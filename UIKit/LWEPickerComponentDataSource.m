@@ -14,10 +14,12 @@
     LWEPickerComponentDataSource helps keep UIPickerDelegate source files from 
     becoming overly complex by abstracting the implementation details of each 
     component of the picker into a single class.
+ 
+    You should subclass this and specify behavior for the didSelectRow:
 */
 @implementation LWEPickerComponentDataSource
 
-@synthesize componentTitles, componentInvocations;
+@synthesize componentTitles;
 @synthesize width,rowHeight;
 
 //! Default initializer, creates array instances
@@ -25,28 +27,21 @@
 {
   if (self = [super init])
   {
-    self->componentTitles = [[NSMutableArray alloc] init];
-    self->componentInvocations = [[NSMutableArray alloc] init];
+    self.componentTitles = [[NSMutableArray alloc] init];
   }
   return self;
 }
-
-/**
- * Adds a title (item) to the picker's componentTitles array, specifying callback
- * \param str String to show in the UIPicker
- * \param anInvocation NSInvocation to use when that item is selected
- */
-- (void) addTitle:(NSString*)str withInvocation:(NSInvocation*)anInvocation
-{
-  [self->componentTitles addObject:str];
-  [self->componentInvocations addObject:anInvocation];
-}
-
 
 //! Returns the number of items in componentTitles
 - (NSInteger) count
 {
   return [componentTitles count];
+}
+
+//! Really should be subclassed to do anything useful
+- (void) didSelectRow:(NSInteger)row
+{
+  return;
 }
 
 #pragma mark -
@@ -55,8 +50,7 @@
 //! Standard dealloc
 - (void) dealloc
 {
-  [self->componentTitles release];
-  [self->componentInvocations release];
+  [self setComponentTitles:nil];
   [super dealloc];
 }
 

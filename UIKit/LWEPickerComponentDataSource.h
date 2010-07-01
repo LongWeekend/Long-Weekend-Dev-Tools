@@ -12,16 +12,15 @@
 @interface LWEPickerComponentDataSource : NSObject
 {
   NSArray *componentTitles;           //! Holds an array of titles (shown in the picker)
-  NSArray *componentInvocations;      //! Holds an array of invocations (actions of the picker items)
   CGFloat width;
   CGFloat rowHeight;
 }
 
 //! Returns the number of items in this component
 - (NSInteger) count;
+- (void) didSelectRow:(NSInteger)row;
 
-@property (readonly, retain) NSArray *componentTitles;
-@property (readonly, retain) NSArray *componentInvocations;
+@property (nonatomic, retain) NSArray *componentTitles;
 @property CGFloat width;
 @property CGFloat rowHeight;
 
