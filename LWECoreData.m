@@ -59,7 +59,7 @@
     }
     else
     {
-      NSAssert2([stringOrPredicate isKindOfClass:[NSPredicate class]], @"Second parameter passed to %s is of unexpected class %@", sel_getName(_cmd), [stringOrPredicate className]);
+      NSAssert2([stringOrPredicate isKindOfClass:[NSPredicate class]], @"Second parameter passed to %s is of unexpected class %@", sel_getName(_cmd), [stringOrPredicate class]);
       predicate = (NSPredicate *)stringOrPredicate;
     }
     [fetchRequest setPredicate:predicate];
