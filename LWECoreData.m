@@ -8,20 +8,39 @@
 
 #import "LWECoreData.h"
 
+/*!
+    @class       LWECoreData
+    @discussion
+    Implements common data actions as static methods to reduce the amount of Core Data-related code
+    that needs to be in the actual source code files.
+*/
 @implementation LWECoreData
-  
+
+/**
+ * Gets all entities for a given entity & context ("SELECT * FROM foo" in SQL)
+ * \param entityName Name of the Core Data entity to fetch
+ * \param managedObjectContext Which ObjectContext to use
+ */
 + (NSArray *) fetchAll:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
   return [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil predicate:nil];
 }
 
+
+/**
+ * Gets all entities for a given entity & context ("SELECT * FROM foo WHERE x ORDER BY y" in SQL)
+ * \param entityName Name of the Core Data entity to fetch
+ * \param managedObjectContext Which ObjectContext to use
+ * \param sortDescriptorsOrNil Sort descriptor, or use nil if you don't want to sort
+ * \param predicate the "where clause" of the query
+ */
 + (NSArray *) fetch:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext withSortDescriptors:(NSArray *)sortDescriptorsOrNil predicate:(id)stringOrPredicate, ...
 {
   NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
   NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
   [fetchRequest setEntity:entity];
   
-  if(sortDescriptorsOrNil != nil)
+  if (sortDescriptorsOrNil != nil)
   {
     [fetchRequest setSortDescriptors:sortDescriptorsOrNil];
   }
@@ -48,14 +67,17 @@
 
   NSError *error;
   NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
-  
-  
 
   [fetchRequest release]; 
   
   return results;
 }
 
+
+/**
+ * Saves the current objectContext
+ * \param managedObjectContext The context to save
+ */
 + (void) save:(NSManagedObjectContext *)managedObjectContext
 {
   //persist this

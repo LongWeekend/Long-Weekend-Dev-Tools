@@ -9,8 +9,9 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@interface LWECoreData : NSObject {
-  
+//! Abstracts common Core Data static method calls
+@interface LWECoreData : NSObject
+{  
 }
 
 + (NSArray *) fetchAll:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
