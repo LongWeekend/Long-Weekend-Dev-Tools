@@ -11,22 +11,20 @@
 #import "FMDatabaseAdditions.h"
 #import "FMResultSet.h"
 #import "LWEFile.h"
+#import "Constants.h"
 
-/** LWE Database singleton, maintains active connections */
+//! LWE Database singleton, maintains active connections
 @interface LWEDatabase : NSObject
 {
   BOOL databaseOpenFinished;
   FMDatabase *dao;
 }
 
-// TODO: these methods should be subclassed as they are jFlash specific
-- (BOOL) copyDatabaseFromBundle:(NSString*)filename;
-- (NSString*) databaseVersion;
-+ (NSString*) userDatabaseFilename;
-
 + (LWEDatabase *)sharedLWEDatabase;
+- (BOOL) copyDatabaseFromBundle:(NSString*)filename;
 - (BOOL) openDatabase:(NSString*) pathToDatabase;
 - (BOOL) closeDatabase;
+- (NSString*) databaseVersion;
 - (BOOL) attachDatabase:(NSString*) pathToDatabase withName:(NSString*) name;
 - (BOOL) detachDatabase:(NSString*) name;
 - (BOOL) tableExists:(NSString*) tableName;

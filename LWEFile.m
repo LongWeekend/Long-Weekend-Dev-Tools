@@ -7,6 +7,7 @@
 //
 
 #import "LWEFile.h"
+#import "LWEDebug.h"
 
 
 @implementation LWEFile
@@ -113,20 +114,20 @@
 + (NSInteger) getTotalDiskSpaceInBytes
 {
   NSInteger totalSpace = 0;
-  NSError *error = nil;
-  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSDictionary *dictionary = [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error: &error];
-  LWE_LOG(@"Last object was: %@",[paths lastObject]);
-  if (dictionary)
-  {
-    NSNumber *fileSystemSizeInBytes = [dictionary objectForKey:NSFileSystemSize];
-    totalSpace = [fileSystemSizeInBytes intValue];
-    LWE_LOG(@"File system size: %d",[fileSystemSizeInBytes intValue])
-  }
-  else
-  {
-    LWE_LOG(@"Error Obtaining File System Info: Domain = %@, Code = %@", [error domain], [error code]);
-  }
+//  NSError *error = nil;
+//  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//  NSDictionary *dictionary = [[NSFileManager defaultManager] attributesOfFileSystemForPath:[paths lastObject] error: &error];
+//  LWE_LOG(@"Last object was: %@",[paths lastObject]);
+//  if (dictionary)
+//  {
+//    NSNumber *fileSystemSizeInBytes = [dictionary objectForKey:NSFileSystemSize];
+//    totalSpace = [fileSystemSizeInBytes intValue];
+//    LWE_LOG(@"File system size: %d",[fileSystemSizeInBytes intValue])
+//  }
+//  else
+//  {
+//    LWE_LOG(@"Error Obtaining File System Info: Domain = %@, Code = %@", [error domain], [error code]);
+//  }
   // TODO: this code doesn't work on iPod Touch and maybe other devices.  So I'm assuming it's all good for now
   totalSpace = 100000000;
   return totalSpace;

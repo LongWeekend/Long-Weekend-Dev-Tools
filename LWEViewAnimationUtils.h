@@ -9,13 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
 
-
 @interface LWEViewAnimationUtils : NSObject {
 
 }
 
 + (void) translateView:(UIView*)view byPoint:(CGPoint)point withInterval:(float)delay;
 + (void) doViewTransition:(NSString *)transition direction:(NSString *)direction duration:(float)duration objectToTransition:(UIViewController *)controllerToTransition;
-
++ (void) fadeOutView:(UIView*)theView fadeDuration:(int)duration;
 
 @end

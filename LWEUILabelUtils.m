@@ -7,6 +7,7 @@
 //
 
 #import "LWEUILabelUtils.h"
+#import "LWEDebug.h"
 
 //! Contains static convenience methods for dealing with UILabels
 @implementation LWEUILabelUtils

@@ -7,6 +7,7 @@
 //
 
 #import "LWEViewAnimationUtils.h"
+#define kAnimationKey @"transitionViewAnimation"
 
 //! Helper class to take some of the heavy lifting out of animating views
 @implementation LWEViewAnimationUtils
@@ -37,5 +38,16 @@
   [[theWindow layer] addAnimation:animation forKey:kAnimationKey];
 	[UIView commitAnimations];
 }
+
+//! Fades out a given view over a given duration.  The view ends up with an alpha of 0
++ (void) fadeOutView:(UIView*)theView fadeDuration:(int)duration
+{
+  // fade the view out to alpha 0 over a duration
+  [UIView beginAnimations:nil context:NULL];
+  [UIView setAnimationDuration:duration];
+  [theView setAlpha:0];
+  [UIView commitAnimations];
+}
+
 
 @end
