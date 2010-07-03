@@ -2,13 +2,15 @@
 #import "LWEFile.h"
 #import "LWEUILabelUtils.h"
 #import "LWEUITableUtils.h"
-#import "LWENetworkUtils.h"
 #import "LWEScrollView.h"
 #import "UIWebView+LWENoBounces.h"
 #import "DebugUIView.h"
 
+// Requires REACHABILITY 2.0
+#import "LWENetworkUtils.h"
+
 // Use Core Animation?
-//#define LWE_USE_CORE_ANIMATION 1
+#define LWE_USE_CORE_ANIMATION 1
 #if defined(LWE_USE_CORE_ANIMATION)
   #import "LWEViewAnimationUtils.h"
 #endif
@@ -22,7 +24,7 @@
 #endif
 
 // Use Core data?
-//#define LWE_USE_CORE_DATA 1
+#define LWE_USE_CORE_DATA 1
 #if defined(LWE_USE_CORE_DATA)
   #import "LWECoreData.h"
 #endif
