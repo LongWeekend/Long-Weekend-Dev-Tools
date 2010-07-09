@@ -100,7 +100,7 @@
   NSError *error;
   if (![managedObjectContext save:&error]) 
   {
-    NSAssert2(0, @"This is embarrassing. We failed to save because: %@", [error localizedDescription]);
+    NSAssert2(0, @"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
   }  
 }
 
