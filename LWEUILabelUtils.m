@@ -13,13 +13,14 @@
 @implementation LWEUILabelUtils
 
 //! Shorter Convenience Method: Resize without parentViewSize option
-+ (void) resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize  {
++ (void) resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
+{
   [LWEUILabelUtils resizeLabelWithConstraints:theLabel minFontSize:minFontSize maxFontSize:maxFontSize forParentViewSize:CGSizeMake(0, 0)];
 }
 
 //! Resize UIScrollView.contentSize based on expected label size and reset scroll pos!
-+ (void) autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize {
-  
++ (void) autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
+{
   // Use our snazzy font resizer (works with multiple lines!)
   [LWEUILabelUtils resizeLabelWithConstraints:theLabel minFontSize:minFontSize maxFontSize:maxFontSize forParentViewSize:scrollViewContainer.frame.size];
   CGSize expectedLabelSize = theLabel.frame.size;
@@ -56,19 +57,24 @@
 }
 
 //! Shorter Convenience Method: AutoSize without specifying font sizes!
-+ (void) autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText  {
++ (void) autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText 
+{
   [LWEUILabelUtils autosizeLabelText:theLabel forScrollView:scrollViewContainer withText:theText minFontSize:READING_MIN_FONTSIZE maxFontSize:READING_MAX_FONTSIZE];
 }
 
 //! Resize font within constraints, works with multi-line labels.
-+ (void) resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize {
++ (void) resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize
+{
   UIFont *newFont = theLabel.font;
   CGRect newFrame = theLabel.frame;
   CGSize expectedLabelSize;
   
+  // Initialize
+  expectedLabelSize.height = 0;
+  
   // Loop from Max Font to Min Font Size until one fits, or scrolling is inevitable
-  for(int i = (int)maxFontSize; i > (int)minFontSize; i=i-2){
-    
+  for (int i = maxFontSize; i > minFontSize; i=i-2)
+  {
     // Set next font size.
     newFont = [newFont fontWithSize:i];
     CGSize constraintSize = theLabel.frame.size;
@@ -87,6 +93,5 @@
   theLabel.frame = newFrame;
   theLabel.font = newFont;
 }
-
 
 @end
