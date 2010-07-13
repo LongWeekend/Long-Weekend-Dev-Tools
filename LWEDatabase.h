@@ -16,7 +16,6 @@
 //! LWE Database singleton, maintains active connections
 @interface LWEDatabase : NSObject
 {
-  BOOL databaseOpenFinished;
   FMDatabase *dao;
 }
 
@@ -37,7 +36,8 @@
 - (BOOL) _databaseIsOpen;
 - (void) _postNotification:(NSNotification *)aNotification;
 
-@property BOOL databaseOpenFinished;
 @property (nonatomic, retain) FMDatabase *dao;
 
 @end
+
+extern NSString const * LWEDatabaseCopyDatabaseDidSucceed;
