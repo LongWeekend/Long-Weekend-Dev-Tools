@@ -11,24 +11,36 @@
 
 @implementation LWELocalNotifications
 
-+ (void) scheduleLocalNotificationMessage:(NSString *)notificationBody withTitle:(NSString*)title inTimeIntervalSinceNow:(NSTimeInterval)interval
++ (UILocalNotification*) _prepareNotificationWithMessage:(NSString*)message buttonTitle:(NSString*)buttonTitleOrNil
 {
-  UILocalNotification *note = [[UILocalNotification alloc] init];
-  if (title)
+  UILocalNotification *note = [[[UILocalNotification alloc] init] autorelease];
+  note.alertBody = message;
+  note.soundName = UILocalNotificationDefaultSoundName;
+  // Show action button if we have a title
+  if (buttonTitleOrNil)
   {
     note.hasAction = YES;
+    note.alertAction = buttonTitleOrNil;
   }
   else
   {
     note.hasAction = NO;
   }
-  note.alertAction = title;
-  note.alertBody = notificationBody;
+  return note;
+}
+
++ (void) scheduleLocalNotificationWithMessage:(NSString *)message buttonTitle:(NSString*)buttonTitleOrNil inTimeIntervalSinceNow:(NSTimeInterval)interval
+{
+  UILocalNotification *note = [LWELocalNotifications _prepareNotificationWithMessage:message buttonTitle:buttonTitleOrNil];
   note.fireDate = [NSDate dateWithTimeIntervalSinceNow:interval];
-  
-  UIApplication *thisApp = [UIApplication sharedApplication];
-  [thisApp scheduleLocalNotification:note];
-  [note release];
+  [[UIApplication sharedApplication] scheduleLocalNotification:note];
+}
+
+
++ (void) presentLocalNotificationWithMessage:(NSString*)message buttonTitle:(NSString*)buttonTitleOrNil
+{
+  UILocalNotification *note = [LWELocalNotifications _prepareNotificationWithMessage:message buttonTitle:buttonTitleOrNil];
+  [[UIApplication sharedApplication] presentLocalNotificationNow:note];
 }
 
 @end

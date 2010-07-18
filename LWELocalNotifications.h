@@ -15,10 +15,14 @@
 
 /**
  * \brief   Schedules a notification on the user's phone
- * \param   notificationBody The text to be displayed
- * \param   title A title for the action button.  If nil, no action button is displayed
- * \param   interval How long to wait before displaying
+ * \param   message The text to be displayed
+ * \param   buttonTitleOrNil A title for the action button.  If nil, no action button is displayed
+ * \param   interval How long to wait before displaying, or nil for immediately
  */
-+ (void) scheduleLocalNotificationMessage:(NSString *)notificationBody withTitle:(NSString*)title inTimeIntervalSinceNow:(NSTimeInterval)interval;
++ (void) scheduleLocalNotificationWithMessage:(NSString *)message buttonTitle:(NSString*)buttonTitleOrNil inTimeIntervalSinceNow:(NSTimeInterval)interval;
++ (void) presentLocalNotificationWithMessage:(NSString*)message buttonTitle:(NSString*)buttonTitleOrNil;
+
+//! Private
++ (UILocalNotification*) _prepareNotificationWithMessage:(NSString*)message buttonTitle:(NSString*)buttonTitleOrNil;
 
 @end
