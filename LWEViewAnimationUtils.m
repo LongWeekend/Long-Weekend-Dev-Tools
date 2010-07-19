@@ -39,8 +39,19 @@
 	[UIView commitAnimations];
 }
 
-//! Fades out a given view over a given duration.  The view ends up with an alpha of 0
-+ (void) fadeOutView:(UIView*)theView fadeDuration:(int)duration
+//! Fades in a given view over a given duration.  The view ends up with an alpha of 1 and IS added to the superview
++ (void) fadeInView:(UIView*)theView intoView:(UIView*)superview fadeDuration:(CGFloat)duration
+{
+  [superview addSubview:theView];
+  [theView setAlpha:0];
+  [UIView beginAnimations:nil context:NULL];
+  [UIView setAnimationDuration:duration];
+  [theView setAlpha:1];
+  [UIView commitAnimations];
+}
+
+//! Fades out a given view over a given duration.  The view ends up with an alpha of 0 but is NOT removed from the superview
++ (void) fadeOutView:(UIView*)theView fadeDuration:(CGFloat)duration
 {
   // fade the view out to alpha 0 over a duration
   [UIView beginAnimations:nil context:NULL];

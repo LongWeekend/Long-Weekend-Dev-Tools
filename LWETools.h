@@ -1,5 +1,6 @@
 #import "LWEDebug.h"
 #import "LWEFile.h"
+#import "LWELocalNotifications.h"
 #import "LWEUILabelUtils.h"
 #import "LWEUITableUtils.h"
 #import "LWEScrollView.h"
