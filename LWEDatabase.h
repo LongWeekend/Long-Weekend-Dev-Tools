@@ -40,4 +40,4 @@
 
 @end
 
-extern NSString const * LWEDatabaseCopyDatabaseDidSucceed;
+extern NSString * const LWEDatabaseCopyDatabaseDidSucceed;

@@ -222,4 +222,4 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
 @end
 
-NSString const * LWEDatabaseCopyDatabaseDidSucceed = @"LWEDatabaseCopyDatabaseDidSucceed";
+NSString * const LWEDatabaseCopyDatabaseDidSucceed = @"LWEDatabaseCopyDatabaseDidSucceed";
