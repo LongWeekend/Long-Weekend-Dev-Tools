@@ -22,6 +22,9 @@
   //! If YES, the view will show a callout (like a speech bubble)
   BOOL showCallout;
   
+  //! If YES, draw a dropshadow
+  BOOL showDropShadow;
+  
   //! Determines where the callout is displayed in reference to the tooltip (left, right, top, bottom)
   LWETooltipCalloutPosition calloutPosition;
   
@@ -36,6 +39,9 @@
   
   //! Value between 0-1 indicating how big/long the callout should be
   CGFloat calloutSize;
+  
+  //! Size of the drop shadow - should be positive values (negative not yet supported)
+  CGSize shadowOffset;
   
   //! Reference to the UIButton close button for the tooltip
   UIButton *closeButton;
@@ -104,6 +110,14 @@
  */
 - (void) setCalloutSize:(CGFloat)size;
 
+
+/**
+ * \brief   Sets the shadow offset size for the subviews
+ * \param   size Should be a positive-valued CGSize struct
+ * \details Blurring is set in LWETooltipConstants.h
+ */
+- (void) setShadowOffset:(CGSize)size;
+
 - (void) layoutTooltip;
 
 // Private helper methods
@@ -115,6 +129,7 @@
 @property (nonatomic, retain) UIButton *closeButton;
 @property (nonatomic, retain) UIView *contentView;
 @property BOOL showCallout;
+@property BOOL showDropShadow;
 
 @property (nonatomic, retain) LWERoundedRectView *roundedRectView;
 @property (nonatomic, retain) LWECalloutView *calloutView;

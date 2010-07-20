@@ -14,13 +14,15 @@
 @synthesize strokeColor;
 @synthesize rectColor;
 @synthesize strokeWidth;
+@synthesize shadowOffset;
 
 - (id)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame]))
   {
-    self.strokeColor = kDefaultStrokeColor;
+    self.shadowOffset = CGSizeZero;
     self.backgroundColor = [UIColor clearColor];
+    self.strokeColor = kDefaultStrokeColor;
     self.rectColor = kDefaultRectColor;
     self.strokeWidth = kDefaultStrokeWidth;
     calloutPosition = LWETooltipCalloutPositionTop;
@@ -58,12 +60,15 @@
 
 - (void)drawRect:(CGRect)rect
 {
+  CGFloat shadowX = self.shadowOffset.width;
+  CGFloat shadowY = self.shadowOffset.height;
+  
   // Set up fill & stroke colors
   CGContextRef context = UIGraphicsGetCurrentContext();
   CGContextSetLineWidth(context, self.strokeWidth);
   CGContextSetStrokeColorWithColor(context, self.strokeColor.CGColor);
   CGContextSetFillColorWithColor(context, self.rectColor.CGColor);
-  
+
   CGRect calloutRect = self.bounds;
   CGFloat base;
   CGFloat length;
@@ -119,41 +124,42 @@
     calloutPointOnBase = (base / 2) * offset;
   }
   
+  CGContextSaveGState(context);
+  CGContextSetShadow(context, CGSizeMake(shadowX, shadowY), kDefaultShadowBlur);  
+  
   // Shit, now convert back to X and Y
   switch (calloutPosition)
   {
     case LWETooltipCalloutPositionTop:
       CGContextMoveToPoint(context, firstBase, length);
-      CGContextAddLineToPoint(context, midpointOnBase, length);
       CGContextAddLineToPoint(context, calloutPointOnBase, 0);
-      CGContextSetStrokeColorWithColor(context, self.rectColor.CGColor);
-      CGContextMoveToPoint(context, firstBase, length);
+      CGContextAddLineToPoint(context, midpointOnBase, length);
+      CGContextAddLineToPoint(context, firstBase, length);
       break;
     case LWETooltipCalloutPositionBottom:
       CGContextMoveToPoint(context, firstBase, 0);
       CGContextAddLineToPoint(context, calloutPointOnBase, length);
       CGContextAddLineToPoint(context, midpointOnBase, 0);
-      CGContextSetStrokeColorWithColor(context, self.rectColor.CGColor);
-      CGContextMoveToPoint(context, firstBase, 0);
+      CGContextAddLineToPoint(context, firstBase, 0);
       break;
     case LWETooltipCalloutPositionLeft:
       CGContextMoveToPoint(context, length, firstBase);
       CGContextAddLineToPoint(context, 0, calloutPointOnBase);
       CGContextAddLineToPoint(context, length, midpointOnBase);
-      CGContextSetStrokeColorWithColor(context, self.rectColor.CGColor);
-      CGContextMoveToPoint(context, length, firstBase);
+      CGContextAddLineToPoint(context, length, firstBase);
       break;
     case LWETooltipCalloutPositionRight:
       CGContextMoveToPoint(context, 0, firstBase);
       CGContextAddLineToPoint(context, length, calloutPointOnBase);
       CGContextAddLineToPoint(context, 0, midpointOnBase);
-      CGContextSetStrokeColorWithColor(context, self.rectColor.CGColor);
-      CGContextMoveToPoint(context, 0, firstBase);
+      CGContextAddLineToPoint(context, 0, firstBase);
       break;
   }
   
   CGContextClosePath(context);
   CGContextDrawPath(context, kCGPathFillStroke);
+
+  CGContextRestoreGState(context);
 }
 
 - (void)dealloc

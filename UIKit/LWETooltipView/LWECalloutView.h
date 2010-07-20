@@ -24,6 +24,9 @@
   
   //! Width of the path stroke
   CGFloat strokeWidth;
+  
+  //! Width & height offset of the shadow (should be positive values, negative doesn't seem to work yet)
+  CGSize shadowOffset;
 
   @private
   LWETooltipCalloutDirection calloutDirection;
@@ -64,8 +67,16 @@
  */
 - (void) setCalloutFillColor:(UIColor*) color;
 
+/**
+ * \brief   Sets the shadow's offset from the callout
+ * \param   size Should be a CGSize with positive height/width values
+ * \details For some reason, we are not yet friendly with negative values (we haven't done it yet)
+ */
+- (void) setShadowOffset:(CGSize)size;
+
 @property (nonatomic, retain) UIColor *strokeColor;
 @property (nonatomic, retain) UIColor *rectColor;
 @property CGFloat strokeWidth;
+@property CGSize shadowOffset;
 
 @end
