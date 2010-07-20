@@ -10,7 +10,7 @@
 
 @implementation LWETooltipView
 
-@synthesize roundedRectView, contentView, showCallout, calloutView, closeButton;
+@synthesize roundedRectView, contentView, showCallout, calloutView, closeButton, showDropShadow;
 
 //! Init and set all defaults
 - (id)initWithFrame:(CGRect)frame
@@ -18,13 +18,15 @@
   if ((self = [super initWithFrame:frame]))
   {
     // Default options
-    calloutOffset = LWETooltipCalloutOffsetRight;
-    calloutPosition = LWETooltipCalloutPositionBottom;
+    calloutOffset = LWETooltipCalloutOffsetNone;
+    calloutPosition = LWETooltipCalloutPositionTop;
     calloutDirection = LWETooltipCalloutDirectionStraight;
     closeButtonPosition = LWETooltipCloseButtonPositionTopRight;
     showCallout = YES;
+    showDropShadow = YES;
+    shadowOffset = CGSizeMake(3,5);
     calloutSize = 0.15f;
-    self.alpha = 0.75f;
+    self.alpha = 1.0f;
     self.closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self setCloseButtonImage:[UIImage imageNamed:@"overlay-btn-close.png"]];
     self.contentView = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
@@ -50,8 +52,8 @@
 {
   self.roundedRectView.rectColor = color;
   self.calloutView.rectColor = color;
-  self.roundedRectView.strokeColor = color;
-  self.calloutView.strokeColor = color;
+//  self.roundedRectView.strokeColor = color;
+//  self.calloutView.strokeColor = color;
 }
 
 - (void) setCalloutPosition:(LWETooltipCalloutPosition)position
@@ -87,26 +89,34 @@
   [self.closeButton addTarget:sender action:action forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void) setShadowOffset:(CGSize)size
+{
+  shadowOffset = size;
+}
+
 #pragma mark -
 #pragma mark View Layout Code
 
 - (void) layoutTooltip
 {
+  // TODO reduce the duplication in this method
   if (self.showCallout)
   {
     // Resize rounded rect to make room for the callout
     self.calloutView.frame = [self _makeCalloutRectFrame];
     [[self calloutView] setCalloutPosition:calloutPosition];
     [[self calloutView] setCalloutDirection:calloutDirection];
-    [[self calloutView] setCalloutOffset:calloutOffset];    
+    [[self calloutView] setCalloutOffset:calloutOffset];
     [[self calloutView] setCalloutFillColor:[[self roundedRectView] rectColor]];
     [[self calloutView] setAlpha:[self alpha]];
+    [[self calloutView] setShadowOffset:shadowOffset];
     
 
     self.roundedRectView.frame = [self _makeNewRoundRectFrame];
     self.contentView.frame = [self _makeContentViewRect];
     [[self roundedRectView] addSubview:[self contentView]];
     [[self roundedRectView] setAlpha:[self alpha]];
+    [[self roundedRectView] setShadowOffset:shadowOffset];
     
     [self addSubview:[self calloutView]];
     [self addSubview:[self roundedRectView]];
@@ -120,6 +130,7 @@
     self.contentView.frame = [self _makeContentViewRect];
     [[self roundedRectView] addSubview:[self contentView]];
     [[self roundedRectView] setAlpha:[self alpha]];
+    [[self roundedRectView] setShadowOffset:CGSizeMake(4,6)];
 
     [self addSubview:[self roundedRectView]];
 

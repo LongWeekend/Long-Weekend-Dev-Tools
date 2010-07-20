@@ -40,7 +40,8 @@ enum
 };
 typedef NSUInteger LWETooltipCloseButtonPosition;
 
-#define kDefaultStrokeColor         [UIColor blueColor]
+#define kDefaultStrokeColor         [UIColor clearColor]
 #define kDefaultRectColor           [UIColor blueColor]
-#define kDefaultStrokeWidth         1.0
+#define kDefaultStrokeWidth         1.0f
 #define kDefaultCornerRadius        20.0
+#define kDefaultShadowBlur          2.5
