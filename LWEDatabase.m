@@ -52,8 +52,16 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   if (fileExists)
   {
     self.dao = [FMDatabase databaseWithPath:pathToDatabase];
-    self.dao.logsErrors = YES;
-    self.dao.traceExecution = YES;
+    
+    // only allow error tracing in a non-release versions.  APP Store version should never have these on
+    #if defined(APP_STORE_FINAL)
+      self.dao.logsErrors = NO;
+      self.dao.traceExecution = NO;
+    #else
+      self.dao.logsErrors = YES;
+      self.dao.traceExecution = YES;
+    #endif
+    
     if ([self.dao open])
     {
       success = YES;
