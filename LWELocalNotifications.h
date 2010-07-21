@@ -14,6 +14,13 @@
 }
 
 /**
+ * \brief   Set the numeric badge to show for the application
+ * \param   badgeNumber The new badge number for the application
+ * \details   <#(comprehensive description)#>
+ */
++ (void)setApplicationBadgeNumber:(NSInteger)badgeNumber;
+
+/**
  * \brief   Schedules a notification on the user's phone
  * \param   message The text to be displayed
  * \param   buttonTitleOrNil A title for the action button.  If nil, no action button is displayed
