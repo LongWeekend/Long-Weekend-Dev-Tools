@@ -12,7 +12,7 @@
 
 @implementation LWEDatabase
 
-@synthesize dao,databaseOpenFinished;
+@synthesize dao;
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
@@ -23,21 +23,18 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (BOOL) copyDatabaseFromBundle:(NSString*)filename
 {
-  BOOL returnVal;
+  BOOL returnVal = NO;
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  if (![LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES])
+  if ([LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES])
   {
-    LWE_LOG(@"Unable to copy database from bundle: %@",filename);
-    returnVal = NO;
+    // Let everyone know that we are DONE
+    NSNotification *aNotification = [NSNotification notificationWithName:LWEDatabaseCopyDatabaseDidSucceed object:self];
+    [self performSelectorOnMainThread:@selector(_postNotification:) withObject:aNotification waitUntilDone:NO];
+    returnVal = YES;
   }
   else
   {
-    NSUserDefaults *settings = [NSUserDefaults standardUserDefaults];
-    [settings setBool:YES forKey:@"db_did_finish_copying"];
-    returnVal = YES;
-    
-    NSNotification *aNotification = [NSNotification notificationWithName:@"DatabaseCopyFinished" object:self];
-    [self performSelectorOnMainThread:@selector(_postNotification:) withObject:aNotification waitUntilDone:NO];
+    LWE_LOG(@"Unable to copy database from bundle: %@",filename);
   }
   [pool release];
   return returnVal;
@@ -54,7 +51,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   BOOL fileExists = [LWEFile fileExists:pathToDatabase];
   if (fileExists)
   {
-    self.databaseOpenFinished = NO;
     self.dao = [FMDatabase databaseWithPath:pathToDatabase];
     
     // only allow error tracing in a non-release versions.  APP Store version should never have these on
@@ -76,9 +72,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
       LWE_LOG(@"FAIL - Could not open DB - error code: %d",[[self dao] lastErrorCode]);
       abort();
     }
-
-    // So other threads can query whether we are done or not
-    self.databaseOpenFinished = YES;
   }
   return success;
 }
@@ -94,7 +87,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   if ([self _databaseIsOpen])
   {
     [[self dao] close];
-    self.databaseOpenFinished = NO;
   }
   return YES;
 }
@@ -102,26 +94,21 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
 /**
  * Gets open database's version - proprietary to LWE databases (uses version table)
+ * \return NSString of the current version, or nil if the database is not open
  */
 - (NSString*) databaseVersion
 {
-  NSString *version = [[NSString alloc] initWithString:RIKAI_VERSION];
+  NSString *version = nil;
   if ([self _databaseIsOpen])
   {
     NSString* sql = [[NSString alloc] initWithFormat:@"SELECT * FROM main.version LIMIT 1"];
     FMResultSet *rs = [self executeQuery:sql];
+    [sql release];
     while ([rs next])
     {
-      // Get rid of the old one and replace w/ the current version
-      [version release];
       version = [rs stringForColumn:@"version"];
     }
     [rs close];
-  }
-  else
-  {
-    // When called with no DB, throw exception
-    [NSException raise:@"Invalid database object in 'dao'" format:@"dao object is: %@",[self dao]];
   }
   return version;
 }
@@ -136,7 +123,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   if ([self _databaseIsOpen])
   {
     NSString *sql = [[NSString alloc] initWithFormat:@"ATTACH DATABASE \"%@\" AS %@;",pathToDatabase,name];
-    LWE_LOG(@"%@",sql);
     [self executeUpdate:sql];
     if (![[self dao] hadError])
     {
@@ -162,7 +148,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   if ([self _databaseIsOpen])
   {
     NSString *sql = [[NSString alloc] initWithFormat:@"DETACH DATABASE \"%@\";",name];
-    LWE_LOG(@"%@",sql);
     [self executeUpdate:sql];
     if (![[self dao] hadError])
     {
@@ -208,9 +193,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   {
     NSString *sql = [[NSString alloc] initWithFormat:@"SELECT name FROM sqlite_master WHERE type='table' AND name='%@'", tableName];
     FMResultSet *rs = [self executeQuery:sql];
-    if ([rs next]) returnVal = YES;
-    [rs close];
     [sql release];
+    if ([rs next])
+    {
+      returnVal = YES;
+    }
+    [rs close];
   }
   else
   {
@@ -241,3 +229,5 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 }
 
 @end
+
+NSString * const LWEDatabaseCopyDatabaseDidSucceed = @"LWEDatabaseCopyDatabaseDidSucceed";
