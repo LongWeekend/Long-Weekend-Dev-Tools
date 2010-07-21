@@ -9,8 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "LWETAuthenticationViewProtocol.h"
 
-@interface LWETDefaultAuthenticationViewController : UIViewController 
-<LWETAuthenticationViewProtocol>
+@interface LWETDefaultAuthenticationViewController : UIViewController <LWETAuthenticationViewProtocol>
 {
 	id <LWETAuthenticationViewDelegate> delegate;
 	UIWebView *webView;
@@ -18,8 +17,7 @@
 	UIBarButtonItem *_cancelBtn;
 }
 
-@property (nonatomic, retain) 
-id<LWETAuthenticationViewDelegate> delegate;
+@property (nonatomic, retain) id<LWETAuthenticationViewDelegate> delegate;
 @property (nonatomic, retain) IBOutlet UIWebView *webView;
 
 -(IBAction) doneButtonTouchedUp:(id)sender;

@@ -10,6 +10,7 @@
 #import "LWETDelegates.h"
 #import "LWETRequestDelegate.h"
 
+// RENDY: may want to put these in the header so users know what is required?
 #import "OAConsumer.h"
 #import "OAToken.h"
 #import "OARequestParameter.h"
@@ -230,6 +231,7 @@
     } 
 	else 
 	{
+    // RENDY: EXCELLENT use for NSError.  One more thing - make domain a NSString * const!
 		LWE_LOG(@"FAILED TWEET!!");
 		[self statusRequestTokenTicket:ticket
 					  didFailWithError:[NSError errorWithDomain:@"LWETwitterEngine" 
@@ -246,6 +248,7 @@
 	if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] && 
 		[self.delegate respondsToSelector:@selector(didFailedWithError:)])
 	{
+    // RENDY: Not sure if casting is necessary here
 		id<LWETRequestDelegate> parent = (id <LWETRequestDelegate>) self.delegate;
 		[parent didFailedWithError:error];
 	}

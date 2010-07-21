@@ -10,6 +10,7 @@
 
 @class LWETwitterOAuth;
 
+// RENDY: please define this protocol.  What does it do??
 @protocol LWETXAuthViewProtocol
 
 - (void)setAuthEngine:(LWETwitterOAuth *)authEngine;

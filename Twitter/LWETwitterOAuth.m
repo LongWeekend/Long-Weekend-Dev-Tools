@@ -34,6 +34,7 @@
 	return self;
 }
 
+// RENDY: see "designated initializer" pattern
 - (id)initWithConsumer:(OAConsumer *)aConsumer 
 			  delegate:(id <LWETAuthProccessDelegate>)aDelegate
 {

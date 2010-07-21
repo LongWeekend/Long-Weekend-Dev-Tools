@@ -32,6 +32,7 @@
 @class LWETUser;
 @class LWETUserDB;
 
+// RENDY: doc
 typedef enum
 {
 	LWET_STATUS_UPDATE,
@@ -39,14 +40,15 @@ typedef enum
 	LWET_FRIENDSHIP_MAKE
 } LWETwitterRequestType;
 
+// RENDY: doc
 typedef enum
 {
 	LWET_AUTH_OAUTH,
 	LWET_AUTH_XAUTH
 }LWETAuthMode;
 
-@interface LWETwitterEngine : NSObject
-<LWETAuthProccessDelegate> 
+// RENDY: doc
+@interface LWETwitterEngine : NSObject <LWETAuthProccessDelegate> 
 {
 	LWETUser *loggedUser;
 	LWETwitterOAuth *authObj;

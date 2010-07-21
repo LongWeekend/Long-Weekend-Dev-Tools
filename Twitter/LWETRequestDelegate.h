@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+// RENDY: doc
 @protocol LWETRequestDelegate
 @optional
 - (void)didFinishProcessWithData:(NSData *)data;

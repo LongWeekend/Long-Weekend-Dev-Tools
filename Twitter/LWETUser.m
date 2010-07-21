@@ -21,6 +21,7 @@
 #pragma mark -
 #pragma mark Initialization phase
 
+// RENDY: no need to implement if no code
 - (id)init
 {
 	if ([super init])

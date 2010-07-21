@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @class OAToken;
-
+// RENDY: doc
 @protocol LWETAuthenticationViewDelegate <NSObject>
 @required
 - (void)didFinishAuthorizationWithPin:(NSString *)pin;
@@ -17,6 +17,7 @@
 
 @end
 
+// RENDY: doc
 @protocol LWETAuthProccessDelegate
 @optional
 - (void)didFinishAuthProcessWithAccessToken:(OAToken *)userToken;

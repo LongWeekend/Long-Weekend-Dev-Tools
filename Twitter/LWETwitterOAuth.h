@@ -57,6 +57,7 @@ typedef enum
 
 - (void)startAuthProccess;
 
+// RENDY: what does this do?
 - (NSString *)methodNameForAuthType:(LWETwitterAuthType)lwet;
 
 - (OAMutableURLRequest *)prepareURLForAuthType:(LWETwitterAuthType)lwet 

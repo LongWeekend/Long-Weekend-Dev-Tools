@@ -28,6 +28,7 @@
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
+// RENDY: we have an LWE method for this ;)
 - (NSString *)applicationDocumentsDirectory;
 
 @end
