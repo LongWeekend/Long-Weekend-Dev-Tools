@@ -21,12 +21,11 @@
 #pragma mark -
 #pragma mark Initialization phase
 
-// RENDY: no need to implement if no code
 - (id)init
 {
 	if ([super init])
 	{
-		
+		/*place for future customazation*/
 	}
 	return self; 
 }
@@ -42,8 +41,7 @@
 						 initWithString:
 						 [managedObject valueForKey:aSecretKey]];
 	
-	//Initialization with the key and secret given
-	//from the managed object
+	//Initialization with the key and secret given from the managed object
 	if ([self initWithKey:aKey 
 				   secret:aSecret])
 	{

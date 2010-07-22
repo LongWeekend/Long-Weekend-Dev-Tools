@@ -11,6 +11,14 @@
 
 @class OAToken;
 
+/**
+ * This class symbolize a user, which are intended to be used for logging in
+ * with the twitter engine.
+ * 
+ * There are a lot of way to initialize this class, one of them are using managed object, and init this class
+ * Also, this class holds all the information needed to sign the request on behalf of this user
+ * to twitter.
+ */
 @interface LWETUser : NSObject 
 {
 	NSString *key;

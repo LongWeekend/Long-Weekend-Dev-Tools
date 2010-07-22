@@ -12,6 +12,19 @@
 #import "LWETDelegates.h"
 #import "LWETwitterOAuth.h"
 #import "LWETAuthenticationViewProtocol.h"
+#import "LWETRequestDelegate.h"
+
+#import "OAConsumer.h"
+#import "OAToken.h"
+#import "OARequestParameter.h"
+#import "OAMutableURLRequest.h"
+#import "OAServiceTicket.h"
+#import "OADataFetcher.h"
+#import "LWEDebug.h"
+#import "LWETUser.h"
+#import "LWETUserDB.h"
+#import "LWETXAuthViewProtocol.h"
+#import "JSON.h"
 
 #define kServerName				@"http://api.twitter.com"
 #define kStatusUpdateMethod		@"statuses/update"
@@ -25,6 +38,8 @@
 #define kOAUTH					@"OAUTH"
 #define kXAUTH					@"XAUTH"
 
+#define kErrorDomain			@"LWETwitterEngine"
+
 @class OAConsumer;
 @class OAToken;
 @class OAServiceTicket;
@@ -32,7 +47,7 @@
 @class LWETUser;
 @class LWETUserDB;
 
-// RENDY: doc
+//! Twitter request enum type for preparing the request object.
 typedef enum
 {
 	LWET_STATUS_UPDATE,
@@ -40,14 +55,21 @@ typedef enum
 	LWET_FRIENDSHIP_MAKE
 } LWETwitterRequestType;
 
-// RENDY: doc
+//! Possible authentication method. XAuth, or OAuth
 typedef enum
 {
 	LWET_AUTH_OAUTH,
 	LWET_AUTH_XAUTH
 }LWETAuthMode;
 
-// RENDY: doc
+/**
+ * This is the twitter agent class, which is going to be instantiated with the user consumer key, and its
+ * secret key. It has most of the required twitter capability, like status udate (tweet), search for people, 
+ * or following people. It will gets updated in the near future with heaps of other twitter capability.
+ *
+ * It also conforms with the LWETAuthProcessDelegate as the protocol of being the Auth engine delegate, and
+ * it will gets report from the auth engine whether the auth has finishes, or failed. 
+ */
 @interface LWETwitterEngine : NSObject <LWETAuthProccessDelegate> 
 {
 	LWETUser *loggedUser;
@@ -58,7 +80,7 @@ typedef enum
 	
 	UIViewController *parentForUserAuthenticationView;
 	UIViewController *authenticationView;
-	id delegate;
+	id<LWETRequestDelegate> delegate;
 	NSString *tmpForUserID;
 }
 
@@ -72,10 +94,13 @@ typedef enum
 @property (nonatomic, assign) UIViewController *parentForUserAuthenticationView;
 @property (nonatomic, assign) id delegate;
 
+/**
+ * Set the user, and logged them on. Check with the core data, wether they have been 
+ * logged in, and has their credential on it, or the engine has to authenticate them by having
+ * preferred auth mode as the OAuth, or XAuth. 
+ */
 - (void)setLoggedUser:(LWETUser *)aUser
 			 authMode:(LWETAuthMode)authMode;
-
-- (id)init;
 
 - (id)initWithConsumerKey:(NSString *)consumerKey 
 			   privateKey:(NSString *)privateKey;
@@ -95,11 +120,14 @@ typedef enum
 
 - (BOOL)_persistUserToken:(OAToken *)userToken;
 
-//Twitter Core Method
+//Twitter Core Methods
+
 - (void)tweet:(NSString *)words;
 
 - (void)search:(NSString *)people;
 
 - (void)follow:(NSString *)people;
+
+- (void)signOutForTheCurrentUser;
 
 @end

@@ -31,8 +31,11 @@ typedef enum
 	LWET_ACCESS_TOKEN
 } LWETwitterAuthType;
 
-@interface LWETwitterOAuth : NSObject 
-<LWETAuthenticationViewDelegate>
+/**
+ * This class takes care of all the authentication method. Imagine this is the Authentication Agent which is used for signing in.
+ *
+ */
+@interface LWETwitterOAuth : NSObject <LWETAuthenticationViewDelegate>
 {
 	BOOL isAuthenticated;
 	id<LWETAuthProccessDelegate> delegate;
@@ -47,8 +50,6 @@ typedef enum
 @property (nonatomic, retain) OAToken *accessToken;
 @property (nonatomic, retain) UIViewController<LWETAuthenticationViewProtocol> *authenticationView;
 
-- (id)init;
-
 - (id)initWithConsumer:(OAConsumer *)aConsumer 
 			  delegate:(id <LWETAuthProccessDelegate>)aDelegate;
 
@@ -57,7 +58,9 @@ typedef enum
 
 - (void)startAuthProccess;
 
-// RENDY: what does this do?
+/**
+ * This method is used for translating the LWETwitterAuthType enum type, to the string it coresponds to. 
+ */
 - (NSString *)methodNameForAuthType:(LWETwitterAuthType)lwet;
 
 - (OAMutableURLRequest *)prepareURLForAuthType:(LWETwitterAuthType)lwet 

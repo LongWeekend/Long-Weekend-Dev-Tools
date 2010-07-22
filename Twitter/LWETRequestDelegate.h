@@ -8,7 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-// RENDY: doc
+/**
+ * This request delegate is the protocol that has to be conformed to, as a twitter engine 
+ * request delegate. All of the request given to the twitter engine, the result (whether it fails)
+ * or succeed, it will goes in these methods. 
+ *
+ */
 @protocol LWETRequestDelegate
 @optional
 - (void)didFinishProcessWithData:(NSData *)data;

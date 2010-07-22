@@ -10,19 +10,6 @@
 #import "LWETDelegates.h"
 #import "LWETRequestDelegate.h"
 
-// RENDY: may want to put these in the header so users know what is required?
-#import "OAConsumer.h"
-#import "OAToken.h"
-#import "OARequestParameter.h"
-#import "OAMutableURLRequest.h"
-#import "OAServiceTicket.h"
-#import "OADataFetcher.h"
-#import "LWEDebug.h"
-#import "LWETUser.h"
-#import "LWETUserDB.h"
-#import "LWETXAuthViewProtocol.h"
-#import "JSON.h"
-
 @implementation LWETwitterEngine
 
 @synthesize parentForUserAuthenticationView;
@@ -38,33 +25,32 @@
 #pragma mark -
 #pragma mark Setters for loggedUser
 
+//! Set the logged user (authenticate if the user is not yet authenticated) and also passed in the preferable method of authentication. 
 - (void)setLoggedUser:(LWETUser *)aUser
 			 authMode:(LWETAuthMode)authMode
 {
-	//TODO: CHECK IF THE USER IS THE SAME
-	
 	LWETUser *user = nil;
 	//check the user id from the database first
 	NSError *error = nil;
 	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" 
-												   inManagedObjectContext:self.context];
-	LWE_LOG(@"CHANGE USER WITH : %@", aUser.userID); 
+													   inManagedObjectContext:self.context];
+	LWE_LOG(@"Changes the user with : %@", aUser.userID); 
 	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"profileID=%@", 
 							  aUser.userID];
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	
+		
 	[request setPredicate:predicate];
 	[request setEntity:description];
-	
+		
 	NSArray *arrayOfManagedObject = [[self context] executeFetchRequest:request 
-																  error:&error];
+																	  error:&error];
 	if (arrayOfManagedObject == nil)
 	{
-		LWE_LOG(@"ERROR : %@", [error userInfo]);
+		LWE_LOG(@"Error cause by core data while trying to get the user from it : %@", [error userInfo]);
 	}
 	else if([arrayOfManagedObject count] <= 0)
 	{
-		LWE_LOG(@"AUTHENTICATION PROCCESS");
+		LWE_LOG(@"Authentication proccess with the LWETwitterOAuth");
 		if (![self authObj])
 		{
 			tmpForUserID = [[NSString alloc]
@@ -72,20 +58,20 @@
 			authObj = [[LWETwitterOAuth alloc]
 					   initWithConsumer:self.consumer
 					   delegate:self];
-			
+				
 			//XAUTH MODE
 			if ((authMode == LWET_AUTH_XAUTH) && (self.authenticationView) && 
 				([self.authenticationView conformsToProtocol:@protocol(LWETXAuthViewProtocol)]))
 			{
 				UIViewController<LWETXAuthViewProtocol> *viewController =
-					(UIViewController<LWETXAuthViewProtocol> *)	self.authenticationView;
+				(UIViewController<LWETXAuthViewProtocol> *)	self.authenticationView;
 				
 				[viewController setAuthEngine:self.authObj];
 				UINavigationController *controller = [[UINavigationController alloc]
 													  initWithRootViewController:viewController];
-				
+					
 				[self.parentForUserAuthenticationView presentModalViewController:controller 
-																		animated:YES];
+																			animated:YES];
 				[controller release];
 			}
 			//OAUTH MODE
@@ -102,11 +88,11 @@
 			}
 		}
 		else 
-			LWE_LOG(@"TOO BAD, AUTH IS IN PROCESS");
+			LWE_LOG(@"Sorry, the authentication is still hapenning.");
 	}
 	else 
 	{
-		LWE_LOG(@"FROM DATABASE");
+		LWE_LOG(@"User data is taken from the database.");
 		NSManagedObject *object = [arrayOfManagedObject objectAtIndex:0];
 		NSManagedObject *relationship = [object valueForKey:@"userProfileToToken"];
 		user = [[LWETUser alloc]
@@ -122,11 +108,18 @@
 #pragma mark -
 #pragma mark Twitter Core Methods
 
+//! Sign out from the current user
+- (void)signOutForTheCurrentUser
+{
+	
+}
+
+//! Tweet the word with the current user credential.
 - (void)tweet:(NSString *)words
 {
 	if (loggedUser != nil) 
 	{
-		LWE_LOG(@"TWEET USING THIS WORD : %@", words);
+		LWE_LOG(@"Tweet Engine: Tweet this word %@", words);
         OADataFetcher *fetcher;
                 
 		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_STATUS_UPDATE 
@@ -151,11 +144,12 @@
     }
 }
 
+//! Search people based on their screen name.
 - (void)search:(NSString *)people
 {
 	if (loggedUser != nil) 
 	{
-		LWE_LOG(@"LOOK FOR ID : %@", people);
+		LWE_LOG(@"Tweet Engine: Looking for this people %@", people);
         OADataFetcher *fetcher;
 		
 		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_USER_SEARCH
@@ -180,11 +174,12 @@
     }
 }
 
+//! Follows a user.
 - (void)follow:(NSString *)people
 {
 	if (loggedUser != nil) 
 	{
-		LWE_LOG(@"FOLLOW FOR ID : %@", people);
+		LWE_LOG(@"Tweet Engine: Current user is following %@", people);
         OADataFetcher *fetcher;
 		
 		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_FRIENDSHIP_MAKE
@@ -218,7 +213,7 @@
 	NSString *responseBody = [[NSString alloc] 
 							  initWithData:data
 							  encoding:NSUTF8StringEncoding];
-	LWE_LOG(@"RESPONSE REQUEST %@", responseBody);
+	LWE_LOG(@"Response request for tweet has finished : %@", responseBody);
 	[responseBody release];
     if (ticket.didSucceed) 
 	{
@@ -231,10 +226,9 @@
     } 
 	else 
 	{
-    // RENDY: EXCELLENT use for NSError.  One more thing - make domain a NSString * const!
-		LWE_LOG(@"FAILED TWEET!!");
+		LWE_LOG(@"Tweet has just failed. ");
 		[self statusRequestTokenTicket:ticket
-					  didFailWithError:[NSError errorWithDomain:@"LWETwitterEngine" 
+					  didFailWithError:[NSError errorWithDomain:kErrorDomain
 														   code:1 
 													   userInfo:nil]];
 	}
@@ -244,13 +238,11 @@
 - (void)statusRequestTokenTicket:(OAServiceTicket *)ticket 
 				didFailWithError:(NSError *)error 
 {
-	LWE_LOG(@"ERROR AFTER REQUEST : %@", [error userInfo]);
+	LWE_LOG(@"Error after tweet request : %@", [error userInfo]);
 	if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] && 
 		[self.delegate respondsToSelector:@selector(didFailedWithError:)])
 	{
-    // RENDY: Not sure if casting is necessary here
-		id<LWETRequestDelegate> parent = (id <LWETRequestDelegate>) self.delegate;
-		[parent didFailedWithError:error];
+		[self.delegate didFailedWithError:error];
 	}
 }
 
@@ -263,7 +255,6 @@
 	NSString *responseBody = [[NSString alloc] 
 							  initWithData:data
 							  encoding:NSUTF8StringEncoding];
-	//LWE_LOG(@"RESPONSE SEARCH REQUEST %@", responseBody);
 	
 	SBJsonParser *parser = [[SBJsonParser alloc]
 						   init];
@@ -396,12 +387,14 @@
 #pragma mark -
 #pragma mark Object Lifecycle
 
+//! This is not the designated initialiser. 
 - (id)init
 {
 	if ([super init])
 	{
 		self.db = [[LWETUserDB alloc] init];
 		self.context = [db managedObjectContext];
+		LWE_LOG(@"Warning : This is not the designated initialiser");
 	}
 	return self;
 }

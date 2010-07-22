@@ -7,14 +7,13 @@
 //
 
 #import "LWETUserDB.h"
-
+#import "LWEDebug.h"
 
 @implementation LWETUserDB
 
 #pragma mark -
 #pragma mark Initialisation
-
-// RENDY: great! 
+ 
 - (id)init
 {
 	if ([super init])
@@ -28,9 +27,9 @@
 #pragma mark Core Data stack
 
 /**
- Returns the managed object context for the application.
- If the context doesn't already exist, it is created 
- and bound to the persistent store coordinator for the application.
+ * Returns the managed object context for the application.
+ * If the context doesn't already exist, it is created 
+ * and bound to the persistent store coordinator for the application.
  */
 - (NSManagedObjectContext *)managedObjectContext 
 {    
@@ -48,8 +47,8 @@
 
 
 /**
- Returns the managed object model for the application.
- If the model doesn't already exist, it is created from the application's model.
+ * Returns the managed object model for the application.
+ * If the model doesn't already exist, it is created from the application's model.
  */
 - (NSManagedObjectModel *)managedObjectModel 
 {    
@@ -66,9 +65,9 @@
 
 
 /**
- Returns the persistent store coordinator for the application.
- If the coordinator doesn't already exist, 
- it is created and the application's store added to it.
+ * Returns the persistent store coordinator for the application.
+ * If the coordinator doesn't already exist, 
+ * it is created and the application's store added to it.
  */
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator 
 {
@@ -126,7 +125,7 @@
 		 Programming Guide" for details.
          
          */
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        LWE_LOG(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }    
     
@@ -138,7 +137,7 @@
 #pragma mark Application's Documents directory
 
 /**
- Returns the path to the application's Documents directory.
+ * Returns the path to the application's Documents directory.
  */
 - (NSString *)applicationDocumentsDirectory 
 {
