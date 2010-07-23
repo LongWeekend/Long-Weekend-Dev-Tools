@@ -99,6 +99,7 @@
 				initFromManagedObject:relationship
 				keyforKey:kTokenKey 
 				keyForSecret:kTokenSecret];
+		user.userID = [object valueForKey:kUserProfileID];
 		loggedUser = [user retain];
 		[user release];
 	}
@@ -111,7 +112,30 @@
 //! Sign out from the current user
 - (void)signOutForTheCurrentUser
 {
+	NSError *error = nil;
+	NSString *userID = self.loggedUser.userID;
+	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" 
+												   inManagedObjectContext:self.context];
+	LWE_LOG(@"Logged the user %@ out", userID); 
 	
+	//try to pull all the data about the user id out from the core data
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"profileID=%@", 
+							  userID];
+	NSFetchRequest *request = [[NSFetchRequest alloc] init];
+	[request setPredicate:predicate];
+	[request setEntity:description];
+	
+	NSArray *arrayOfManagedObject = [[self context] executeFetchRequest:request 
+																  error:&error];
+	//delete the user profile
+	if ((arrayOfManagedObject != nil) && ([arrayOfManagedObject count] > 0))
+	{
+		[[self context] deleteObject:[arrayOfManagedObject objectAtIndex:0]];	
+	}
+	
+	[request release];
+	[loggedUser release];
+	loggedUser = nil;
 }
 
 //! Tweet the word with the current user credential.
