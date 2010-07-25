@@ -130,7 +130,22 @@
 	//delete the user profile
 	if ((arrayOfManagedObject != nil) && ([arrayOfManagedObject count] > 0))
 	{
-		[[self context] deleteObject:[arrayOfManagedObject objectAtIndex:0]];	
+		[[self context] deleteObject:[arrayOfManagedObject objectAtIndex:0]];
+		if (error)
+		{
+			[error release];
+			error = nil;
+		}
+		[[self context] save:&error];
+		if (error)
+		{
+			LWE_LOG(@"Error: Trying to delete the object from the databae");
+		}
+		else 
+		{
+			LWE_LOG(@"Success deleting the user from the database");
+		}
+
 	}
 	
 	[request release];
@@ -495,6 +510,7 @@
 		LWETUser *user = [[LWETUser alloc]
 						  initWithKey:userToken.key 
 						  secret:userToken.secret];
+		user.userID = tmpForUserID;
 		loggedUser = [user retain];
 		[user release];
 		
