@@ -13,12 +13,11 @@
 
 - (NSDictionary *)queryStrings
 {
-	NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-	
 	NSString *q = self.query;
 	LWE_LOG(@"Query String : %@", q);
 	if ((q != nil)&&([q rangeOfString:@"="].location != NSNotFound))
 	{
+		NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
 		BOOL more;
 		do
 		{

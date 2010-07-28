@@ -302,6 +302,7 @@
 	LWE_LOG(@"%@", idPerson);
 	
 	[responseBody release];
+	[parser release];
 	
     /*if (ticket.didSucceed) 
 	{
