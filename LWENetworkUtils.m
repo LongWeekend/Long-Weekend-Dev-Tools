@@ -22,10 +22,14 @@
   return YES;
 }
 
+/**
+ * Checks network access for a given URL
+ */
 +(BOOL) networkAvailableFor:(NSString*)hostURL
 {
-  // Check reachability once
-  Reachability *reachability = [Reachability reachabilityWithHostName:hostURL];
+  // Note: reachability only accepts host names, not fully qualified URLs
+  NSURL *url = [NSURL URLWithString:hostURL];
+  Reachability *reachability = [Reachability reachabilityWithHostName:[url host]];
   NetworkStatus status = [reachability currentReachabilityStatus];
   if ((status != ReachableViaWiFi) && (status != ReachableViaWWAN))
   {
@@ -37,6 +41,7 @@
   }
 }
   
+//! TODO: this class is RIKAI SPECIFIC
 + (void) launchAlertIfNotReachableForHost:(NSString*)hostURLOrNil
 {  
   NSString* alertMessage;
