@@ -17,6 +17,8 @@
 
 #define HTTP_CODE_200_FOUND 200
 
+extern NSString * const LWEDownloaderStateUpdated;
+
 /** State machine for the downloader */
 typedef enum _downloaderStates
 {
@@ -74,6 +76,7 @@ typedef enum _downloaderStates
 // Psuedo private methods
 - (BOOL) _updateInternalState:(NSInteger)nextState;
 - (BOOL) _updateInternalState:(NSInteger)nextState withTaskMessage:(NSString*)taskMsg;
+- (void) _updateIdleTimerStatus;
 
 // Custom getter & setter for progress
 - (float) progress;
