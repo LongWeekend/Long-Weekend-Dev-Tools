@@ -278,8 +278,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	SBJsonParser *parser = [[SBJsonParser alloc]
 						   init];
 	NSArray *obj = [parser objectWithString:responseBody];
-	NSString *idPerson = [[obj objectAtIndex:0] objectForKey:@"id"];
-	LWE_LOG(@"%@", idPerson);
+	LWE_LOG(@"%@", [[obj objectAtIndex:0] objectForKey:@"id"]);
 	
 	[responseBody release];
 	[parser release];
