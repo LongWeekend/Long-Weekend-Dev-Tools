@@ -251,15 +251,16 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 							  encoding:NSUTF8StringEncoding];
 	LWE_LOG(@"Response request for tweet has finished : %@", responseBody);
 	[responseBody release];
-    if (ticket.didSucceed) 
+  if (ticket.didSucceed) 
 	{
 		if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] &&
 			[self.delegate respondsToSelector:@selector(didFinishProcessWithData:)])
 		{
-			id<LWETRequestDelegate> parent = (id <LWETRequestDelegate>) self.delegate;
-			[parent didFinishProcessWithData:data];
+      // Do this on the main thread because we call this from the background mostly!
+      // If the delegate has UI stuff in it, it will crash, that's why
+      [self.delegate performSelectorOnMainThread:@selector(didFinishProcessWithData:) withObject:data waitUntilDone:NO];
 		}
-    } 
+  } 
 	else 
 	{
 		LWE_LOG(@"Tweet has just failed. ");
@@ -274,7 +275,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	LWE_LOG(@"Error after tweet request : %@", error);
 	if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] && [self.delegate respondsToSelector:@selector(didFailedWithError:)])
 	{
-		[self.delegate didFailedWithError:error];
+		[self.delegate performSelectorOnMainThread:@selector(didFailedWithError:) withObject:error waitUntilDone:NO];
 	}
 }
 
