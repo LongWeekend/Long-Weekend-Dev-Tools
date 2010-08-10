@@ -41,7 +41,7 @@
  */
 - (id) initWithTargetURL: (NSString *) target targetPath:(NSString*)tmpTargetFilename
 {
-  if (self = [self init])
+  if ((self = [self init]))
   {
     if ([target isKindOfClass:[NSString class]])
     {
