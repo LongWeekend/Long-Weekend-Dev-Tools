@@ -41,4 +41,10 @@
 + (CGRect) retinaSafeCGRect:(CGRect)rect;
 
 
+/**
+ * \brief   Returns a screen dimension (x,y,w,h) converted to retina coordinate space as necessary (e.g. x=100 becomes x=200)
+ * \param   dimension Any integer
+ * \return   If iPhone4, dimension will be 2x of parameter dimension
+ */
++ (NSInteger) retinaSafeDimension:(NSInteger)dimension;
 @end

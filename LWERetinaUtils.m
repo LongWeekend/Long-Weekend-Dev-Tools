@@ -49,4 +49,16 @@
   return rect;
 }
 
++ (NSInteger) retinaSafeDimension:(NSInteger)dimension
+{
+  if ([LWERetinaUtils isRetinaDisplay])
+  {
+    return dimension *2;
+  }
+  else
+  {
+    return dimension;
+  }
+}
+
 @end
