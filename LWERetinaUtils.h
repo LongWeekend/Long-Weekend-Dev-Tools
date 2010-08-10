@@ -33,4 +33,12 @@
  */
 + (NSString*) retinaSafeImageName:(NSString*)name;
 
+/**
+ * \brief   Returns a CGRect that is OK to use for either retina or non-retina display
+ * \param   rect Any CGRect
+ * \return   If iPhone4, CGRect width&height properties will be 2x of parameter rect
+ */
++ (CGRect) retinaSafeCGRect:(CGRect)rect;
+
+
 @end

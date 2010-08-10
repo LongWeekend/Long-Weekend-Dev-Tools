@@ -39,4 +39,14 @@
   }
 }
 
++ (CGRect) retinaSafeCGRect:(CGRect)rect
+{
+  if ([LWERetinaUtils isRetinaDisplay])
+  {
+    rect.size.width = rect.size.width * 2.0f;
+    rect.size.height = rect.size.height * 2.0f;
+  }
+  return rect;
+}
+
 @end
