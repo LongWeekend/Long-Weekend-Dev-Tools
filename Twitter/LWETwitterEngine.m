@@ -31,6 +31,13 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 - (void)setLoggedUser:(LWETUser *)aUser authMode:(LWETAuthMode)authMode
 {
 	LWETUser *user = nil;
+	
+	if (loggedUser != nil)
+	{
+		[loggedUser release];
+		loggedUser = nil;
+	}
+	
 	//check the user id from the database first
 	NSError *error = nil;
 	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" inManagedObjectContext:self.context];
@@ -200,31 +207,37 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 //! Follows a user.
 - (void)follow:(NSString *)people
 {
+	// This method is likely called in the background
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
 	if (loggedUser != nil) 
 	{
 		LWE_LOG(@"Tweet Engine: Current user is following %@", people);
         OADataFetcher *fetcher;
 		
 		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_FRIENDSHIP_MAKE
-															relatedID:people
-														   returnType:kJSONreturnType];
-        [request setHTTPMethod:@"POST"];
+																												relatedID:people
+																											 returnType:kJSONreturnType];
+    [request setHTTPMethod:@"POST"];
         
-        OARequestParameter *param1 = [[OARequestParameter alloc] 
-									  initWithName:@"follow" value:@"true"];
+    OARequestParameter *param1 = [[OARequestParameter alloc] 
+																	initWithName:@"follow" 
+																	value:@"true"];
         
-        NSArray *params = [NSArray arrayWithObject:param1];
-        [request setParameters:params];
+		NSArray *params = [NSArray arrayWithObject:param1];
+    [request setParameters:params];
         
         
-        fetcher = [[[OADataFetcher alloc] init] autorelease];
-        [fetcher fetchDataWithRequest:request
-                             delegate:self
-                    didFinishSelector:@selector(followRequestTokenTicket:didFinishWithData:)
-                      didFailSelector:@selector(followRequestTokenTicket:didFailWithError:)];
+    fetcher = [[[OADataFetcher alloc] init] autorelease];
+    [fetcher fetchDataWithRequest:request
+												 delegate:self
+								didFinishSelector:@selector(followRequestTokenTicket:didFinishWithData:)
+									didFailSelector:@selector(followRequestTokenTicket:didFailWithError:)];
         
-        [param1 release];
-    }
+    [param1 release];
+	}
+	
+	[pool release];
 }
 
 #pragma mark -

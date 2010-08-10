@@ -38,7 +38,7 @@
 - (id)initWithConsumer:(OAConsumer *)aConsumer 
 			  delegate:(id <LWETAuthProccessDelegate>)aDelegate
 {
-	if ([self init])
+	if (self = [super init])
 	{
 		self.consumer = aConsumer;
 		self.delegate = aDelegate;
