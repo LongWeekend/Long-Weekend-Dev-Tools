@@ -38,7 +38,7 @@
 #define kOAUTH					@"OAUTH"
 #define kXAUTH					@"XAUTH"
 
-#define kErrorDomain			@"LWETwitterEngine"
+extern NSString * const LWETwitterErrorDomain;
 
 @class OAConsumer;
 @class OAToken;
@@ -102,12 +102,9 @@ typedef enum
 - (void)setLoggedUser:(LWETUser *)aUser
 			 authMode:(LWETAuthMode)authMode;
 
-- (id)initWithConsumerKey:(NSString *)consumerKey 
-			   privateKey:(NSString *)privateKey;
+- (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey;
 
-- (id)initWithConsumerKey:(NSString *)consumerKey 
-			   privateKey:(NSString *)privateKey 
-	   authenticationView:(UIViewController *) controller;
+- (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey authenticationView:(UIViewController *) controller;
 
 - (NSString *)methodNameForTwitterRequestType:(LWETwitterRequestType)lwet;
 

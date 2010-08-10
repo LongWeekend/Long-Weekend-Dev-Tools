@@ -58,13 +58,7 @@
     return;
   }
 
-  UIAlertView *networkUnavailableAlert = [[UIAlertView alloc]
-                                          initWithTitle: NSLocalizedString(@"Cannot Open Page", @"LWENetworkUtils.AlertView Title")
-                                          message: alertMessage
-                                          delegate:nil
-                                          cancelButtonTitle:@"OK" 
-                                          otherButtonTitles:nil];
-  [networkUnavailableAlert show];
-  [networkUnavailableAlert release];    
+  [LWEUIAlertView notificationAlertWithTitle:NSLocalizedString(@"Cannot Open Page", @"LWENetworkUtils.AlertView Title")
+                                     message:alertMessage];
 }
 @end

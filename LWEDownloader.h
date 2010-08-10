@@ -18,6 +18,7 @@
 #define HTTP_CODE_200_FOUND 200
 
 extern NSString * const LWEDownloaderStateUpdated;
+extern NSString * const LWEDownloaderErrorDomain;
 
 /** State machine for the downloader */
 typedef enum _downloaderStates

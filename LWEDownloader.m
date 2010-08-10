@@ -609,5 +609,6 @@
 }
 
 NSString * const LWEDownloaderStateUpdated = @"LWEDownloaderStateUpdated";
+NSString * const LWEDownloaderErrorDomain  = @"LWEDownloader";
 
 @end

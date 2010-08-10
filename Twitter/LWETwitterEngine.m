@@ -10,6 +10,8 @@
 #import "LWETDelegates.h"
 #import "LWETRequestDelegate.h"
 
+NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
+
 @implementation LWETwitterEngine
 
 @synthesize parentForUserAuthenticationView;
@@ -26,17 +28,13 @@
 #pragma mark Setters for loggedUser
 
 //! Set the logged user (authenticate if the user is not yet authenticated) and also passed in the preferable method of authentication. 
-- (void)setLoggedUser:(LWETUser *)aUser
-			 authMode:(LWETAuthMode)authMode
+- (void)setLoggedUser:(LWETUser *)aUser authMode:(LWETAuthMode)authMode
 {
 	LWETUser *user = nil;
 	//check the user id from the database first
 	NSError *error = nil;
-	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" 
-													   inManagedObjectContext:self.context];
-	LWE_LOG(@"Changes the user with : %@", aUser.userID); 
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"profileID=%@", 
-							  aUser.userID];
+	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" inManagedObjectContext:self.context];
+	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"profileID=%@",aUser.userID];
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
 		
 	[request setPredicate:predicate];
@@ -53,52 +51,42 @@
 		LWE_LOG(@"Authentication proccess with the LWETwitterOAuth");
 		if (![self authObj])
 		{
-			tmpForUserID = [[NSString alloc]
-							initWithString:aUser.userID];
-			authObj = [[LWETwitterOAuth alloc]
-					   initWithConsumer:self.consumer
-					   delegate:self];
+			tmpForUserID = [[NSString alloc] initWithString:aUser.userID];
+			authObj = [[LWETwitterOAuth alloc] initWithConsumer:self.consumer delegate:self];
 				
 			//XAUTH MODE
-			if ((authMode == LWET_AUTH_XAUTH) && (self.authenticationView) && 
-				([self.authenticationView conformsToProtocol:@protocol(LWETXAuthViewProtocol)]))
+			if ((authMode == LWET_AUTH_XAUTH) && (self.authenticationView) && ([self.authenticationView conformsToProtocol:@protocol(LWETXAuthViewProtocol)]))
 			{
 				UIViewController<LWETXAuthViewProtocol> *viewController =
 				(UIViewController<LWETXAuthViewProtocol> *)	self.authenticationView;
 				
 				[viewController setAuthEngine:self.authObj];
-				UINavigationController *controller = [[UINavigationController alloc]
-													  initWithRootViewController:viewController];
+				UINavigationController *controller = [[UINavigationController alloc] initWithRootViewController:viewController];
 					
-				[self.parentForUserAuthenticationView presentModalViewController:controller 
-																			animated:YES];
+				[self.parentForUserAuthenticationView presentModalViewController:controller animated:YES];
 				[controller release];
 			}
 			//OAUTH MODE
 			else if (authMode == LWET_AUTH_OAUTH)
 			{
-				
-				if ((self.authenticationView) && ([self.authenticationView 
-												   conformsToProtocol:
-												   @protocol(LWETAuthenticationViewProtocol)]))
+				if ((self.authenticationView) && ([self.authenticationView conformsToProtocol:@protocol(LWETAuthenticationViewProtocol)]))
 				{
 					authObj.authenticationView = self.authenticationView;
 				}
 				[self.authObj startAuthProccess];
 			}
 		}
-		else 
+		else
+    {
 			LWE_LOG(@"Sorry, the authentication is still hapenning.");
+    }
 	}
 	else 
 	{
 		LWE_LOG(@"User data is taken from the database.");
 		NSManagedObject *object = [arrayOfManagedObject objectAtIndex:0];
 		NSManagedObject *relationship = [object valueForKey:@"userProfileToToken"];
-		user = [[LWETUser alloc]
-				initFromManagedObject:relationship
-				keyforKey:kTokenKey 
-				keyForSecret:kTokenSecret];
+		user = [[LWETUser alloc] initFromManagedObject:relationship keyforKey:kTokenKey keyForSecret:kTokenSecret];
 		user.userID = [object valueForKey:kUserProfileID];
 		loggedUser = [user retain];
 		[user release];
@@ -114,8 +102,7 @@
 {
 	NSError *error = nil;
 	NSString *userID = self.loggedUser.userID;
-	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" 
-												   inManagedObjectContext:self.context];
+	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" inManagedObjectContext:self.context];
 	LWE_LOG(@"Logged the user %@ out", userID); 
 	
 	//try to pull all the data about the user id out from the core data
@@ -125,8 +112,7 @@
 	[request setPredicate:predicate];
 	[request setEntity:description];
 	
-	NSArray *arrayOfManagedObject = [[self context] executeFetchRequest:request 
-																  error:&error];
+	NSArray *arrayOfManagedObject = [[self context] executeFetchRequest:request error:&error];
 	//delete the user profile
 	if ((arrayOfManagedObject != nil) && ([arrayOfManagedObject count] > 0))
 	{
@@ -156,31 +142,29 @@
 //! Tweet the word with the current user credential.
 - (void)tweet:(NSString *)words
 {
+  // This method is likely called in the background
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	if (loggedUser != nil) 
 	{
 		LWE_LOG(@"Tweet Engine: Tweet this word %@", words);
-        OADataFetcher *fetcher;
-                
-		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_STATUS_UPDATE 
-															relatedID:nil
-														   returnType:kJSONreturnType];
-        [request setHTTPMethod:@"POST"];
-        
-        OARequestParameter *param1 = [[OARequestParameter alloc] 
-									 initWithName:@"status" value:words];
-        
-        NSArray *params = [NSArray arrayWithObject:param1];
-        [request setParameters:params];
-        
-        
-        fetcher = [[[OADataFetcher alloc] init] autorelease];
-        [fetcher fetchDataWithRequest:request
-                             delegate:self
-                    didFinishSelector:@selector(statusRequestTokenTicket:didFinishWithData:)
-                      didFailSelector:@selector(statusRequestTokenTicket:didFailWithError:)];
-        
-        [param1 release];
-    }
+    OADataFetcher *fetcher;
+		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_STATUS_UPDATE relatedID:nil returnType:kJSONreturnType];
+    [request setHTTPMethod:@"POST"];
+    
+    OARequestParameter *param1 = [[OARequestParameter alloc] initWithName:@"status" value:words];
+    NSArray *params = [NSArray arrayWithObject:param1];
+    [param1 release];
+    [request setParameters:params];
+    
+    fetcher = [[[OADataFetcher alloc] init] autorelease];
+    [fetcher fetchDataWithRequest:request
+                         delegate:self
+                didFinishSelector:@selector(statusRequestTokenTicket:didFinishWithData:)
+                  didFailSelector:@selector(statusRequestTokenTicket:didFailWithError:)];
+    
+  }
+  [pool release];
 }
 
 //! Search people based on their screen name.
@@ -267,19 +251,15 @@
 	{
 		LWE_LOG(@"Tweet has just failed. ");
 		[self statusRequestTokenTicket:ticket
-					  didFailWithError:[NSError errorWithDomain:kErrorDomain
-														   code:1 
-													   userInfo:nil]];
+					  didFailWithError:[NSError errorWithDomain:LWETwitterErrorDomain code:1 userInfo:nil]];
 	}
 }
 
 
-- (void)statusRequestTokenTicket:(OAServiceTicket *)ticket 
-				didFailWithError:(NSError *)error 
+- (void)statusRequestTokenTicket:(OAServiceTicket *)ticket didFailWithError:(NSError *)error 
 {
-	LWE_LOG(@"Error after tweet request : %@", [error userInfo]);
-	if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] && 
-		[self.delegate respondsToSelector:@selector(didFailedWithError:)])
+	LWE_LOG(@"Error after tweet request : %@", error);
+	if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] && [self.delegate respondsToSelector:@selector(didFailedWithError:)])
 	{
 		[self.delegate didFailedWithError:error];
 	}
@@ -427,56 +407,44 @@
 #pragma mark -
 #pragma mark Object Lifecycle
 
-//! This is not the designated initialiser. 
-- (id)init
+- (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey
 {
-	if ([super init])
+	if (self = [super init])
 	{
 		self.db = [[LWETUserDB alloc] init];
 		self.context = [db managedObjectContext];
-		LWE_LOG(@"Warning : This is not the designated initialiser");
+		consumer = [[OAConsumer alloc] initWithKey:consumerKey secret:privateKey];
 	}
 	return self;
 }
 
-- (id)initWithConsumerKey:(NSString *)consumerKey
-			   privateKey:(NSString *)privateKey
+- (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey authenticationView:(UIViewController *) controller
 {
-	if ([self init])
-	{
-		consumer = [[OAConsumer alloc]
-					initWithKey:consumerKey 
-					secret:privateKey];		
-	}
-	return self;
-}
-
-- (id)initWithConsumerKey:(NSString *)consumerKey 
-			   privateKey:(NSString *)privateKey 
-	   authenticationView:(UIViewController *) controller
-{
-	if ([self initWithConsumerKey:consumerKey privateKey:privateKey])
+	if (self = [self initWithConsumerKey:consumerKey privateKey:privateKey])
+  {
 		self.authenticationView = controller;
-	
+	}
 	return self;
 }
 																										
-
+//! Standard dealloc
 - (void) dealloc
 {
 	//TODO: CHECK THE DEALLOC AGAIN
-	[consumer release];
-	[db release];
-	
-	if (self.context)
-		[context release];
-	if (self.authenticationView)
-		[authenticationView release];
+  if (consumer)
+  {
+    [consumer release];
+    consumer = nil;
+  }
+  [self setDb:nil];
+  [self setContext:nil];
+  [self setAuthenticationView:nil];
+  [self setTmpForUserID:nil];
 	if (loggedUser)
+  {
 		[loggedUser release];
-	if (self.tmpForUserID)
-		[tmpForUserID release];
-	
+    loggedUser = nil;
+  }
 	[super dealloc];
 }
 
