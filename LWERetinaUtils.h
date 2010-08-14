@@ -42,6 +42,14 @@
 
 
 /**
+ * \brief   Returns a CGPoint that is OK to use for either retina or non-retina display
+ * \param   rect Any CGPoint
+ * \return   If iPhone4, CGPoint width&height properties will be 2x of parameter rect
+ */
++ (CGPoint) retinaSafeCGPoint:(CGPoint)point;
+
+
+/**
  * \brief   Returns a screen dimension (x,y,w,h) converted to retina coordinate space as necessary (e.g. x=100 becomes x=200)
  * \param   dimension Any integer
  * \return   If iPhone4, dimension will be 2x of parameter dimension
