@@ -8,17 +8,16 @@
 
 #import "LWEImageUtils.h"
 
-
 @implementation LWEImageUtils
 
-#pragma mark Image Resizing methods
 // Return the passed in image as a resized version
-+(UIImage *)resizeImage:(UIImage *)image width:(int)width height:(int)height 
++ (UIImage *)resizeImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height 
 {
   CGImageRef imageRef = [image CGImage];
+  CGSize size = [image size];
+
+  // Strips the alpha info out of the image
   CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef);
-  
-  //if (alphaInfo == kCGImageAlphaNone)
   alphaInfo = kCGImageAlphaNoneSkipLast;
   
   CGContextRef bitmap = CGBitmapContextCreate(NULL, width, height, CGImageGetBitsPerComponent(imageRef), 4 * width, CGImageGetColorSpace(imageRef), alphaInfo);
@@ -38,17 +37,20 @@
 }
 
 // Transforms image orientation, rotates to 'UIImageOrientationUp'
-+ (CGAffineTransform) orientationTransformForImage:(UIImage *)image newSize:(CGSize)newSize
++ (LWEOrientationTransform) orientationTransformForImage:(UIImage *)image
 {
   CGImageRef img = [image CGImage];
   CGFloat width = CGImageGetWidth(img);
   CGFloat height = CGImageGetHeight(img);
+
   CGSize size = CGSizeMake(width, height);
-  CGAffineTransform transform = CGAffineTransformIdentity;
   CGFloat origHeight = size.height;
+  CGAffineTransform transform = CGAffineTransformIdentity;
   UIImageOrientation orient = image.imageOrientation;
   
-  switch(orient) { // EXIF 1 to 8 //
+  
+  switch(orient)
+  { // EXIF 1 to 8 //
     case UIImageOrientationUp:
       break;
     case UIImageOrientationUpMirrored:
@@ -90,8 +92,11 @@
       break;
     default:;
   }
-  newSize = size;
-  return transform;
+  
+  LWEOrientationTransform orientTransform;
+  orientTransform.size = size;
+  orientTransform.transform = transform;
+  return orientTransform;
 }
 
 /// Rotate the image
@@ -100,20 +105,27 @@
   CGImageRef img = [image CGImage];
   CGFloat width = CGImageGetWidth(img);
   CGFloat height = CGImageGetHeight(img);
+  
   CGRect bounds = CGRectMake(0, 0, width, height);
   CGSize size = bounds.size;
-  CGFloat scale = size.width/width;
+  CGFloat scale = (bounds.size.width)/width;
+
+  LWEOrientationTransform orientTransform = [LWEImageUtils orientationTransformForImage:image];
+  CGAffineTransform transform = orientTransform.transform;
+  size = orientTransform.size;
   
-  CGAffineTransform transform = [LWEImageUtils orientationTransformForImage:image newSize: size];
   UIGraphicsBeginImageContext(size);
   CGContextRef context = UIGraphicsGetCurrentContext();
   
   // Flip //
   UIImageOrientation orientation = [image imageOrientation];
-  if (orientation == UIImageOrientationRight || orientation == UIImageOrientationLeft) {
+  if (orientation == UIImageOrientationRight || orientation == UIImageOrientationLeft)
+  {
     CGContextScaleCTM(context, -scale, scale);
     CGContextTranslateCTM(context, -height, 0);
-  } else {
+  }
+  else
+  {
     CGContextScaleCTM(context, scale, -scale);
     CGContextTranslateCTM(context, 0, -height);
   }
@@ -124,7 +136,5 @@
   UIGraphicsEndImageContext();
   return newImage;
 }
-
-
 
 @end
