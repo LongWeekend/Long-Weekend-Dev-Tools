@@ -74,16 +74,19 @@
 	return loadingView;
 }
 
-
-- (void)remove
+/**
+ * Subclass the UIView method to add a fade
+ */
+- (void)removeFromSuperview
 {
-	UIView *aSuperview = [self superview];
+  // Run the normal UI removeFromSuperview
 	[super removeFromSuperview];
-	
+  
 	// Set up the animation
 	CATransition *animation = [CATransition animation];
 	[animation setType:kCATransitionFade];
 	
+	UIView *aSuperview = [self superview];
 	[[aSuperview layer] addAnimation:animation forKey:@"layerAnimation"];
 }
 
