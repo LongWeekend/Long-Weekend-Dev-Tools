@@ -49,6 +49,16 @@
   return rect;
 }
 
++ (CGPoint) retinaSafeCGPoint:(CGPoint)point
+{
+  if ([LWERetinaUtils isRetinaDisplay])
+  {
+    point.x = point.x * 2.0f;
+    point.y = point.y * 2.0f;
+  }
+  return point;
+}
+
 + (NSInteger) retinaSafeDimension:(NSInteger)dimension
 {
   if ([LWERetinaUtils isRetinaDisplay])
