@@ -77,7 +77,7 @@
 /**
  * Subclass the UIView method to add a fade
  */
-- (void)removeFromSuperview
+- (void) removeFromSuperview
 {
   // Run the normal UI removeFromSuperview
 	[super removeFromSuperview];
@@ -117,16 +117,6 @@
 	CGContextStrokePath(context);
 	
 	CGPathRelease(roundRectPath);
-}
-
-//
-// dealloc
-//
-// Release instance memory.
-//
-- (void)dealloc
-{
-	[super dealloc];
 }
 
 @end
