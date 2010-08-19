@@ -10,11 +10,15 @@
 
 @implementation LWEImageUtils
 
++ (UIImage *)resizeImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height
+{
+  return [LWEImageUtils resizeImage:image width:width height:height withQuality:kCGInterpolationMedium];
+}
+
 // Return the passed in image as a resized version
-+ (UIImage *)resizeImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height 
++ (UIImage *)resizeImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height withQuality:(int)quality
 {
   CGImageRef imageRef = [image CGImage];
-  CGSize size = [image size];
 
   // Strips the alpha info out of the image
   CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef);
@@ -23,7 +27,8 @@
   CGContextRef bitmap = CGBitmapContextCreate(NULL, width, height, CGImageGetBitsPerComponent(imageRef), 4 * width, CGImageGetColorSpace(imageRef), alphaInfo);
   
   // make it faster but crappier
-  CGContextSetInterpolationQuality(bitmap, kCGInterpolationLow);
+  // quality = kCGInterpolationHigh, kCGInterpolationMedium, kCGInterpolationLow
+  CGContextSetInterpolationQuality(bitmap, quality);
   
   // Now resize it!
   CGContextDrawImage(bitmap, CGRectMake(0, 0, width, height), imageRef);
