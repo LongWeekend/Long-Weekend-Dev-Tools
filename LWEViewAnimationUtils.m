@@ -35,7 +35,8 @@
 	[animation setDuration:duration];
 	[animation setType:transition];
 	[animation setSubtype:direction];
-  [[theWindow layer] addAnimation:animation forKey:kAnimationKey];
+	[animation setRemovedOnCompletion:YES];
+  [[theWindow layer] addAnimation:animation forKey:kAnimationKey ];
 	[UIView commitAnimations];
 }
 
