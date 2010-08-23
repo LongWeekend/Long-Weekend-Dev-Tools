@@ -14,6 +14,5 @@
 }
 
 + (id)loadingView:(UIView *)aSuperview withText:(NSString *)text;
-- (void)remove;
 
 @end
