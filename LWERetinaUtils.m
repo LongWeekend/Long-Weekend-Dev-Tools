@@ -55,6 +55,8 @@
   {
     rect.size.width = rect.size.width * 2.0f;
     rect.size.height = rect.size.height * 2.0f;
+    rect.origin.x = rect.origin.x * 2.0f;
+    rect.origin.y = rect.origin.y * 2.0f;
   }
   return rect;
 }
