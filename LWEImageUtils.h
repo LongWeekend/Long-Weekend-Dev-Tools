@@ -29,6 +29,18 @@ typedef struct LWEOrientationTransform
  * \param   image A UIImage to resize
  * \param   width New width of the image
  * \param   height New height of the image
+ * \param   quality integer/constant defining resize quality
+ * \return   A new UIImage object at the new dimensons
+ * \details   Uses a very low quality interpolation to resize quickly
+ */
++ (UIImage *)resizeImage:(UIImage *)image width:(CGFloat)width height:(CGFloat)height withQuality:(int)quality;
+
+
+/**
+ * \brief   Alias to resizer that does not require a quality setting (defaults to medium)
+ * \param   image A UIImage to resize
+ * \param   width New width of the image
+ * \param   height New height of the image
  * \return   A new UIImage object at the new dimensons
  * \details   Uses a very low quality interpolation to resize quickly
  */

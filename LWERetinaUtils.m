@@ -13,7 +13,7 @@
 
 + (BOOL) isRetinaDisplay
 {
-  if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] && [[UIScreen mainScreen] scale] == 2)
+  if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] && [[UIScreen mainScreen] scale] == 2 && ![LWERetinaUtils isPadDevice])
   {
     return YES;
   }
@@ -21,8 +21,18 @@
   {
     return NO;
   }
+  
 }
 
++(BOOL) isPadDevice {
+  BOOL isPadDevice=NO;
+  NSString* model = [UIDevice currentDevice].model;
+  if ([model rangeOfString:@"iPad"].location != NSNotFound) 
+  {
+    return YES;
+  }
+  return isPadDevice;
+}
 
 + (NSString*) retinaSafeImageName:(NSString*)name
 {
@@ -45,6 +55,8 @@
   {
     rect.size.width = rect.size.width * 2.0f;
     rect.size.height = rect.size.height * 2.0f;
+    rect.origin.x = rect.origin.x * 2.0f;
+    rect.origin.y = rect.origin.y * 2.0f;
   }
   return rect;
 }

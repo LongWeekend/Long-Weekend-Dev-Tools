@@ -42,24 +42,35 @@
   }
 }
   
-//! TODO: this class is RIKAI SPECIFIC
-+ (void) launchAlertIfNotReachableForHost:(NSString*)hostURLOrNil
++ (BOOL) networkReachableForHost:(NSString*)hostURLOrNil showAlert:(BOOL) showAlert
 {  
   NSString* alertMessage;
   if ([LWENetworkUtils networkAvailable] == NO) // first check it we have any connection at all
   {
-    alertMessage = NSLocalizedString(@"Rikai cannot open the page because it is not connected to the internet.", @"LWENetworkUtils.No Internet");
+    alertMessage = NSLocalizedString(@"Cannot open the page because it is not connected to the internet.", @"LWENetworkUtils.No Internet");
   }
   else if(hostURLOrNil != nil && [LWENetworkUtils networkAvailableFor:hostURLOrNil] == NO)
   {
-    alertMessage = NSLocalizedString(@"Rikai could not open the page you requested. The server is not responding.", @"LWENetworkUtils.No Page");
+    alertMessage = NSLocalizedString(@"Could not open the page you requested. The server is not responding.", @"LWENetworkUtils.No Page");
   }
   else // no problems, just return
   {
-    return;
+    return YES;
   }
 
-  [LWEUIAlertView notificationAlertWithTitle:NSLocalizedString(@"Cannot Open Page", @"LWENetworkUtils.AlertView Title")
-                                     message:alertMessage];
+  if (showAlert)
+  {
+    UIAlertView *networkUnavailableAlert = [[UIAlertView alloc]
+                                            initWithTitle: NSLocalizedString(@"Cannot Open Page", @"LWENetworkUtils.AlertView Title")
+                                            message: alertMessage
+                                            delegate:nil
+                                            cancelButtonTitle:@"OK" 
+                                            otherButtonTitles:nil];
+    [networkUnavailableAlert show];
+    [networkUnavailableAlert release];
+  }
+  
+  return NO;
 }
+
 @end

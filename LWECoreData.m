@@ -6,6 +6,7 @@
 //
 
 #import "LWECoreData.h"
+#import "LWEDebug.h"
 
 /*!
     @class       LWECoreData

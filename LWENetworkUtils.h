@@ -15,6 +15,6 @@
 
 + (BOOL) networkAvailable;
 + (BOOL) networkAvailableFor:(NSString*)hostURL;
-+ (void) launchAlertIfNotReachableForHost:(NSString*)hostURL;
++ (BOOL) networkReachableForHost:(NSString*)hostURLOrNil showAlert:(BOOL) showAlert;
 
 @end

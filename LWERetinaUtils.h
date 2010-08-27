@@ -25,6 +25,11 @@
  */
 + (BOOL) isRetinaDisplay;
 
+/**
+ * \brief   Detects if the app isrunning on an iPad or not
+ * \return   Returns YES if the device is an iPad, or NO is not
+ */
++(BOOL) isPadDevice;
 
 /**
  * \brief   Returns a filename with the retina naming convention if we have iPhone 4
