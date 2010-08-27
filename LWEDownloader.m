@@ -30,6 +30,7 @@
     
     // Cancel any ongoing download if they terminate the app
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelTask) name:UIApplicationWillTerminateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_updateIdleTimerStatus) name:LWEDownloaderStateUpdated object:nil];
   }
   return self;
 }
@@ -40,7 +41,7 @@
  */
 - (id) initWithTargetURL: (NSString *) target targetPath:(NSString*)tmpTargetFilename
 {
-  if (self = [self init])
+  if ((self = [self init]))
   {
     if ([target isKindOfClass:[NSString class]])
     {
@@ -111,6 +112,25 @@
   return progress;
 }
 
+/**
+ * Updates the idle timer depending on our download state
+ */
+- (void) _updateIdleTimerStatus
+{
+  // Make the application NOT fall asleep if we are NOT in a finalized state
+  UIApplication *app = [UIApplication sharedApplication];
+  if (([self isFailureState] || [self isSuccessState]) && app.idleTimerDisabled)
+  {
+    LWE_LOG(@"Enabling idle timer");
+    app.idleTimerDisabled = NO;
+  }
+  else if (app.idleTimerDisabled == NO)
+  {
+    LWE_LOG(@"Disabling idle timer");
+    app.idleTimerDisabled = YES;
+  }
+}
+
 
 /**
  * Changes internal state of Downloader class while also firing a notification as such, returns YES on success
@@ -118,7 +138,7 @@
 - (BOOL) _updateInternalState:(NSInteger)nextState
 {
   downloaderState = nextState;
-  [[NSNotificationCenter defaultCenter] postNotificationName:@"LWEDownloaderStateUpdated" object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:LWEDownloaderStateUpdated object:self];
   return YES;
 }
 
@@ -587,5 +607,8 @@
   [_compressedFilename release];
   [super dealloc];
 }
+
+NSString * const LWEDownloaderStateUpdated = @"LWEDownloaderStateUpdated";
+NSString * const LWEDownloaderErrorDomain  = @"LWEDownloader";
 
 @end

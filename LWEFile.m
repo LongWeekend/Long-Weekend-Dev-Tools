@@ -82,7 +82,7 @@
 /**
  * Helper function to copy files from the main bundle to the docs directory
  */
-+ (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite
++ (BOOL) copyFromMainBundleToDocuments:(NSString *)filename shouldOverwrite:(BOOL)overwrite
 {
   NSString *destPath = [LWEFile createDocumentPathWithFilename:filename];
   if ([LWEFile fileExists:destPath])

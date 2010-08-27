@@ -11,6 +11,17 @@
 
 @implementation LWELocalNotifications
 
++ (void)setApplicationBadgeNumber:(NSInteger)badgeNumber
+{
+	if(badgeNumber < 0)
+	{
+		[NSException raise:@"ApplicationBadgeNumberCannotBeZero" format:@""];
+	}
+	
+	//Set badge number
+	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:badgeNumber];
+}
+
 + (UILocalNotification*) _prepareNotificationWithMessage:(NSString*)message buttonTitle:(NSString*)buttonTitleOrNil
 {
   UILocalNotification *note = [[[UILocalNotification alloc] init] autorelease];
@@ -19,7 +30,7 @@
   // Show action button if we have a title
   if (buttonTitleOrNil)
   {
-    note.hasAction = YES;
+    note.hasAction = YES;	
     note.alertAction = buttonTitleOrNil;
   }
   else

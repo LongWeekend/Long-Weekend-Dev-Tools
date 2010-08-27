@@ -24,6 +24,7 @@
 - (BOOL) openDatabase:(NSString*) pathToDatabase;
 - (BOOL) closeDatabase;
 - (NSString*) databaseVersion;
+- (NSString*) databaseVersionForDatabase:(NSString*)dbName;
 - (BOOL) attachDatabase:(NSString*) pathToDatabase withName:(NSString*) name;
 - (BOOL) detachDatabase:(NSString*) name;
 - (BOOL) tableExists:(NSString*) tableName;
@@ -41,3 +42,4 @@
 @end
 
 extern NSString * const LWEDatabaseCopyDatabaseDidSucceed;
+extern NSString * const LWEDatabaseTempAttachName;

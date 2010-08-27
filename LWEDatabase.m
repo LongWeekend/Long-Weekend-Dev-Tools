@@ -98,10 +98,21 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (NSString*) databaseVersion
 {
+  return [self databaseVersionForDatabase:@"main"];
+}
+
+
+/**
+ * Gets version of a plugin in the database - proprietary to LWE databases (uses version table)
+ * \param dbName name of database (used when attaching db to main)
+ * \return NSString of the current version, or nil if the database is not open
+ */
+- (NSString*) databaseVersionForDatabase:(NSString*)dbName
+{
   NSString *version = nil;
   if ([self _databaseIsOpen])
   {
-    NSString* sql = [[NSString alloc] initWithFormat:@"SELECT * FROM main.version LIMIT 1"];
+    NSString* sql = [[NSString alloc] initWithFormat:@"SELECT * FROM %@.version LIMIT 1",dbName];
     FMResultSet *rs = [self executeQuery:sql];
     [sql release];
     while ([rs next])
@@ -110,7 +121,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
     }
     [rs close];
   }
-  return version;
+  return version;  
 }
 
 
@@ -230,4 +241,5 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
 @end
 
-NSString * const LWEDatabaseCopyDatabaseDidSucceed = @"LWEDatabaseCopyDatabaseDidSucceed";
+NSString * const LWEDatabaseCopyDatabaseDidSucceed  = @"LWEDatabaseCopyDatabaseDidSucceed";
+NSString * const LWEDatabaseTempAttachName          = @"LWEDATABASETMP";

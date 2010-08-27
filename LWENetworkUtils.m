@@ -22,10 +22,14 @@
   return YES;
 }
 
+/**
+ * Checks network access for a given URL
+ */
 +(BOOL) networkAvailableFor:(NSString*)hostURL
 {
-  // Check reachability once
-  Reachability *reachability = [Reachability reachabilityWithHostName:hostURL];
+  // Note: reachability only accepts host names, not fully qualified URLs
+  NSURL *url = [NSURL URLWithString:hostURL];
+  Reachability *reachability = [Reachability reachabilityWithHostName:[url host]];
   NetworkStatus status = [reachability currentReachabilityStatus];
   if ((status != ReachableViaWiFi) && (status != ReachableViaWWAN))
   {
@@ -42,11 +46,11 @@
   NSString* alertMessage;
   if ([LWENetworkUtils networkAvailable] == NO) // first check it we have any connection at all
   {
-    alertMessage = NSLocalizedString(@"Rikai cannot open the page because it is not connected to the internet.", @"LWENetworkUtils.No Internet");
+    alertMessage = NSLocalizedString(@"Cannot open the page because it is not connected to the internet.", @"LWENetworkUtils.No Internet");
   }
   else if(hostURLOrNil != nil && [LWENetworkUtils networkAvailableFor:hostURLOrNil] == NO)
   {
-    alertMessage = NSLocalizedString(@"Rikai could not open the page you requested. The server is not responding.", @"LWENetworkUtils.No Page");
+    alertMessage = NSLocalizedString(@"Could not open the page you requested. The server is not responding.", @"LWENetworkUtils.No Page");
   }
   else // no problems, just return
   {
@@ -62,8 +66,9 @@
                                             cancelButtonTitle:@"OK" 
                                             otherButtonTitles:nil];
     [networkUnavailableAlert show];
-    [networkUnavailableAlert release];    
+    [networkUnavailableAlert release];
   }
+  
   return NO;
 }
 

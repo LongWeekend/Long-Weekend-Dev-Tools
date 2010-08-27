@@ -6,6 +6,7 @@
 //
 
 #import "LWECoreData.h"
+#import "LWEDebug.h"
 
 /*!
     @class       LWECoreData
@@ -100,6 +101,15 @@
   NSError *error;
   if (![managedObjectContext save:&error]) 
   {
+    NSArray* detailedErrors = [[error userInfo] objectForKey:NSDetailedErrorsKey];
+    if (detailedErrors != nil && [detailedErrors count] > 0)
+    {
+      for(NSError* detailedError in detailedErrors)
+      {
+        LWE_LOG(@"  DetailedError: %@", [detailedError userInfo]);
+      }
+    }
+    // Now fail
     NSAssert2(0, @"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
   }  
 }
