@@ -37,7 +37,7 @@
   }
 }
   
-+ (void) launchAlertIfNotReachableForHost:(NSString*)hostURLOrNil
++ (BOOL) networkReachableForHost:(NSString*)hostURLOrNil showAlert:(BOOL) showAlert
 {  
   NSString* alertMessage;
   if ([LWENetworkUtils networkAvailable] == NO) // first check it we have any connection at all
@@ -50,16 +50,21 @@
   }
   else // no problems, just return
   {
-    return;
+    return YES;
   }
 
-  UIAlertView *networkUnavailableAlert = [[UIAlertView alloc]
-                                          initWithTitle: NSLocalizedString(@"Cannot Open Page", @"LWENetworkUtils.AlertView Title")
-                                          message: alertMessage
-                                          delegate:nil
-                                          cancelButtonTitle:@"OK" 
-                                          otherButtonTitles:nil];
-  [networkUnavailableAlert show];
-  [networkUnavailableAlert release];    
+  if (showAlert)
+  {
+    UIAlertView *networkUnavailableAlert = [[UIAlertView alloc]
+                                            initWithTitle: NSLocalizedString(@"Cannot Open Page", @"LWENetworkUtils.AlertView Title")
+                                            message: alertMessage
+                                            delegate:nil
+                                            cancelButtonTitle:@"OK" 
+                                            otherButtonTitles:nil];
+    [networkUnavailableAlert show];
+    [networkUnavailableAlert release];    
+  }
+  return NO;
 }
+
 @end
