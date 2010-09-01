@@ -17,7 +17,7 @@
  * \details This view is most similar to the callout view used (privately) in the Maps application.
  It is more customizable and extendable, and allows for a custom content view.
 */
-@interface LWETooltipView : UIView
+@interface LWETooltipViewOld : UIView
 {
   //! If YES, the view will show a callout (like a speech bubble)
   BOOL showCallout;

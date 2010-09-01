@@ -8,7 +8,7 @@
 
 #import "LWETooltipView.h"
 
-@implementation LWETooltipView
+@implementation LWETooltipViewOld
 
 @synthesize roundedRectView, contentView, showCallout, calloutView, closeButton, showDropShadow;
 

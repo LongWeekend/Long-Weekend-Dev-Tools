@@ -24,7 +24,7 @@
 + (NSArray *) fetch:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext withSortDescriptors:(NSArray *)sortDescriptorsOrNil withLimit:(int)limitOrNil predicate:(id)stringOrPredicate, ...;
 
 //! Saves the current context
-+ (void) save:(NSManagedObjectContext *)managedObjectContext;
++ (BOOL) save:(NSManagedObjectContext *)managedObjectContext;
 
 //! Deletes the provided entity from the provided context
 + (BOOL) delete:(id)entity fromContext:(NSManagedObjectContext *)context;

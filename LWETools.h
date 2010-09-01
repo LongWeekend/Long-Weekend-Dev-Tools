@@ -2,6 +2,7 @@
 #import "LWEFile.h"
 #import "LWELocalNotifications.h"
 #import "LWEUILabelUtils.h"
+#import "LWEUIAlertView.h"
 #import "LWEUITableUtils.h"
 #import "LWEScrollView.h"
 #import "UIWebView+LWENoBounces.h"

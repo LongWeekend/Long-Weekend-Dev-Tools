@@ -95,9 +95,11 @@
 /**
  * Saves the current objectContext
  * \param managedObjectContext The context to save
+ * \return YES if successful
  */
-+ (void) save:(NSManagedObjectContext *)managedObjectContext
++ (BOOL) save:(NSManagedObjectContext *)managedObjectContext
 {
+  BOOL returnVal = YES;
   NSError *error;
   if (![managedObjectContext save:&error]) 
   {
@@ -111,7 +113,9 @@
     }
     // Now fail
     NSAssert2(0, @"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
-  }  
+    returnVal = NO;
+  }
+  return returnVal;
 }
 
 /**
