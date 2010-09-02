@@ -135,29 +135,6 @@
 	//  rrect.origin.y = rrect.origin.y + 1;
 	//  rrect.size.height = rrect.size.height - 1;
 	//  rrect.size.width = rrect.size.width - 1;
-  
-  // If we have a shadow other than zero, offset either the size or the origin (move the box)
-  /*if (shadowX > 0)
-	 {
-	 rrect.size.width = rrect.size.width - (2 * shadowX);
-	 }
-	 else if (shadowX < 0)
-	 {
-	 rrect.origin.x = rrect.origin.x - (2 * shadowX);
-	 rrect.size.width = rrect.size.width - (2 * shadowX);
-	 }
-	 
-	 if (shadowY > 0)
-	 {
-	 rrect.size.height = rrect.size.height - ( 2 * shadowY);
-	 }
-	 else if (shadowY < 0)
-	 {
-	 rrect.origin.y = rrect.origin.y - ( 2 * shadowY);
-	 rrect.size.height = rrect.size.height - ( 2 * shadowY);
-	 }*/
-  
-  
   CGFloat radius = self.params.cornerRadius;
   CGFloat width = CGRectGetWidth(rrect);
   CGFloat height = CGRectGetHeight(rrect);
@@ -341,6 +318,31 @@
 // Determine the new CGRect for the rounded rect view based on callout size
 - (CGRect) _makeNewRoundRectFrame
 {
+	
+	// If we have a shadow other than zero, offset either the size or the origin (move the box)
+	/*float shadowX = self.params.shadowOffset.width;
+	float shadowY = self.params.shadowOffset.height;
+	if (shadowX > 0)
+	{
+		rrect.size.width = rrect.size.width - (2 * shadowX);
+	}
+	else if (shadowX < 0)
+	{
+		rrect.origin.x = rrect.origin.x - (2 * shadowX);
+		rrect.size.width = rrect.size.width - (2 * shadowX);
+	}
+	
+	if (shadowY > 0)
+	{
+		rrect.size.height = rrect.size.height - ( 2 * shadowY);
+	}
+	else if (shadowY < 0)
+	{
+		rrect.origin.y = rrect.origin.y - ( 2 * shadowY);
+		rrect.size.height = rrect.size.height - ( 2 * shadowY);
+	}*/
+	
+	
   CGRect newRoundedRectViewRect;
   NSInteger totalSpace; 
   NSInteger numPixelsToShave;
@@ -414,9 +416,25 @@
   NSInteger totalClip = self.params.cornerRadius*2;
   NSInteger labelHeight = _roundRectFrame.size.height - totalClip;
   NSInteger labelWidth = _roundRectFrame.size.width - totalClip;
+	
+	CGFloat xOffset = 0.0f;
+	CGFloat	yOffset = 0.0f;
+	//if the callout position at the top, or in the left side please re-position the content view. It does not affect anything if the callout position
+	//is on the right position, or bottom cause the origin position for the content view is not affected by the size of the callout itself 
+	//(no need to be repositioned cause the 0,0 is in the top left corner)
+	if (self.params.calloutPosition == LWETooltipCalloutPositionTop)
+	{
+		yOffset += _calloutRectFrame.size.height;
+	}
+	else if (self.params.calloutPosition == LWETooltipCalloutPositionLeft)
+	{
+		xOffset += _calloutRectFrame.size.width;
+	}
+
+	
   if (labelWidth > 0 && labelHeight > 0)
   {
-    tooltipViewRect = CGRectMake(self.params.cornerRadius/2, self.params.cornerRadius/2, labelWidth+self.params.cornerRadius, labelHeight+self.params.cornerRadius);
+    tooltipViewRect = CGRectMake(self.params.cornerRadius/2 + xOffset, self.params.cornerRadius/2 + yOffset, labelWidth+self.params.cornerRadius, labelHeight+self.params.cornerRadius);
   }
   return tooltipViewRect;
 }

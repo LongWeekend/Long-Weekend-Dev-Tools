@@ -20,6 +20,7 @@
             instantiating this class.
  
  */
+//! LWE implementation of the tooltip view. It is cofigurable with the LWETooltipParams object which is passed in the init method. It also consist of the content view which can be constructed with the method calling, and instantiating this class.
 @interface LWETooltipView : UIView 
 {	
 	LWETooltipParams *params;							//! Object which hold of all the parameter needed in the tool tip, like shadow, stroke width, etc.
