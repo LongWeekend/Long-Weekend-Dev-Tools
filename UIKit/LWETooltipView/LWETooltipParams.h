@@ -10,7 +10,8 @@
 #import "LWETooltipConstants.h"
 
 //! This structure is used in a callout properties. Callout can be thought of a triangle which has 3 points, the first base, midpoin, and the pointOnBase. (The term used here MAY not be correct) but just to give the idea, it also has a height of the triangle (callout).
-struct LWECalloutBases {
+struct LWECalloutBases
+{
   CGFloat firstBase;
   CGFloat pointOnBase;
 	CGFloat midpointOnBase;
@@ -25,7 +26,6 @@ typedef struct LWECalloutBases LWECalloutBases;
 //! Protocol that can be conformed by a class which going to have an LWETooltip, and acts as a delegate for all the action in the LWETooltip. Currently it only supports touch up inside event, but this opens to a future implementation.
 @protocol LWETooltipViewDelegate <NSObject>
 @optional
-
 - (void)tooltipView:(LWETooltipView *)tooltipView closeButtonDidReceiveAction:(UIControlEvents)action;
 @end
 
@@ -88,6 +88,12 @@ typedef struct LWECalloutBases LWECalloutBases;
 @property CGFloat calloutSize;
 @property BOOL showCallout;
 
+// TODO: RENDY, please doc these ;)
+/**
+ * \brief   <#(brief description)#>
+ * \return   <#(description)#>
+ * \details   <#(comprehensive description)#>
+ */
 - (id)initWithDefaultValue;
 
 @end

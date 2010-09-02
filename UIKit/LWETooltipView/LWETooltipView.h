@@ -10,12 +10,15 @@
 #import "LWETooltipConstants.h"
 #import "LWETooltipParams.h"
 
-//! LWE implementation of the tooltip view. It is cofigurable with the LWETooltipParams object which is passed in the init method. It also consist of the content view which can be constructed with the method calling, and instantiating this class.
 /**
  * \class   LWETooltipView 
  * \brief   Creates a tooltip-like view with a close button and an optional callout graphic
  * \details This view is most similar to the callout view used (privately) in the Maps application.
 						It is more customizable and extendable, and allows for a custom content view.
+            It is cofigurable with the LWETooltipParams object which is passed in the init method.
+            It also consist of the content view which can be constructed with the method calling, and
+            instantiating this class.
+ 
  */
 @interface LWETooltipView : UIView 
 {	

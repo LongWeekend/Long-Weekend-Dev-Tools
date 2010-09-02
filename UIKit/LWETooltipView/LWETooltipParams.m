@@ -26,7 +26,7 @@
 
 - (id)initWithDefaultValue;
 {
-	if (self = [super init])
+	if ((self = [super init]))
 	{	
 		// Default options
 		self.closeButtonPosition = LWETooltipCloseButtonPositionTopRight;
