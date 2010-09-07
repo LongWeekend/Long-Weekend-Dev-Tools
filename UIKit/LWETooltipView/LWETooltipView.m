@@ -60,6 +60,22 @@
 		[self setContentView:aContentView];
 		self.contentView.backgroundColor = [UIColor clearColor];
 		//self.contentView = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+		
+		//if by any chance it should resize itself, and the content view is not null, please resize itself first. 
+		if ((self.params.shouldResize) && (self.contentView != nil))
+		{
+			CGRect contentViewFrame = self.contentView.frame;
+			CGRect adjustedContentViewFrame = [self _makeContentViewRect];
+			NSInteger dWidth = contentViewFrame.size.width - adjustedContentViewFrame.size.width;
+			NSInteger dHeight = contentViewFrame.size.height - adjustedContentViewFrame.size.height;
+			
+			LWE_LOG(@"x : %f, y : %f, width : %f, height : %f", contentView.frame.origin.x, contentView.frame.origin.y, contentView.frame.size.width, contentView.frame.size.height);
+			[self setFrame:CGRectMake(self.frame.origin.x - (dWidth/2), self.frame.origin.y - (dHeight/2), self.frame.size.width + dWidth, self.frame.size.height + dHeight)];
+			
+			_roundRectFrame = [self _makeNewRoundRectFrame];
+			_calloutRectFrame = [self _makeCalloutRectFrame];
+		}		
+		
 	}
 	return self;
 }
@@ -119,7 +135,7 @@
 	
 	//Set up the content view frame, and then add to self for subview
 	self.contentView.frame = [self _makeContentViewRect];
-	[self addSubview:self.contentView];		
+	[self addSubview:self.contentView];	
 	
 	//Add the subview for the close button after setting up the frame based on the position of the close button in the param.
 	_closeButton.frame = [self _makeCloseButtonRectFrame];

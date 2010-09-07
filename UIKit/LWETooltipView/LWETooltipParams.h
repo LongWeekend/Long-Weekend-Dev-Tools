@@ -44,6 +44,7 @@ typedef struct LWECalloutBases LWECalloutBases;
   BOOL showDropShadow;			//! If YES, draw a dropshadow
 	CGSize shadowOffset;			//! Size of the drop shadow - should be positive values (negative not yet supported)
 	CGFloat alpha;						//! opacity of the tooltip
+	BOOL shouldResize;				//! boolean to indicate that the tolltip will resize based on the content view provided. 
 	
 	//Background colour, and stroke related properties (Color, and width of the lines)
 	UIColor *rectColor;				//! Color to fill path with
@@ -70,6 +71,7 @@ typedef struct LWECalloutBases LWECalloutBases;
 @property BOOL showDropShadow;
 @property CGSize shadowOffset;
 @property CGFloat alpha;
+@property BOOL shouldResize;
 
 //Strokes properties with background colour
 @property (nonatomic, retain) UIColor *rectColor;
