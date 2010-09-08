@@ -12,7 +12,7 @@
 @implementation LWETooltipParams
 
 @synthesize closeButtonPosition, closeButtonImage;
-@synthesize shadowOffset, showDropShadow, alpha;
+@synthesize shadowOffset, showDropShadow, alpha, shouldResize;
 @synthesize rectColor, backgroundColor, strokeColor, strokeWidth;
 @synthesize cornerRadius;
 @synthesize calloutPosition, calloutDirection, calloutOffset, calloutSize, showCallout;
@@ -48,6 +48,7 @@
     self.calloutOffset = LWETooltipCalloutOffsetLeft;
     self.calloutSize = 0.15f;
 		self.showCallout = YES;
+		self.shouldResize = NO;
 	}
 	return self;
 }
