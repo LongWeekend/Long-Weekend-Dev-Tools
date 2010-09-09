@@ -20,6 +20,29 @@
  */
 - (id)initWithHex:(NSNumber *)hex
 {
+	if (self = [self initWithHex:hex alpha:1.0f])
+	{
+		//customization?
+	}
+	return self;
+}
+
+/**
+ * \brief		This is the method that will initialize a UIColor with the hexadecimal NSNumber, and also returns a autorelease color object.
+ *					Keep in mind that the parameter is the hexadecimal so it will be something like [NSNumber numberWithInt:0xFFFFFF]
+ * \param		Color code in hexadecimal
+ * \details This method is currently only supports 24bits color, so please dont give 12bits color like 0xFFF but instead give it 0xFFFFFF. It might be
+ *					upgraded, or extended in the future. But now it is nice to have a 24 bits color converter from hexa to RGB.
+ */
++ (id)colorWithHex:(NSNumber *)hex
+{
+	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex alpha:1.0f] autorelease];
+	return tmpColor;
+}
+
+//! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
+- (id)initWithHex:(NSNumber *)hex alpha:(CGFloat)alpha
+{
 	//This things just to avoid the wrong parameter, and the caller does not give 24 bits color. 
 	//It will gets messy with the bits shifting, and operator if it is not 6 digits hexa.
 	NSString *hexString = [[NSString alloc] initWithFormat:@"%x", [hex intValue]];
@@ -34,25 +57,20 @@
 	float red = (float) (([hex intValue] & 0xFF0000) >> 16) / 255.0f;
 	float green = (float) (([hex intValue] & 0x00FF00) >> 8) / 255.0f;
 	float blue = (float) (([hex intValue] & 0x000FF) >> 0) / 255.0f;
-
+	
 	//after getting the individual color component, it calls the initWithRed:green:blue:alpha: method, and it will return itself.
-	if (self = [self initWithRed:red green:green blue:blue alpha:1.0f])
+	if (self = [self initWithRed:red green:green blue:blue alpha:alpha])
 	{
 		//possible future customization after initialization
 	}
 	return self;
+	
 }
 
-/**
- * \brief		This is the method that will initialize a UIColor with the hexadecimal NSNumber, and also returns a autorelease color object.
- *					Keep in mind that the parameter is the hexadecimal so it will be something like [NSNumber numberWithInt:0xFFFFFF]
- * \param		Color code in hexadecimal
- * \details This method is currently only supports 24bits color, so please dont give 12bits color like 0xFFF but instead give it 0xFFFFFF. It might be
- *					upgraded, or extended in the future. But now it is nice to have a 24 bits color converter from hexa to RGB.
- */
-+ (id)colorWithHex:(NSNumber *)hex
+//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
++ (id)colorWithHex:(NSNumber *)hex alpha:(CGFloat)alpha
 {
-	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex] autorelease];
+	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex alpha:alpha] autorelease];
 	return tmpColor;
 }
 
