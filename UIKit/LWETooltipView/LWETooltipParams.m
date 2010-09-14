@@ -12,7 +12,7 @@
 @implementation LWETooltipParams
 
 @synthesize closeButtonPosition, closeButtonImage;
-@synthesize shadowOffset, showDropShadow, alpha, shouldResize;
+@synthesize shadowOffset, shadowBlur, showDropShadow, alpha, shouldResize;
 @synthesize rectColor, backgroundColor, strokeColor, strokeWidth;
 @synthesize cornerRadius;
 @synthesize calloutPosition, calloutDirection, calloutOffset, calloutSize, showCallout;
@@ -34,6 +34,7 @@
 		
 		self.shadowOffset = CGSizeMake(3, 5);
 		self.showDropShadow = YES;
+		self.shadowBlur = kDefaultShadowBlur;
 		self.alpha = 1.0f;
 		
 		self.rectColor = kDefaultRectColor;
