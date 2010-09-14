@@ -51,7 +51,7 @@
  */
 - (id)initWithOrigin:(CGPoint)startCoordinate length:(CGFloat)length weight:(CGFloat)aThickness color:(UIColor *)aColor orientation:(LWELineOrientation)anOrientation
 {
-	CGRect newFrame;
+	CGRect newFrame = CGRectZero;
 	CGPoint newEndPoint;
 	if (anOrientation == LWELineOrientationHorizontal)
 	{
