@@ -19,11 +19,15 @@
 //@synthesize totalHeight;
 
 + (id)loadingView:(UIView *)aSuperview withText:(NSString *)text
+{
+	return [LWELoadingView loadingView:aSuperview withText:text calculateNavigationBar:NO];
+}
+
++ (id)loadingView:(UIView *)aSuperview withText:(NSString *)text calculateNavigationBar:(BOOL)calculateNavigationBar
 {	
 	//STEP 1 - Initialise itself
 	CGRect selfFrame = [[UIScreen mainScreen] bounds]; //[aSuperview bounds];
 	LWELoadingView *loadingView = [[[LWELoadingView alloc] initWithFrame:selfFrame] autorelease];
-	LWE_LOG(@"Superview bounds x:%f, y:%f, width:%f, height:%f", aSuperview.bounds.origin.x, aSuperview.bounds.origin.y, aSuperview.bounds.size.width, aSuperview.bounds.size.height);
 	if (!loadingView)
 	{
 		return nil;
@@ -64,6 +68,13 @@
 	selfFrame.origin.x = floor(0.5 * (loadingView.frame.size.width - selfFrame.size.width));
 	selfFrame.origin.y = floor(0.5 * (loadingView.frame.size.height - selfFrame.size.height));
 	loadingView.frame = selfFrame;
+	//If calculate navigation bar, means that the 0,0 location is below the navigation bar, so the y-coordinate origin
+	//has to be adjusted accordingly (44px is the default height for navigation bar)
+	//TODO: Check compatibility with iPhone 4
+	if (calculateNavigationBar)
+	{
+		selfFrame.origin.y = selfFrame.origin.y - 44.0;
+	}
 	LWE_LOG(@"The new loading view after resize x:%f, y:%f, width:%f, height:%f", loadingView.frame.origin.x, loadingView.frame.origin.y, loadingView.frame.size.width, loadingView.frame.size.height);	
 	
 	//STEP 5 - Fix the position of the label

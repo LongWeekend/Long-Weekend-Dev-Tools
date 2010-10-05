@@ -18,5 +18,6 @@
 }
 
 + (id)loadingView:(UIView *)aSuperview withText:(NSString *)text;
++ (id)loadingView:(UIView *)aSuperview withText:(NSString *)text calculateNavigationBar:(BOOL)calculateNavigationBar;
 
 @end
