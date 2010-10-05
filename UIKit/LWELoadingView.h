@@ -8,6 +8,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#define DEFAULT_LABEL_WIDTH		280.0
+#define DEFAULT_LABEL_HEIGHT	50.0
+#define DEFAULT_OFFSET_WIDTH	2
+#define DEFAULT_OFFSET_HEIGHT 15
+
 @interface LWELoadingView : UIView 
 {
 }
