@@ -21,7 +21,7 @@
 + (id)loadingView:(UIView *)aSuperview withText:(NSString *)text
 {	
 	//STEP 1 - Initialise itself
-	CGRect selfFrame = [aSuperview bounds];
+	CGRect selfFrame = [[UIScreen mainScreen] bounds]; //[aSuperview bounds];
 	LWELoadingView *loadingView = [[[LWELoadingView alloc] initWithFrame:selfFrame] autorelease];
 	LWE_LOG(@"Superview bounds x:%f, y:%f, width:%f, height:%f", aSuperview.bounds.origin.x, aSuperview.bounds.origin.y, aSuperview.bounds.size.width, aSuperview.bounds.size.height);
 	if (!loadingView)
