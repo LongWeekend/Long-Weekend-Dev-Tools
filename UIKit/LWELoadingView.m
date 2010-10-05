@@ -64,7 +64,7 @@
 	selfFrame.origin.x = floor(0.5 * (loadingView.frame.size.width - selfFrame.size.width));
 	selfFrame.origin.y = floor(0.5 * (loadingView.frame.size.height - selfFrame.size.height));
 	loadingView.frame = selfFrame;
-	LWE_LOG(@"The new loading view after resize x:%f, y:%f, width:%f, height:%f", aSuperview.bounds.origin.x, aSuperview.bounds.origin.y, aSuperview.bounds.size.width, aSuperview.bounds.size.height);	
+	LWE_LOG(@"The new loading view after resize x:%f, y:%f, width:%f, height:%f", loadingView.frame.origin.x, loadingView.frame.origin.y, loadingView.frame.size.width, loadingView.frame.size.height);	
 	
 	//STEP 5 - Fix the position of the label
 	labelFrame.origin.x = floor(0.5 * (loadingView.frame.size.width - DEFAULT_LABEL_WIDTH));
