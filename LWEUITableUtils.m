@@ -1,9 +1,7 @@
-
 //  LWEUITableUtils.m
-//  jFlash
 //
 //  Created by Mark Makdad on 2/21/10.
-//  Copyright 2010 LONG WEEKEND INC.. All rights reserved.
+//  Copyright 2010 LONG WEEKEND INC. All rights reserved.
 //
 
 #import "LWEUITableUtils.h"
@@ -20,6 +18,36 @@
     cell = [[[UITableViewCell alloc] initWithStyle:style reuseIdentifier:identifier] autorelease];
   }
   return cell;
+}
+
+//! Returns a new UITableViewCell with a blank tagged label - automatically determines whether new or off the queue
++ (UITableViewCell*) reuseBlankLabelCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView
+{
+  UITableViewCell *cell;
+  UILabel *label = nil;
+  
+  cell = [lclTableView dequeueReusableCellWithIdentifier:identifier];
+  if (cell == nil)
+  {
+    cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"Cell"] autorelease];
+    
+    label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+    [label setLineBreakMode:UILineBreakModeWordWrap];
+    [label setMinimumFontSize:LWE_UITABLE_CELL_FONT_SIZE];
+    [label setNumberOfLines:0];
+    [label setFont:[UIFont systemFontOfSize:LWE_UITABLE_CELL_FONT_SIZE]];
+    [label setTag:1];
+    
+    [[cell contentView] addSubview:label];
+  }
+  return cell;
+}
+
+//! Sets the frame to the hieght needed for a given text size. Used in conjunction with reuseBlankLabelCellForIdentifier
++ (void)autosizeFrameForBlankLabel:(UILabel*)label forText:(NSString*)text
+{
+  CGFloat height = [LWEUITableUtils autosizeHeightForCellWithText:text] - (LWE_UITABLE_CELL_CONTENT_MARGIN * 2);
+  [label setFrame:CGRectMake(LWE_UITABLE_CELL_CONTENT_MARGIN, LWE_UITABLE_CELL_CONTENT_MARGIN, LWE_UITABLE_CELL_CONTENT_WIDTH - (LWE_UITABLE_CELL_CONTENT_MARGIN * 2), MAX(height, 44.0f))];
 }
 
 /**
@@ -50,7 +78,7 @@
 {
   CGSize constraint = CGSizeMake(width - (margin * 2), 20000.0f);
   CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
-  CGFloat height = size.height;
+  CGFloat height = MAX(size.height, 44.0f);
   return height + (margin * 2);
 }
 
