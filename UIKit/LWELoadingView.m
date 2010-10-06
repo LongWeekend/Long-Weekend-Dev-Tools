@@ -11,7 +11,7 @@
 
 // Private
 @interface LWELoadingView ()
-	CGFloat _totalHeight;
+CGFloat _totalHeight;
 @end
 
 @implementation LWELoadingView
@@ -33,7 +33,7 @@
 	}
 	
 	const CGSize DEFAULT_OFFSET_VIEW = CGSizeMake(DEFAULT_OFFSET_WIDTH, DEFAULT_OFFSET_HEIGHT);
-
+  
   // configure the label
 	CGRect labelFrame = CGRectMake(0, 0, DEFAULT_LABEL_WIDTH, DEFAULT_LABEL_HEIGHT);
 	UILabel *loadingLabel = [[UILabel alloc] initWithFrame:labelFrame];
@@ -50,12 +50,12 @@
 	[loadingView addSubview:activityIndicatorView];
   
 	_totalHeight = loadingLabel.frame.size.height + activityIndicatorView.frame.size.height;
-
+  
 	// size and center the loading view
 	borderFrame.size.width =  DEFAULT_LABEL_WIDTH + (DEFAULT_OFFSET_VIEW.width*2);
 	borderFrame.size.height = _totalHeight + (DEFAULT_OFFSET_VIEW.height*2);
 	borderFrame.origin.x = floor(0.5 * (loadingView.frame.size.width - borderFrame.size.width));
-	borderFrame.origin.y = floor((0.5 * loadingView.frame.size.height) - borderFrame.size.height);
+	borderFrame.origin.y = floor(0.5 * (loadingView.frame.size.height - borderFrame.size.height));
 	loadingView.frame = borderFrame;
 	
   // position activity indicator
@@ -63,7 +63,7 @@
 	activityIndicatorRect.origin.x = 0.5 * (loadingView.frame.size.width - activityIndicatorRect.size.width);
 	activityIndicatorRect.origin.y = loadingLabel.frame.origin.y + loadingLabel.frame.size.height-5;
 	activityIndicatorView.frame = activityIndicatorRect;
- 
+  
   // position the label
 	labelFrame.origin.x = floor(0.5 * (loadingView.frame.size.width - DEFAULT_LABEL_WIDTH));
 	labelFrame.origin.y = floor((0.5 * (loadingView.frame.size.height - _totalHeight)*0.1));
