@@ -56,6 +56,11 @@ CGFloat _totalHeight;
 	borderFrame.size.height = _totalHeight + (DEFAULT_OFFSET_VIEW.height*2);
 	borderFrame.origin.x = floor(0.5 * (loadingView.frame.size.width - borderFrame.size.width));
 	borderFrame.origin.y = floor(0.5 * (loadingView.frame.size.height - borderFrame.size.height));
+  //If calculate navigation bar, adjust 44px for nav bar hieght.
+  if (calculateNavigationBar)
+  {
+    borderFrame.origin.y = borderFrame.origin.y - 44.0;
+  }
 	loadingView.frame = borderFrame;
 	
   // position activity indicator
