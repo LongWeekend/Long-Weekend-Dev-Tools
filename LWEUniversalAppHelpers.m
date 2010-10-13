@@ -14,7 +14,7 @@
 +(BOOL)isAnIPad
 {
     #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200  // this is when the UI_USER_INTERFACE_IDIOM was added
-      if ([LWEUniversalAppHelpers isAnIPad])
+      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         return YES;
       else 
         // This is a 3.2.0+ but not an iPad (for future, when iPhone/iPod Touch runs with same OS than iPad)    
