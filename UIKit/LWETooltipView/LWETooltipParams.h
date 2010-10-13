@@ -43,6 +43,7 @@ typedef struct LWECalloutBases LWECalloutBases;
 	//Tooltip view look and feel related parameter
   BOOL showDropShadow;			//! If YES, draw a dropshadow
 	CGSize shadowOffset;			//! Size of the drop shadow - should be positive values (negative not yet supported)
+	CGFloat shadowBlur;				//! Non negative number, specifiying the amount of the blur
 	CGFloat alpha;						//! opacity of the tooltip
 	BOOL shouldResize;				//! boolean to indicate that the tolltip will resize based on the content view provided. 
 	
@@ -70,6 +71,7 @@ typedef struct LWECalloutBases LWECalloutBases;
 ////Tooltip view look and feel related parameter
 @property BOOL showDropShadow;
 @property CGSize shadowOffset;
+@property CGFloat shadowBlur;
 @property CGFloat alpha;
 @property BOOL shouldResize;
 

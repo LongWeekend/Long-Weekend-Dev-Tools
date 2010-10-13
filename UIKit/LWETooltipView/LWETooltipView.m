@@ -27,6 +27,7 @@
 {
 	if (self = [super initWithFrame:frame])
 	{
+		//STEP 1 - set the parameter, make a new one with default parameter if not provided
 		if (toolTipParameters)
 		{
 			[self setParams:toolTipParameters];
@@ -38,44 +39,54 @@
 			[tempParams release];
 		}
 		
-		if (self.params.showCallout)
-		{
-			_roundRectFrame = [self _makeNewRoundRectFrame];
-			_calloutRectFrame = [self _makeCalloutRectFrame];
-		}
-		else 
-		{
-			_calloutRectFrame = CGRectZero;
-			_roundRectFrame = [self bounds];
-		}
+		//STEP 2 - calculate the size ratio between the rounded rect, and the callout
+		_roundRectFrame = [self _makeNewRoundRectFrame];
+		_calloutRectFrame = [self _makeCalloutRectFrame];
 		
+		//STEP 3 - Set everything up, included the background.
 		[self setBackgroundColor:self.params.backgroundColor]; 
-		[self setOpaque:NO];
-		[self setDelegate:aDelegate];
+		//The reason is, no opaque makes drawing process a bit slower, 
+		//if we know that the alpha is 1 (not transparent) set opaque to yes. 
+		[self setOpaque:self.params.alpha < 1.0 ? NO : YES]; 
+		[self setContentView:aContentView];
+		self.contentView.backgroundColor = [UIColor clearColor];
 		
+		//STEP 4 - Set the tooltip functionality related
+		[self setDelegate:aDelegate];
 		_closeButton = [[UIButton buttonWithType:UIButtonTypeCustom] retain];
 		[self _setCloseButtonImage:self.params.closeButtonImage];
 		[_closeButton addTarget:self action:@selector(_closeButtonDidTouchUpInside:) forControlEvents:UIControlEventTouchUpInside];
 		
-		[self setContentView:aContentView];
-		self.contentView.backgroundColor = [UIColor clearColor];
-		//self.contentView = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-		
+		//STEP 5 - Resize process if needed
 		//if by any chance it should resize itself, and the content view is not null, please resize itself first. 
+		//by resizing it should calibrate all of the parameter, including if it s going to drop shadow,
+		//the shadow size is going to be added first, so when the rounded rect is going to be shapped, the content is not clipped
 		if ((self.params.shouldResize) && (self.contentView != nil))
 		{
 			CGRect contentViewFrame = self.contentView.frame;
 			CGRect adjustedContentViewFrame = [self _makeContentViewRect];
 			NSInteger dWidth = contentViewFrame.size.width - adjustedContentViewFrame.size.width;
 			NSInteger dHeight = contentViewFrame.size.height - adjustedContentViewFrame.size.height;
+			if (self.params.showDropShadow)
+			{
+				dWidth = dWidth + self.params.shadowOffset.width;
+				dHeight = dHeight + self.params.shadowOffset.height;
+			}
 			
-			LWE_LOG(@"x : %f, y : %f, width : %f, height : %f", contentView.frame.origin.x, contentView.frame.origin.y, contentView.frame.size.width, contentView.frame.size.height);
+			LWE_LOG(@"LOG : The tooltip is resized into => x : %f, y : %f, width : %f, height : %f", contentView.frame.origin.x, contentView.frame.origin.y, contentView.frame.size.width, contentView.frame.size.height);
 			[self setFrame:CGRectMake(self.frame.origin.x - (dWidth/2), self.frame.origin.y - (dHeight/2), self.frame.size.width + dWidth, self.frame.size.height + dHeight)];
 			
 			_roundRectFrame = [self _makeNewRoundRectFrame];
 			_calloutRectFrame = [self _makeCalloutRectFrame];
-		}		
+		}
 		
+		//STEP 6 - Calibrate the size of the rectangle if the shadow is dropped.
+		//if the caller ask for shadow, please offset the rounded rectangle first so that the shadow can be applied
+		if (self.params.showDropShadow)
+		{
+			_roundRectFrame = [self _calibrateRoundedRectBasedOnShadow];
+			//TODO: Do we need to calibrate the callout size again? My oppinion if the shadow dropped is bigger than 0, not neeeded (Rendy - 14/9/10)
+		}
 	}
 	return self;
 }
@@ -87,7 +98,6 @@
 {
 	if ([self.delegate respondsToSelector:@selector(tooltipView:closeButtonDidReceiveAction:)])
 	{
-		LWE_LOG(@"Close button did touch up inside in the LWETooptip class");
 		[self.delegate tooltipView:self closeButtonDidReceiveAction:UIControlEventTouchUpInside];
 	}
 }
@@ -124,9 +134,10 @@
 	CGContextSaveGState(context);
 	if (self.params.showDropShadow)
 	{
+		CGFloat shadowBlur = self.params.shadowBlur >= 0.0 ? self.params.shadowBlur : kDefaultShadowBlur ;
 		CGFloat shadowX = self.params.shadowOffset.width;
 		CGFloat shadowY = self.params.shadowOffset.height;
-		CGContextSetShadow(context, CGSizeMake(shadowX, shadowY), kDefaultShadowBlur); 		
+		CGContextSetShadow(context, CGSizeMake(shadowX, shadowY), shadowBlur); 		
 	}
 	
   CGContextClosePath(context);
@@ -305,90 +316,77 @@
 
 
 // Makes the CGRect for the callout graphic
-- (CGRect) _makeCalloutRectFrame
+- (CGRect)_makeCalloutRectFrame
 {
-  CGRect tmpCalloutRectFrame = CGRectZero;
-	CGRect tmpRoundRectFrame = _roundRectFrame;
-	if ((!CGRectIsEmpty(tmpRoundRectFrame)) && (!CGRectIsNull(tmpRoundRectFrame)))
-	{
-		switch (self.params.calloutPosition)
+	//if there is a callout to be showed, please calculate the size of the callout rect based on the callout size and position.
+	//else return CGRectZero as the callout size is zero.. 
+	if (self.params.showCallout)
+	{		
+		CGRect tmpCalloutRectFrame = CGRectZero;
+		CGRect tmpRoundRectFrame = _roundRectFrame;
+		if ((!CGRectIsEmpty(tmpRoundRectFrame)) && (!CGRectIsNull(tmpRoundRectFrame)))
 		{
-			case LWETooltipCalloutPositionTop:
-				tmpCalloutRectFrame = CGRectMake(0, 0, self.frame.size.width, (self.frame.size.height - tmpRoundRectFrame.size.height));
-				break;
-			case LWETooltipCalloutPositionBottom:
-				tmpCalloutRectFrame = CGRectMake(0, tmpRoundRectFrame.size.height, self.frame.size.width, (self.frame.size.height - tmpRoundRectFrame.size.height));
-				break;
-			case LWETooltipCalloutPositionLeft:
-				tmpCalloutRectFrame = CGRectMake(0, 0, (self.frame.size.width - tmpRoundRectFrame.size.width), self.frame.size.height);
-				break;
-			case LWETooltipCalloutPositionRight:
-				tmpCalloutRectFrame = CGRectMake(tmpRoundRectFrame.size.width, 0, (self.frame.size.width - tmpRoundRectFrame.size.width), self.frame.size.height);
-				break;
+			switch (self.params.calloutPosition)
+			{
+				case LWETooltipCalloutPositionTop:
+					tmpCalloutRectFrame = CGRectMake(0, 0, self.frame.size.width, (self.frame.size.height - tmpRoundRectFrame.size.height));
+					break;
+				case LWETooltipCalloutPositionBottom:
+					tmpCalloutRectFrame = CGRectMake(0, tmpRoundRectFrame.size.height, self.frame.size.width, (self.frame.size.height - tmpRoundRectFrame.size.height));
+					break;
+				case LWETooltipCalloutPositionLeft:
+					tmpCalloutRectFrame = CGRectMake(0, 0, (self.frame.size.width - tmpRoundRectFrame.size.width), self.frame.size.height);
+					break;
+				case LWETooltipCalloutPositionRight:
+					tmpCalloutRectFrame = CGRectMake(tmpRoundRectFrame.size.width, 0, (self.frame.size.width - tmpRoundRectFrame.size.width), self.frame.size.height);
+					break;
+			}
 		}
+		return tmpCalloutRectFrame;
 	}
-  return tmpCalloutRectFrame;
+	return CGRectZero;
 }
 
 
 // Determine the new CGRect for the rounded rect view based on callout size
-- (CGRect) _makeNewRoundRectFrame
+- (CGRect)_makeNewRoundRectFrame
 {
-	
-	// If we have a shadow other than zero, offset either the size or the origin (move the box)
-	/*float shadowX = self.params.shadowOffset.width;
-	float shadowY = self.params.shadowOffset.height;
-	if (shadowX > 0)
+	//if there is a callout to be showed, please calculate the size of the rounded rect based on the callout.
+	//else use the whole rectangle of this view to be rounded rect. 
+	if (self.params.showCallout)
 	{
-		rrect.size.width = rrect.size.width - (2 * shadowX);
+		CGRect newRoundedRectViewRect;
+		NSInteger totalSpace; 
+		NSInteger numPixelsToShave;
+		CGFloat calloutSize = self.params.calloutSize;
+		
+		switch (self.params.calloutPosition)
+		{
+			case LWETooltipCalloutPositionTop:
+				totalSpace = self.frame.size.height;
+				numPixelsToShave = round((float)totalSpace * calloutSize);
+				newRoundedRectViewRect = CGRectMake(0, numPixelsToShave, self.frame.size.width, totalSpace - numPixelsToShave);
+				break;
+			case LWETooltipCalloutPositionBottom:
+				totalSpace = self.frame.size.height;
+				numPixelsToShave = round((float)totalSpace * calloutSize);
+				newRoundedRectViewRect = CGRectMake(0, 0, self.frame.size.width, totalSpace - numPixelsToShave);
+				break;
+			case LWETooltipCalloutPositionLeft:
+				totalSpace = self.frame.size.width;
+				numPixelsToShave = round((float)totalSpace * calloutSize);
+				newRoundedRectViewRect = CGRectMake(numPixelsToShave, 0, totalSpace - numPixelsToShave,self.frame.size.height);
+				break;
+			case LWETooltipCalloutPositionRight:
+				totalSpace = self.frame.size.width;
+				numPixelsToShave = round((float)totalSpace * calloutSize);
+				newRoundedRectViewRect = CGRectMake(0, 0, totalSpace - numPixelsToShave,self.frame.size.height);
+				break;
+		}
+		return newRoundedRectViewRect;
 	}
-	else if (shadowX < 0)
-	{
-		rrect.origin.x = rrect.origin.x - (2 * shadowX);
-		rrect.size.width = rrect.size.width - (2 * shadowX);
-	}
-	
-	if (shadowY > 0)
-	{
-		rrect.size.height = rrect.size.height - ( 2 * shadowY);
-	}
-	else if (shadowY < 0)
-	{
-		rrect.origin.y = rrect.origin.y - ( 2 * shadowY);
-		rrect.size.height = rrect.size.height - ( 2 * shadowY);
-	}*/
-	
-	
-  CGRect newRoundedRectViewRect;
-  NSInteger totalSpace; 
-  NSInteger numPixelsToShave;
-	CGFloat calloutSize = self.params.calloutSize;
-  switch (self.params.calloutPosition)
-  {
-    case LWETooltipCalloutPositionTop:
-      totalSpace = self.frame.size.height;
-      numPixelsToShave = round((float)totalSpace * calloutSize);
-      newRoundedRectViewRect = CGRectMake(0, numPixelsToShave, self.frame.size.width, totalSpace - numPixelsToShave);
-      break;
-    case LWETooltipCalloutPositionBottom:
-      totalSpace = self.frame.size.height;
-      numPixelsToShave = round((float)totalSpace * calloutSize);
-      newRoundedRectViewRect = CGRectMake(0, 0, self.frame.size.width, totalSpace - numPixelsToShave);
-      break;
-    case LWETooltipCalloutPositionLeft:
-      totalSpace = self.frame.size.width;
-      numPixelsToShave = round((float)totalSpace * calloutSize);
-      newRoundedRectViewRect = CGRectMake(numPixelsToShave, 0, totalSpace - numPixelsToShave,self.frame.size.height);
-      break;
-    case LWETooltipCalloutPositionRight:
-      totalSpace = self.frame.size.width;
-      numPixelsToShave = round((float)totalSpace * calloutSize);
-      newRoundedRectViewRect = CGRectMake(0, 0, totalSpace - numPixelsToShave,self.frame.size.height);
-      break;
-  }
-  return newRoundedRectViewRect;
+  return [self bounds];
 }
-
 
 // Makes the CGRect for the close button
 - (CGRect)_makeCloseButtonRectFrame
@@ -397,7 +395,8 @@
   CGRect roundRectFrame = _roundRectFrame;
   CGSize buttonSize = _closeButton.frame.size;
   CGFloat offset = self.params.cornerRadius / 4;
-  CGFloat dx, dy;
+  CGFloat dx=0.0f;
+	CGFloat dy=0.0f;
   
   switch (self.params.closeButtonPosition)
   {
@@ -418,7 +417,7 @@
       dy = roundRectFrame.origin.y + roundRectFrame.size.height - buttonSize.height - offset;
       break;
   }
-  closeButtonRectFrame = CGRectMake(dx, dy, 0, 0);
+  closeButtonRectFrame = CGRectMake(dx, dy, 0.0f, 0.0f);
   closeButtonRectFrame.size = buttonSize;
   return closeButtonRectFrame;
 }
@@ -454,6 +453,38 @@
   }
   return tooltipViewRect;
 }
+
+- (CGRect)_calibrateRoundedRectBasedOnShadow
+{
+	CGRect rrect = _roundRectFrame;
+	//LWE_LOG(@"x : %f, y : %f, width : %f, height : %f", rrect.origin.x, rrect.origin.y, rrect.size.width, rrect.size.height);
+	
+	// If we have a shadow other than zero, offset either the size or the origin (move the box)
+	float shadowX = self.params.shadowOffset.width;
+	float shadowY = self.params.shadowOffset.height;
+	if (shadowX > 0)
+	{
+		rrect.size.width = rrect.size.width - (2 * shadowX);
+	}
+	else if (shadowX < 0)
+	{
+		rrect.origin.x = rrect.origin.x - (2 * shadowX);
+		rrect.size.width = rrect.size.width - (2 * shadowX);
+	}
+	
+	if (shadowY > 0)
+	{
+		rrect.size.height = rrect.size.height - (2 * shadowY);
+	}
+	else if (shadowY < 0)
+	{
+		rrect.origin.y = rrect.origin.y - (2 * shadowY);
+		rrect.size.height = rrect.size.height - (2 * shadowY);
+	}
+	
+	//LWE_LOG(@"x : %f, y : %f, width : %f, height : %f", rrect.origin.x, rrect.origin.y, rrect.size.width, rrect.size.height);
+	return rrect;
+}												 												
 
 #pragma mark -
 #pragma mark Class plumbing

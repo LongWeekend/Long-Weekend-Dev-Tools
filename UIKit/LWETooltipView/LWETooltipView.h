@@ -68,5 +68,6 @@
 - (CGRect)_makeNewRoundRectFrame;
 - (CGRect)_makeCloseButtonRectFrame;
 - (CGRect)_makeContentViewRect;
+- (CGRect)_calibrateRoundedRectBasedOnShadow;
 
 @end
