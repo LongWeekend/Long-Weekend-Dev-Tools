@@ -7,6 +7,7 @@
 //
 
 #import "LWENetworkUtils.h"
+#import "LWEUIAlertView.h"
 
 
 @implementation LWENetworkUtils
