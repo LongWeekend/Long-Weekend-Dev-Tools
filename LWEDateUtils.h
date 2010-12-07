@@ -4,7 +4,7 @@
 //  Created by Mark Makdad on 12/7/10.
 //  Copyright 2010 Long Weekend LLC. All rights reserved.
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @interface LWEDateUtils : NSObject
 {
