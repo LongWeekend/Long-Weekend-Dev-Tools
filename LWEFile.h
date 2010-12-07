@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+  kLWEFileLocationBundle = 0, // the file is in the bundle
+  kLWEFileLocationDocuments = 1 // the file is in the documents directory
+} kLWEFileLocation;
 
 @interface LWEFile : NSObject
 {

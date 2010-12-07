@@ -16,6 +16,9 @@
 */
 @implementation LWECoreData
 
+#pragma mark -
+#pragma mark retrieval methods
+
 /**
  * Gets all entities for a given entity & context ("SELECT * FROM foo" in SQL)
  * \param entityName Name of the Core Data entity to fetch
@@ -91,6 +94,63 @@
   
   return results;
 }
+
+#pragma mark -
+#pragma mark addLables
+
+/**
+ * Adds a plist to a entity, assumes that the plist has same attribute key names. Will update or create an entity
+ * based on the identifiedByAttribute.
+ * \param path Full path to plist we are working with. Use something like: NSString *path = [[NSBundle mainBundle] pathForResource:@"PLISTNAME" ofType:@"plist"];
+ * \param entityName The name of the entity to add data too.
+ * \param identifiedByAttribute The name of the identifying attribute. This attribute must be a string.
+ * \param managedObjectContext Which ObjectContext to use
+ */
++(id) addPlist:(NSString*)path toEntity:(NSString *)entityName identifiedByAttribute:(NSString *)attributeName inManagedContext:(NSManagedObjectContext *)managedObjectContext save:(BOOL)shouldSave
+{
+  // Build the dictionary from the plist
+  NSDictionary *attributeDict = [[NSDictionary alloc] initWithContentsOfFile:path];
+
+  // find an existing instance of this entity
+  NSPredicate *predicate =  [NSPredicate predicateWithFormat:@"%@ = %@", attributeName, [attributeDict valueForKey:attributeName]];
+  id entityArray = [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil predicate:predicate];
+  id entity; // the entity we will populate
+  
+  // we require the attribute identifier to be unique so error if we get more than one entity
+  NSAssert(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);
+  
+  // set entity to the existing one if it exists
+  if ([entityArray count] == 1) 
+  {
+    entity = [entityArray objectAtIndex:0];
+  }
+  else // make a new one
+  {
+    entity = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:managedObjectContext];
+  }
+  
+  // enumerate the attribute dict.  The key will be the attribute in the entity
+  NSEnumerator *enumerator = [attributeDict keyEnumerator];
+  id key;
+  
+  // add all the dict attribute values to the entity
+  while ((key = [enumerator nextObject])) 
+  {
+    [entity setValue:[attributeDict valueForKey:key] forKey:key];
+  }
+  
+  if (shouldSave == YES) 
+  {
+    [LWECoreData save:managedObjectContext];
+  }
+  
+  [attributeDict release];
+    
+  return entity;
+}
+
+#pragma mark -
+#pragma mark persiste methods
 
 /**
  * Saves the current objectContext
