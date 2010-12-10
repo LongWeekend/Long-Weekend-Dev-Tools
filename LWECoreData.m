@@ -110,10 +110,16 @@
 {
   // Build the dictionary from the plist
   NSDictionary *attributeDict = [[NSDictionary alloc] initWithContentsOfFile:path];
+  
+//  id debugArray = [LWECoreData fetchAll:entityName managedObjectContext:managedObjectContext];
+//  for (id item in debugArray) 
+//  {
+//    LWE_LOG(@"%@", [item contactShortName]);
+//  }
 
   // find an existing instance of this entity
-  NSPredicate *predicate =  [NSPredicate predicateWithFormat:@"%@ = %@", attributeName, [attributeDict valueForKey:attributeName]];
-  id entityArray = [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil predicate:predicate];
+  NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K like %@", attributeName, [attributeDict valueForKey:attributeName]];
+  NSArray* entityArray = [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil predicate:predicate];
   id entity; // the entity we will populate
   
   // we require the attribute identifier to be unique so error if we get more than one entity
