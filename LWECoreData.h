@@ -14,6 +14,9 @@
 {  
 }
 
+//! Creates an autoreleased MOC associated with a store coordinator
++ (NSManagedObjectContext*) managedObjectContextWithStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+
 //! Creates an autoreleased persistent store coordinator using the pathname.  If copy is YES, it will copy the file from the bundle on not found
 + (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath copy:(BOOL)shouldCopy;
 
