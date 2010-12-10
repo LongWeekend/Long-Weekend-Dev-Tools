@@ -17,6 +17,66 @@
 @implementation LWECoreData
 
 #pragma mark -
+#pragma mark Persistent Store Methods
+
+/**
+ * Creates an autoreleased managed object context and associates a persistent store coordinator
+ * \param coordinator the persistent store coordinator to use with the managed object context
+ * \return A managed object context
+ */
+
++ (NSManagedObjectContext*) managedObjectContextWithStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator
+{
+  NSManagedObjectContext *managedObjectContext = [[[NSManagedObjectContext alloc] init] autorelease];
+  [managedObjectContext setPersistentStoreCoordinator:coordinator];
+  return managedObjectContext;
+}
+
+/**
+ * \param storePath The full file path of the persistent store to be associated with the store coordinator
+ * \param shouldCopy if YES, the method will attempt to copy the filename from the bundle if it is not found
+ * \return An initialized, autoreleased NSPersistentStoreCoordinator object, associated with the provided store
+ * This method assumes the store path is a SQLite database.
+ */
++ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath copy:(BOOL)shouldCopy
+{
+  // If the file doesn't exist, copy it
+  if (![LWEFile fileExists:storePath])
+  {
+    // Do the copy first if we're supposed to
+    BOOL copied = NO;
+    if (shouldCopy)
+    {
+      NSString *filename = [storePath lastPathComponent];
+      copied = [LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES];
+    }
+    
+    // Return nil if we failed to copy, or didn't want to
+    if (!copied || !shouldCopy)
+    {
+      return nil;
+    }
+  }
+  
+  // Now set it up
+	NSURL *storeUrl = [NSURL fileURLWithPath:storePath];
+  NSPersistentStoreCoordinator *psc = nil;
+  psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[NSManagedObjectModel mergedModelFromBundles:nil]];
+
+  NSError *error = nil;
+  if (![psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error])
+  {
+		/*
+		 * Replace this implementation with code to handle the error appropriately.
+		 * example: The schema for the persistent store is incompatible with current managed object model
+		 */
+		LWE_LOG(@"Unresolved error %@, %@", error, [error userInfo]);
+    psc = nil;
+  }
+  return psc;
+}
+
+#pragma mark -
 #pragma mark retrieval methods
 
 /**

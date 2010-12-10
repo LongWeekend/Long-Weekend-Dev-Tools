@@ -14,6 +14,9 @@
 {  
 }
 
+//! Creates an autoreleased persistent store coordinator using the pathname.  If copy is YES, it will copy the file from the bundle on not found
++ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath copy:(BOOL)shouldCopy;
+
 //! Returns all entities of a given type from a given context (SELECT * FROM x)
 + (NSArray *) fetchAll:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
@@ -24,7 +27,7 @@
 + (NSArray *) fetch:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext withSortDescriptors:(NSArray *)sortDescriptorsOrNil withLimit:(int)limitOrNil predicate:(id)stringOrPredicate, ...;
 
 //! Creates or overwrites the attributes of an entity from a plist, returns the saved entity.
-+(id) addPlist:(NSString*)path toEntity:(NSString *)entityName identifiedByAttribute:(NSString *)attributeName inManagedContext:(NSManagedObjectContext *)managedObjectContext save:(BOOL)shouldSave;
++ (id) addPlist:(NSString*)path toEntity:(NSString *)entityName identifiedByAttribute:(NSString *)attributeName inManagedContext:(NSManagedObjectContext *)managedObjectContext save:(BOOL)shouldSave;
 
 //! Saves the current context
 + (BOOL) save:(NSManagedObjectContext *)managedObjectContext;
