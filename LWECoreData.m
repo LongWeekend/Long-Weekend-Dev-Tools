@@ -38,30 +38,13 @@
  * \return An initialized, autoreleased NSPersistentStoreCoordinator object, associated with the provided store
  * This method assumes the store path is a SQLite database.
  */
-+ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath copy:(BOOL)shouldCopy
++ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath
 {
-  // If the file doesn't exist, copy it
-  if (![LWEFile fileExists:storePath])
-  {
-    // Do the copy first if we're supposed to
-    BOOL copied = NO;
-    if (shouldCopy)
-    {
-      NSString *filename = [storePath lastPathComponent];
-      copied = [LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES];
-    }
-    
-    // Return nil if we failed to copy, or didn't want to
-    if (!copied || !shouldCopy)
-    {
-      return nil;
-    }
-  }
-  
-  // Now set it up
 	NSURL *storeUrl = [NSURL fileURLWithPath:storePath];
+  
   NSPersistentStoreCoordinator *psc = nil;
-  psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[NSManagedObjectModel mergedModelFromBundles:nil]];
+  NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:nil];
+  psc = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model] autorelease];
 
   NSError *error = nil;
   if (![psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error])
@@ -71,7 +54,7 @@
 		 * example: The schema for the persistent store is incompatible with current managed object model
 		 */
 		LWE_LOG(@"Unresolved error %@, %@", error, [error userInfo]);
-    psc = nil;
+    return nil;
   }
   return psc;
 }
