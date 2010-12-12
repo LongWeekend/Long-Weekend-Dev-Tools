@@ -133,8 +133,12 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
     [fetchRequest setPredicate:predicate];
   }
   
-  NSError *error;
+  NSError *error = nil;
   NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+  if (error)
+  {
+    LWE_LOG(@"Fetch error: %@",error);
+  }
   
   [fetchRequest release]; 
   
