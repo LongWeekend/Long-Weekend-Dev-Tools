@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+extern NSString * const LWECoreDataObjectId;
+
 //! Abstracts common Core Data static method calls
 @interface LWECoreData : NSObject
 {  

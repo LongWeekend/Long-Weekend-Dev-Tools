@@ -8,6 +8,9 @@
 #import "LWECoreData.h"
 #import "LWEDebug.h"
 
+// Used by user info dictionaries as a key in notifications about object changes
+NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
+
 /*!
     @class       LWECoreData
     @discussion
