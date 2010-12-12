@@ -20,6 +20,7 @@ typedef enum {
 
 + (NSString*) createBundlePathWithFilename:(NSString*) filename;
 + (NSString*) createDocumentPathWithFilename:(NSString*) filename;
++ (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error;
 + (BOOL) deleteFile:(NSString*)filename;
 + (BOOL) fileExists:(NSString*)filename;
 + (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite;

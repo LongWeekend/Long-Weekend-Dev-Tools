@@ -13,6 +13,17 @@
 @implementation LWEFile
 
 /**
+ * Creates a directory.  This method will create intermediary directories (recursive) as necessary.
+ * \param pathname the full path to the directory to be created
+ * \param error an NSError object passed by reference
+ */
++ (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  return [fm createDirectoryAtPath:pathname withIntermediateDirectories:YES attributes:nil error:error];
+}
+
+/**
  * Takes a single filename and returns a full path pointing at that filename in the main bundle
  */
 + (NSString*) createBundlePathWithFilename:(NSString*)filename
