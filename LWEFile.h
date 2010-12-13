@@ -24,4 +24,5 @@ typedef enum {
 + (BOOL) fileExists:(NSString*)filename;
 + (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite;
 + (NSInteger) getTotalDiskSpaceInBytes;
++ (void) printFilesInDocsDir;
 @end

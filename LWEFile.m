@@ -79,6 +79,19 @@
 }
 
 
++ (void) printFilesInDocsDir
+{
+  NSString* docsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+  NSError *error;
+  id directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:docsDir error:&error];
+  for(id file in directoryContent)
+  {
+    LWE_LOG(@"file named %@", file);
+  }
+}
+
+
+
 /**
  * Helper function to copy files from the main bundle to the docs directory
  */
