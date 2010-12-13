@@ -89,7 +89,22 @@
   }
 }
 
+/**
+ * Creates a directory at the path if it doesn't already exist
+ */
++ (BOOL) createDirectoryIfNotExisting:(NSString*)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes error:(NSError **)error
+{
+  if (![LWEFile fileExists:path])
+  {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    return [fm createDirectoryAtPath:path withIntermediateDirectories:createIntermediates attributes:attributes error:error];
+  }
+  return YES;
+}
 
+/**
+ * Prints the Files in the Documents Directory for Debugging Purposes
+ */
 + (void) printFilesInDocsDir
 {
   NSString* docsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
