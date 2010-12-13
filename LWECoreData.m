@@ -8,6 +8,9 @@
 #import "LWECoreData.h"
 #import "LWEDebug.h"
 
+// Used by user info dictionaries as a key in notifications about object changes
+NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
+
 /*!
     @class       LWECoreData
     @discussion
@@ -15,6 +18,49 @@
     that needs to be in the actual source code files.
 */
 @implementation LWECoreData
+
+#pragma mark -
+#pragma mark Persistent Store Methods
+
+/**
+ * Creates an autoreleased managed object context and associates a persistent store coordinator
+ * \param coordinator the persistent store coordinator to use with the managed object context
+ * \return A managed object context
+ */
+
++ (NSManagedObjectContext*) managedObjectContextWithStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator
+{
+  NSManagedObjectContext *managedObjectContext = [[[NSManagedObjectContext alloc] init] autorelease];
+  [managedObjectContext setPersistentStoreCoordinator:coordinator];
+  return managedObjectContext;
+}
+
+/**
+ * \param storePath The full file path of the persistent store to be associated with the store coordinator
+ * \param shouldCopy if YES, the method will attempt to copy the filename from the bundle if it is not found
+ * \return An initialized, autoreleased NSPersistentStoreCoordinator object, associated with the provided store
+ * This method assumes the store path is a SQLite database.
+ */
++ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath
+{
+	NSURL *storeUrl = [NSURL fileURLWithPath:storePath];
+  
+  NSPersistentStoreCoordinator *psc = nil;
+  NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:nil];
+  psc = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model] autorelease];
+
+  NSError *error = nil;
+  if (![psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeUrl options:nil error:&error])
+  {
+		/*
+		 * Replace this implementation with code to handle the error appropriately.
+		 * example: The schema for the persistent store is incompatible with current managed object model
+		 */
+		LWE_LOG(@"Unresolved error %@, %@", error, [error userInfo]);
+    return nil;
+  }
+  return psc;
+}
 
 #pragma mark -
 #pragma mark retrieval methods

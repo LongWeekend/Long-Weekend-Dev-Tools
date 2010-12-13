@@ -13,6 +13,17 @@
 @implementation LWEFile
 
 /**
+ * Creates a directory.  This method will create intermediary directories (recursive) as necessary.
+ * \param pathname the full path to the directory to be created
+ * \param error an NSError object passed by reference
+ */
++ (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  return [fm createDirectoryAtPath:pathname withIntermediateDirectories:YES attributes:nil error:error];
+}
+
+/**
  * Takes a single filename and returns a full path pointing at that filename in the main bundle
  */
 + (NSString*) createBundlePathWithFilename:(NSString*)filename
@@ -117,9 +128,26 @@
   
   // Now do the actual copy
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
+  
+  NSArray *explodedString = [filename componentsSeparatedByString:@"."];
+  LWE_LOG(@"Exploded string reconstituted: '%@.%@'",[explodedString objectAtIndex:0],[explodedString objectAtIndex:1]);
+  
+//  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:[explodedString objectAtIndex:0] ofType:[explodedString objectAtIndex:1]];
+//  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
+  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"Phone" ofType:@"sqlite"];
   LWE_LOG(@"Copying file from :%@",bundlePath);
-	return [fileManager copyItemAtPath:bundlePath toPath:destPath error:NULL];
+  NSError *error = nil;
+	BOOL result = [fileManager copyItemAtPath:bundlePath toPath:destPath error:&error];
+  if (result)
+  {
+    return YES;
+  }
+  else
+  {
+    LWE_LOG(@"Error copying file: %@",error);
+    return NO;
+  }
+
 }
 
 

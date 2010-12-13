@@ -9,10 +9,18 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+extern NSString * const LWECoreDataObjectId;
+
 //! Abstracts common Core Data static method calls
 @interface LWECoreData : NSObject
 {  
 }
+
+//! Creates an autoreleased MOC associated with a store coordinator
++ (NSManagedObjectContext*) managedObjectContextWithStoreCoordinator:(NSPersistentStoreCoordinator*)coordinator;
+
+//! Creates an autoreleased persistent store coordinator using the pathname.
++ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPath:(NSString*)storePath;
 
 //! Returns all entities of a given type from a given context (SELECT * FROM x)
 + (NSArray *) fetchAll:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
@@ -30,7 +38,7 @@
 + (NSFetchRequest *) fetchRequest: (NSManagedObjectContext *) managedObjectContext entityName: (NSString *) entityName limitOrNil: (int) limitOrNil sortDescriptorsOrNil: (NSArray *) sortDescriptorsOrNil stringOrPredicate: (id) stringOrPredicate, ...;
 
 //! Creates or overwrites the attributes of an entity from a plist, returns the saved entity.
-+(id) addPlist:(NSString*)path toEntity:(NSString *)entityName identifiedByAttribute:(NSString *)attributeName inManagedContext:(NSManagedObjectContext *)managedObjectContext save:(BOOL)shouldSave;
++ (id) addPlist:(NSString*)path toEntity:(NSString *)entityName identifiedByAttribute:(NSString *)attributeName inManagedContext:(NSManagedObjectContext *)managedObjectContext save:(BOOL)shouldSave;
 
 //! Saves the current context
 + (BOOL) save:(NSManagedObjectContext *)managedObjectContext;
