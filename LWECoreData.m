@@ -29,7 +29,6 @@
   return [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil predicate:nil];
 }
 
-
 /**
  * Gets all entities for a given entity & context ("SELECT * FROM foo WHERE x ORDER BY y" in SQL)
  * \param entityName Name of the Core Data entity to fetch
@@ -42,7 +41,6 @@
   return [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:sortDescriptorsOrNil withLimit:0 predicate:stringOrPredicate];
 }
 
-
 /**
  * Gets all entities for a given entity & context ("SELECT * FROM foo WHERE x ORDER BY y LIMIT z" in SQL)
  * \param entityName Name of the Core Data entity to fetch
@@ -53,7 +51,51 @@
  */
 + (NSArray *) fetch:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext withSortDescriptors:(NSArray *)sortDescriptorsOrNil withLimit:(int)limitOrNil predicate:(id)stringOrPredicate, ...
 {
-  NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+  NSFetchRequest *fetchRequest;
+  fetchRequest = [self fetchRequest: managedObjectContext entityName: entityName limitOrNil: limitOrNil sortDescriptorsOrNil: sortDescriptorsOrNil stringOrPredicate: stringOrPredicate];
+  
+  NSError *error;
+  NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+  
+  return results;
+}
+
+/**
+ * Returns a count of all entities for a given entity & context ("SELECT * FROM foo WHERE x ORDER BY y LIMIT z" in SQL)
+ * \param entityName Name of the Core Data entity to fetch
+ * \param managedObjectContext Which ObjectContext to use
+ * \param sortDescriptorsOrNil Sort descriptor, or use nil if you don't want to sort
+ * \param limitOrNil Integer number to limit by.  0 for no limit clause
+ * \param predicate the "where clause" of the query
+ */
++ (NSUInteger) count:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext withSortDescriptors:(NSArray *)sortDescriptors predicate:(id)stringOrPredicate, ...
+{
+  NSFetchRequest *fetchRequest = [self fetchRequest: managedObjectContext entityName: entityName limitOrNil:0 sortDescriptorsOrNil: sortDescriptors stringOrPredicate: stringOrPredicate];
+  
+  NSError *error = nil;
+  NSUInteger count = [managedObjectContext countForFetchRequest:fetchRequest error:&error];
+  
+  if (!error)
+  {
+    return count;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
+/**
+ * Returns an autoreleased NSFetchRequest with the given parameters for use in fetch or count operations
+ * \param entityName Name of the Core Data entity
+ * \param managedObjectContext Which ObjectContext to use
+ * \param sortDescriptorsOrNil Sort descriptor, or use nil if you don't want to sort
+ * \param limitOrNil Integer number to limit by.  0 for no limit clause
+ * \param predicate the "where clause" of the query
+ */
++ (NSFetchRequest *) fetchRequest: (NSManagedObjectContext *) managedObjectContext entityName: (NSString *) entityName limitOrNil: (int) limitOrNil sortDescriptorsOrNil: (NSArray *) sortDescriptorsOrNil stringOrPredicate: (id) stringOrPredicate, ...  
+{
+  NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
   NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
   [fetchRequest setEntity:entity];
   
@@ -86,14 +128,9 @@
     }
     [fetchRequest setPredicate:predicate];
   }
-  
-  NSError *error;
-  NSArray *results = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
-  
-  [fetchRequest release]; 
-  
-  return results;
+  return fetchRequest;
 }
+
 
 #pragma mark -
 #pragma mark addLables
