@@ -116,6 +116,20 @@
   }
 }
 
+/**
+ * Prints the Files in the Documents Directory for Debugging Purposes
+ */
++ (void) printFilesInBundle
+{
+  NSString* bundelDir = [[NSBundle mainBundle] resourcePath];
+  NSError *error;
+  id directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:bundelDir error:&error];
+  for(id file in directoryContent)
+  {
+    LWE_LOG(@"file named %@", file);
+  }
+}
+
 
 
 /**
