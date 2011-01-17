@@ -79,7 +79,7 @@
   NSFileManager *fm = [NSFileManager defaultManager];
   if ([fm fileExistsAtPath:filename])
   {
-    LWE_LOG(@"File found at specified location: %@",filename);
+//    LWE_LOG(@"File found at specified location: %@",filename);
     return YES;
   }
   else
