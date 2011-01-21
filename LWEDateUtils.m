@@ -17,7 +17,7 @@
  */
 + (NSString*) localizedStringFromDate:(NSDate*)inputDate dateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle useRelative:(BOOL)relative
 {
-  NSDateFormatter *tmpFormatter = [[NSDateFormatter alloc] init];
+  NSDateFormatter *tmpFormatter = [[[NSDateFormatter alloc] init] autorelease];
   [tmpFormatter setDateStyle:dateStyle];
   [tmpFormatter setTimeStyle:timeStyle];
   [tmpFormatter setDoesRelativeDateFormatting:relative];
