@@ -204,9 +204,11 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K like %@", attributeName, [attributeDict valueForKey:attributeName]];
   NSArray* entityArray = [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil predicate:predicate];
   id entity; // the entity we will populate
-  
+
   // we require the attribute identifier to be unique so error if we get more than one entity
+#if !defined(APP_STORE_FINAL)
   NSAssert(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);
+#endif
   
   // set entity to the existing one if it exists
   if ([entityArray count] == 1) 

@@ -83,7 +83,7 @@
     
     // WARNING: this uses "word wrap" (not good for very long JPN strings!)
     expectedLabelSize = [theLabel.text sizeWithFont:newFont constrainedToSize:constraintSize lineBreakMode:theLabel.lineBreakMode];
-    LWE_LOG(@"Label Size w:%d h: %d",expectedLabelSize.width,expectedLabelSize.height);
+    LWE_LOG(@"Label Size w:%f h: %f",expectedLabelSize.width,expectedLabelSize.height);
     
     // Break if this fontsize fits within the available scrollable height?
     if(parentViewSize.height != 0 && expectedLabelSize.height < parentViewSize.height)
