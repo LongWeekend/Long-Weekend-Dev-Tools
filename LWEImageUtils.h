@@ -48,6 +48,11 @@ typedef struct LWEOrientationTransform
 
 
 /**
+ * \brief   Alias to resizer that crops if the image scale doesn't match
+ */
++ (UIImage*)resizeImage:(UIImage*)image byScalingAndCroppingForSize:(CGSize)targetSize;
+
+/**
  * \brief   Detects the orientation of an image and returns a transformation struct that will rotate/scale it to "up" (normal orientation)
  * \param   image A UIImage
  * \return   A struct containing the CGAffineTransform matrix struct and the new CGSize struct
