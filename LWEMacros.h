@@ -14,6 +14,6 @@ if (self.delegate && ([self.delegate respondsToSelector:SELECTOR])) \
 }\
 else\
 {\
-  NSLog(@"Delegate does not respond to selector SELECTOR");\
+  NSLog(@"Delegate is not set or does not respond to SELECTOR");\
 }\
 } while(0)
