@@ -6,7 +6,6 @@
  *  Copyright 2011 Long Weekend LLC. All rights reserved.
  *
  */
-
 #define LWE_DELEGATE_CALL(SELECTOR,OBJ) do { \
 if (self.delegate && ([self.delegate respondsToSelector:SELECTOR])) \
 {\
@@ -15,5 +14,4 @@ if (self.delegate && ([self.delegate respondsToSelector:SELECTOR])) \
 else\
 {\
   NSLog(@"Delegate is not set or does not respond to SELECTOR");\
-}\
-} while(0)
+} } while(0)
