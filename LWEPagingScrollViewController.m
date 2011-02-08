@@ -54,7 +54,6 @@
 		widthCount = 1;
 	}
 	
-  LWE_LOG(@"height: %f", scrollView.frame.size.height);
   scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * widthCount, scrollView.frame.size.height);
 	scrollView.contentOffset = CGPointMake(0, 0);
 
@@ -154,7 +153,7 @@
 		}
 	}
 	
-	[self.currentPage updateViews:NO];
+  [self.currentPage updateViews:NO];
 	[self.nextPage updateViews:NO];
 }
 
@@ -172,7 +171,8 @@
     [swapController release];
 	}
 
-	[self.currentPage updateViews:YES];
+  // defeats the race condition where the user can "beat" you to an un updated view
+	[self.currentPage updateViews:NO];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView

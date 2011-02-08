@@ -20,7 +20,7 @@
 {
 	IBOutlet UIScrollView *scrollView;
 	IBOutlet UIPageControl *pageControl;
-	
+
 	LWEPageViewController *currentPage;
 	LWEPageViewController *nextPage;
 }
