@@ -19,8 +19,6 @@
 {
 	NSInteger pageIndex;
 	BOOL viewNeedsUpdate;
-	IBOutlet UILabel *label;
-	IBOutlet UITextView *textView;
 }
 
 @property (nonatomic) NSInteger pageIndex;
