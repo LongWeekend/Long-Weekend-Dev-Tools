@@ -18,12 +18,15 @@
 
 @implementation LWEPageViewController
 
-@synthesize datasource, pageIndex;
+@synthesize datasource, pageIndex, viewNeedsUpdate;
 
 - (void)setPageIndex:(NSInteger)newPageIndex
 {
-	pageIndex = newPageIndex;
-  viewNeedsUpdate = YES;
+  if(pageIndex != newPageIndex)
+  {
+    pageIndex = newPageIndex;
+    viewNeedsUpdate = YES;
+  }
 }
 
 - (void)updateViews:(BOOL)force

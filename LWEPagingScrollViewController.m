@@ -47,6 +47,8 @@
 	self.nextPage = [self setupNextPage];
 	[scrollView addSubview:self.currentPage.view];
 	[scrollView addSubview:self.nextPage.view];
+  
+  [scrollView bringSubviewToFront:pageControl];
 
 	NSInteger widthCount = [self.datasource numDataPages];
 	if (widthCount == 0)

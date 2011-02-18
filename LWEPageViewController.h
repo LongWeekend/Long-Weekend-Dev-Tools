@@ -18,11 +18,9 @@
 @interface LWEPageViewController : UIViewController
 {
 	NSInteger pageIndex;
-	BOOL viewNeedsUpdate;
-	IBOutlet UILabel *label;
-	IBOutlet UITextView *textView;
 }
 
+@property BOOL viewNeedsUpdate;
 @property (nonatomic) NSInteger pageIndex;
 @property (assign) id datasource;
 
