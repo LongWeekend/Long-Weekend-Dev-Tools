@@ -18,9 +18,9 @@
 @interface LWEPageViewController : UIViewController
 {
 	NSInteger pageIndex;
-	BOOL viewNeedsUpdate;
 }
 
+@property BOOL viewNeedsUpdate;
 @property (nonatomic) NSInteger pageIndex;
 @property (assign) id datasource;
 

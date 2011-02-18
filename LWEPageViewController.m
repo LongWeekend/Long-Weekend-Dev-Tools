@@ -18,7 +18,7 @@
 
 @implementation LWEPageViewController
 
-@synthesize datasource, pageIndex;
+@synthesize datasource, pageIndex, viewNeedsUpdate;
 
 - (void)setPageIndex:(NSInteger)newPageIndex
 {
