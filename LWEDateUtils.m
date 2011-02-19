@@ -20,7 +20,12 @@
   NSDateFormatter *tmpFormatter = [[[NSDateFormatter alloc] init] autorelease];
   [tmpFormatter setDateStyle:dateStyle];
   [tmpFormatter setTimeStyle:timeStyle];
-  [tmpFormatter setDoesRelativeDateFormatting:relative];
+  
+  // This is an iOS4 call
+  if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 4.0)
+  {
+    [tmpFormatter setDoesRelativeDateFormatting:relative];
+  }
   return [tmpFormatter stringFromDate:inputDate];
 }
 
