@@ -29,6 +29,7 @@
 @property (assign) id delegate;
 @property (nonatomic, retain) LWEPageViewController *currentPage;
 @property (nonatomic, retain) LWEPageViewController *nextPage;
+@property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 
 - (LWEPageViewController*) setupNextPage;
 - (LWEPageViewController*) setupCurrentPage;

@@ -17,7 +17,7 @@
 
 @implementation LWEPagingScrollViewController
 
-@synthesize datasource, delegate, currentPage, nextPage;
+@synthesize datasource, delegate, currentPage, nextPage, scrollView;
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(LWEPageViewController *)pageController
 {
@@ -45,10 +45,10 @@
 {
 	self.currentPage = [self setupCurrentPage];
 	self.nextPage = [self setupNextPage];
-	[scrollView addSubview:self.currentPage.view];
-	[scrollView addSubview:self.nextPage.view];
   
-  [scrollView bringSubviewToFront:pageControl];
+	[self.scrollView addSubview:self.currentPage.view];
+	[self.scrollView addSubview:self.nextPage.view];
+  [self.scrollView bringSubviewToFront:pageControl];
 
 	NSInteger widthCount = [self.datasource numDataPages];
 	if (widthCount == 0)
@@ -56,8 +56,8 @@
 		widthCount = 1;
 	}
 	
-  scrollView.contentSize = CGSizeMake(scrollView.frame.size.width * widthCount, scrollView.frame.size.height);
-	scrollView.contentOffset = CGPointMake(0, 0);
+  self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
+	self.scrollView.contentOffset = CGPointMake(0, 0);
 
 	pageControl.numberOfPages = [self.datasource numDataPages];
 	pageControl.currentPage = 0;
@@ -73,7 +73,7 @@
 {
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupCurrentPage:)]))
   {
-    LWEPageViewController* tmpVC = [self.delegate performSelector:@selector(setupCurrentPage:) withObject:self];
+    LWEPageViewController* tmpVC = [self.delegate setupCurrentPage:self];
     tmpVC.datasource = self;
     return tmpVC;
   }
@@ -87,7 +87,7 @@
 {
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupNextPage:)]))
   {
-    LWEPageViewController* tmpVC = [self.delegate performSelector:@selector(setupNextPage:) withObject:self];
+    LWEPageViewController* tmpVC = [self.delegate setupNextPage:self];
     tmpVC.datasource = self;
     return tmpVC;
   }
@@ -103,7 +103,7 @@
 //! A page will ask for it's data, and this is the default implementation. Override to do something different
 - (id) dataForPage:(NSInteger)pageIndex
 {
-  if (pageIndex > [[self datasource] numDataPages] - 1) // ignore out of range requests. The pages are dumb
+  if (pageIndex > [[self datasource] numDataPages] - 1 || pageIndex < 0) // ignore out of range requests. The pages are dumb
   {
     return nil;
   }
@@ -161,11 +161,11 @@
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
-  CGFloat pageWidth = scrollView.frame.size.width;
-  float fractionalPage = scrollView.contentOffset.x / pageWidth;
+  CGFloat pageWidth = self.scrollView.frame.size.width;
+  float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	NSInteger nearestNumber = lround(fractionalPage);
 
-	if (currentPage.pageIndex != nearestNumber)
+	if (self.currentPage.pageIndex != nearestNumber)
 	{
 		LWEPageViewController *swapController = [self.currentPage retain];
 		self.currentPage = self.nextPage;
@@ -188,10 +188,18 @@
 	NSInteger pageIndex = pageControl.currentPage;
 
 	// update the scroll view to the appropriate page
-  CGRect frame = scrollView.frame;
+  CGRect frame = self.scrollView.frame;
   frame.origin.x = frame.size.width * pageIndex;
   frame.origin.y = 0;
   [scrollView scrollRectToVisible:frame animated:YES];
+}
+
+- (void) viewDidUnload
+{
+ 	self.currentPage = nil;
+	self.nextPage = nil;
+ 
+  [super viewDidUnload];
 }
 
 - (void)dealloc
@@ -199,6 +207,7 @@
   self.datasource = nil;
 	self.currentPage = nil;
 	self.nextPage = nil;
+  self.scrollView = nil;
 	
 	[super dealloc];
 }
