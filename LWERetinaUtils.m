@@ -34,14 +34,19 @@
   return isPadDevice;
 }
 
++ (NSString*) retinaFilenameForName: (NSString *) name
+{
+  NSString *stringToAdd = @"@2x.";
+  NSRange lastPeriod = [name rangeOfString:@"." options:NSBackwardsSearch];
+  NSString *retinaName = [name stringByReplacingCharactersInRange:lastPeriod withString:stringToAdd];
+  return retinaName;
+}
+
 + (NSString*) retinaSafeImageName:(NSString*)name
 {
   if ([LWERetinaUtils isRetinaDisplay])
   {
-    NSString *stringToAdd = @"@2x.";
-    NSRange lastPeriod = [name rangeOfString:@"." options:NSBackwardsSearch];
-    NSString *retinaName = [name stringByReplacingCharactersInRange:lastPeriod withString:stringToAdd];
-    return retinaName;
+    [[self class] retinaFilenameForName:name];
   }
   else
   {

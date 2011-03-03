@@ -30,11 +30,12 @@
   return ![LWEUniversalAppHelpers isAnIPad];
 }
 
-/**
- * Returns the filename passed to it, UNLESS the device is an iPad AND the
- * same filename + "@HD" exists.  (ala @2x)
- */
 + (NSString*) fileNamed:(NSString*)fileName
+{
+  [LWEUniversalAppHelpers fileNamed:fileName useRetinaIfMissing:NO];
+}
+
++ (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
 {
   if ([LWEUniversalAppHelpers isAnIPad])
   {
@@ -45,6 +46,11 @@
     {
       return ipadName;
     }
+    else if (useRetina)
+    {
+      return [LWERetinaUtils retinaFilenameForName:fileName];
+    }
+
   }
   // Let Cocoa handle it - just return as-is.
   return fileName;
