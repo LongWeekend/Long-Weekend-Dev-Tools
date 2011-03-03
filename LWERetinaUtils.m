@@ -46,7 +46,7 @@
 {
   if ([LWERetinaUtils isRetinaDisplay])
   {
-    [[self class] retinaFilenameForName:name];
+    return [[self class] retinaFilenameForName:name];
   }
   else
   {
