@@ -32,11 +32,12 @@
 
 + (NSString*) fileNamed:(NSString*)fileName
 {
-  [LWEUniversalAppHelpers fileNamed:fileName useRetinaIfMissing:NO];
+  return [LWEUniversalAppHelpers fileNamed:fileName useRetinaIfMissing:NO];
 }
 
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
 {
+  NSString *returnVal = nil;
   if ([LWEUniversalAppHelpers isAnIPad])
   {
     NSString *stringToAdd = @"@HD.";
@@ -44,18 +45,18 @@
     NSString *ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:stringToAdd];
     if ([LWEFile fileExists:ipadName])
     {
-      return ipadName;
+      returnVal = ipadName;
     }
     else if (useRetina)
     {
-      return [LWERetinaUtils retinaFilenameForName:fileName];
+      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
     }
-
   }
   else
   {
-    return [LWERetinaUtils retinaSafeImageName:fileName];
+    returnVal = [LWERetinaUtils retinaSafeImageName:fileName];
   }
+  return returnVal;
 }
 
 @end
