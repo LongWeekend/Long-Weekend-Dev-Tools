@@ -52,8 +52,10 @@
     }
 
   }
-  // Let Cocoa handle it - just return as-is.
-  return fileName;
+  else
+  {
+    return [LWERetinaUtils retinaSafeImageName:fileName];
+  }
 }
 
 @end
