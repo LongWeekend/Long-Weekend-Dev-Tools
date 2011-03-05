@@ -40,17 +40,35 @@
   NSString *returnVal = nil;
   if ([LWEUniversalAppHelpers isAnIPad])
   {
-    NSString *stringToAdd = @"@HD.";
     NSRange lastPeriod = [fileName rangeOfString:@"." options:NSBackwardsSearch];
-    NSString *ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:stringToAdd];
-    if ([LWEFile fileExists:ipadName])
+    NSString *ipadName = nil;
+    if (lastPeriod.location == NSNotFound)
     {
+      // Append only
+      ipadName = [fileName stringByAppendingString:@"@HD"];
+    }
+    else
+    {
+      ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:@"@HD."];
+    }
+    
+    if (useRetina)
+    {
+      if ([LWEFile fileExists:ipadName])
+      {
+        returnVal = ipadName;
+      }
+      else
+      {
+        returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      }
+    }
+    else
+    {
+      // Don't care about whether the file exists or not
       returnVal = ipadName;
     }
-    else if (useRetina)
-    {
-      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
-    }
+
   }
   else
   {
