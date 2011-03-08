@@ -62,6 +62,46 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   return psc;
 }
 
+/**
+ * \param storePath The file path of the persistent store to be associated with the store coordinator minus the extension
+ * \param modelName the name of the model itself - usually PROJECTNAMEData
+ * \return An initialized, autoreleased NSPersistentStoreCoordinator object, associated with the provided store
+ * This method assumes the store path is a SQLite database.
+ * This method is used for model with versions that can be automatically merged.
+ */
++ (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPathForVersionedModel:(NSString*)storePath modelNameOrNil:(NSString*)modelName
+{
+  // get a managedObjectModel
+  NSManagedObjectModel *managedObjectModel;
+  NSString *path = [[NSBundle mainBundle] pathForResource:modelName ofType:@"momd"];
+  if(path != nil)
+  {
+    NSURL *momURL = [NSURL fileURLWithPath:path];
+    managedObjectModel = [[[NSManagedObjectModel alloc] initWithContentsOfURL:momURL] autorelease];
+  }
+  else
+  {
+    managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
+  }
+
+  NSError *error;
+  NSPersistentStoreCoordinator* coordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel] autorelease];
+  
+  //merging options
+  NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys: 
+                           [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
+                           [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption,
+                           nil];
+
+  if (![coordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[NSURL fileURLWithPath:storePath] options:options error:&error])
+  {
+    // Handle error
+    NSLog(@"Problem with PersistentStoreCoordinator: %@",error);
+  }
+  
+  return coordinator;
+}
+
 #pragma mark -
 #pragma mark retrieval methods
 
