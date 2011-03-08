@@ -37,20 +37,40 @@
 
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
 {
+  NSString *returnVal = nil;
   if ([LWEUniversalAppHelpers isAnIPad])
   {
-    NSString *stringToAdd = @"@HD.";
     NSRange lastPeriod = [fileName rangeOfString:@"." options:NSBackwardsSearch];
-    NSString *ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:stringToAdd];
-    if ([LWEFile fileExists:ipadName])
+    NSString *ipadName = nil;
+    if (lastPeriod.location == NSNotFound)
     {
-      return ipadName;
+      // Append only
+      ipadName = [fileName stringByAppendingString:@"@HD"];
     }
-    else if (useRetina)
+    else
     {
-      return [LWERetinaUtils retinaSafeImageName:fileName];
+      ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:@"@HD."];
     }
+    
+    if (useRetina)
+    {
+      if ([LWEFile fileExists:ipadName])
+      {
+        returnVal = ipadName;
+      }
+      else
+      {
+        returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      }
+    }
+    else
+    {
+      // Don't care about whether the file exists or not
+      returnVal = ipadName;
+    }
+    return returnVal;
   }
+  
   return fileName; // we didn't do anything fancy, just return the fileName
 }
 

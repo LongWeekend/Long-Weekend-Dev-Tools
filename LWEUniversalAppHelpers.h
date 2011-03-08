@@ -18,7 +18,19 @@
 //! Determines if the device is an iPhone or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isAnIPhone;
 
+/**
+ * Returns the filename passed to it, UNLESS the device is an iPad AND the same filename + "@HD" exists.  (ala @2x)
+ */
 + (NSString*) fileNamed:(NSString*)fileName;
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
+
+/**
+ * Returns an appropriate filename based on the filename given, making considerations for whether the device is an iPad or not, and whether the device is Retina or not.
+ * \param fileName The name of the file to Retina-icize or iPadHD-icize
+ * \param useRetina If the device is an iPad, and no iPad HD file is found for the given fileName, setting this param to YES will return the retina filename instead.
+ * \return Returns a filename based on the input fileName -- e.g. foo.png => foo@HD.png or foo@2x.png ... or maybe just foo.png.
+ */
++ (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
+
 
 @end

@@ -29,7 +29,15 @@
  * \brief   Detects if the app isrunning on an iPad or not
  * \return   Returns YES if the device is an iPad, or NO is not
  */
-+(BOOL) isPadDevice;
++ (BOOL) isPadDevice;
+
+/**
+ * \brief Returns a retina filename for any file name provided.
+ * \details Note this method does NO checking for files or retina devices, it is a string processing method ONLY.
+ * \name Filename to retina-icize
+ * \return Filename in retina terms -- e.g. image.png => image@2x.png
+ */
++ (NSString*) retinaFilenameForName: (NSString *) name;
 
 /**
  * \brief   Returns a filename with the retina naming convention if we have iPhone 4

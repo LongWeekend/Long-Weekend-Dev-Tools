@@ -206,7 +206,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   id entity; // the entity we will populate
 
   // we require the attribute identifier to be unique so error if we get more than one entity
-#if !defined(APP_STORE_FINAL)
+#if !defined(LWE_RELEASE_APP_STORE)
   NSAssert(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);
 #endif
   
