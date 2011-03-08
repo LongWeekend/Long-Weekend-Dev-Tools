@@ -19,5 +19,6 @@
 +(BOOL)isAnIPhone;
 
 + (NSString*) fileNamed:(NSString*)fileName;
++ (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
 
 @end
