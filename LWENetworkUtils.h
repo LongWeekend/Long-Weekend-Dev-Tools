@@ -9,9 +9,13 @@
 #import "Reachability.h"
 
 
-@interface LWENetworkUtils : NSObject {
+@interface LWENetworkUtils : NSObject 
 
-}
+/**
+ * Given some NSData object, returns a string of Base64-encoded data for that NSData.
+ * This was ripped off from: http://www.cocoadev.com/index.pl?BaseSixtyFour
+ */
++ (NSString*) base64forData:(NSData*)theData;
 
 + (BOOL) networkAvailable;
 + (BOOL) networkAvailableFor:(NSString*)hostURL;
