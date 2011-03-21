@@ -60,10 +60,13 @@
 	self.scrollView.contentOffset = CGPointMake(0, 0);
 
 	pageControl.numberOfPages = [self.datasource numDataPages];
-	pageControl.currentPage = 0;
+  
+  LWE_LOG(@"The current page index is: %i", pageControl.currentPage);
 	
-	[self applyNewIndex:0 pageController:self.currentPage];
-	[self applyNewIndex:1 pageController:self.nextPage];
+	[self applyNewIndex:pageControl.currentPage pageController:self.currentPage];
+	[self applyNewIndex:pageControl.currentPage + 1 pageController:self.nextPage];
+  
+  [self changePage:nil];
 }
 
 #pragma mark -
