@@ -60,10 +60,13 @@
 	self.scrollView.contentOffset = CGPointMake(0, 0);
 
 	pageControl.numberOfPages = [self.datasource numDataPages];
-	pageControl.currentPage = 0;
+  
+  LWE_LOG(@"The current page index is: %i", pageControl.currentPage);
 	
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
+  
+  [self changePageAnimated:NO]; // go to the current page
 }
 
 #pragma mark -
@@ -183,15 +186,20 @@
 	pageControl.currentPage = self.currentPage.pageIndex;
 }
 
-- (IBAction)changePage:(id)sender
+- (void)changePageAnimated:(BOOL)animated
 {
-	NSInteger pageIndex = pageControl.currentPage;
+  NSInteger pageIndex = pageControl.currentPage;
 
 	// update the scroll view to the appropriate page
   CGRect frame = self.scrollView.frame;
   frame.origin.x = frame.size.width * pageIndex;
   frame.origin.y = 0;
-  [scrollView scrollRectToVisible:frame animated:YES];
+  [scrollView scrollRectToVisible:frame animated:animated];
+}
+
+- (IBAction)changePage:(id)sender
+{
+	[self changePageAnimated:YES];
 }
 
 - (void) viewDidUnload

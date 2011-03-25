@@ -33,6 +33,7 @@
 
 - (LWEPageViewController*) setupNextPage;
 - (LWEPageViewController*) setupCurrentPage;
+- (void)changePageAnimated:(BOOL)animated;
 - (IBAction)changePage:(id)sender;
 - (id)dataForPage:(NSInteger)pageIndex;
 
