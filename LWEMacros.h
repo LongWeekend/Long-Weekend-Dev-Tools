@@ -34,14 +34,15 @@ else\
 
 //! Use this in other methods with a "self." timer - don't use with a non-retain synthesized retain setter timer (self.something) otherwise it will leak!
 #define LWE_STOP_TIMER(OBJ) do { \
-if ([OBJ isValid])\
+if (OBJ)\
 {\
-  [OBJ invalidate];\
+  if ([OBJ isValid]) {\
+    [OBJ invalidate];\
+  }\
+  else\
+  {\
+    NSLog(@"Tried to stop timer: %@ but it is not valid, setting to nil",OBJ);\
+  }\
+  OBJ = nil;\
 }\
-else\
-{\
-  NSLog(@"Tried to stop timer: %@ but it is not valid, setting to nil",OBJ);\
-}\
-OBJ = nil;\
 } while(0)
-
