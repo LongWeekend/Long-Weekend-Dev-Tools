@@ -204,8 +204,10 @@
 
 - (void) viewDidUnload
 {
+  // we don't get rid of the 
  	self.currentPage = nil;
 	self.nextPage = nil;
+  self.scrollView = nil;
  
   [super viewDidUnload];
 }
