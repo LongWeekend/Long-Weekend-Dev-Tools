@@ -15,20 +15,20 @@
  * Shows standard no-network alert view w/o delegate setting
  * Note that this method just calls noNetworkAlertWithDelegate:nil
  */
-+ (UIAlertView*) noNetworkAlert
++ (void) noNetworkAlert
 {
-  return [LWEUIAlertView noNetworkAlertWithDelegate:nil];
+  [LWEUIAlertView noNetworkAlertWithDelegate:nil];
 }
 
 /**
  * \param delegate the delegate of the alert view, if any
  * Note that this method just calls notificationAlertWithTitle:message:delegate with a custom title & message
  */
-+ (UIAlertView*) noNetworkAlertWithDelegate:(id)delegate
++ (void) noNetworkAlertWithDelegate:(id)delegate
 {
-  return [LWEUIAlertView notificationAlertWithTitle:NSLocalizedString(@"No Network Access",@"Network.UnableToConnect_AlertViewTitle")
-                                            message:NSLocalizedString(@"Please check your network connection and try again.",@"Network.UnableToConnect_AlertViewMessage")
-                                           delegate:delegate];
+  [LWEUIAlertView notificationAlertWithTitle:NSLocalizedString(@"No Network Access",@"Network.UnableToConnect_AlertViewTitle")
+                                     message:NSLocalizedString(@"Please check your network connection and try again.",@"Network.UnableToConnect_AlertViewMessage")
+                                    delegate:delegate];
 }
 
 /**
@@ -36,9 +36,9 @@
  * \param title Title of the UIAlertView
  * \param message Message content of the UIAlertView
  */
-+ (UIAlertView*) notificationAlertWithTitle:(NSString*)title message:(NSString*)message
++ (void) notificationAlertWithTitle:(NSString*)title message:(NSString*)message
 {
-  return [LWEUIAlertView notificationAlertWithTitle:title message:message delegate:nil];
+  [LWEUIAlertView notificationAlertWithTitle:title message:message delegate:nil];
 }
 
 /**
@@ -46,9 +46,9 @@
  * \param message Message content of the UIAlertView
  * \param delegate Delegate of the UIAlertView, if any
  */
-+ (UIAlertView*) notificationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate
++ (void) notificationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate
 {
-  return [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:nil cancel:NSLocalizedString(@"OK",@"Global.OK") delegate:delegate];
+  [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:nil cancel:NSLocalizedString(@"OK",@"Global.OK") delegate:delegate];
 }
 
 /**
@@ -57,9 +57,9 @@
  * \param message Message content of the UIAlertView
  * \param delegate Delegate of the UIAlertView, if any
  */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate
++ (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate
 {
-  return [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:NSLocalizedString(@"OK",@"Global.OK") cancel:NSLocalizedString(@"Cancel",@"Global.Cancel") delegate:delegate];
+  [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:NSLocalizedString(@"OK",@"Global.OK") cancel:NSLocalizedString(@"Cancel",@"Global.Cancel") delegate:delegate];
 }
 
 /**
@@ -69,13 +69,30 @@
  * \param cancel Text for the "Cancel" action
  * \param delegate Delegate of the UIAlertView, if any
  */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate
++ (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate
+{
+  [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:ok cancel:cancel delegate:delegate tag:nil];
+}
+
+/**
+ * \param title Title of the UIAlertView
+ * \param message Message content of the UIAlertView
+ * \param ok Text for the "OK" action 
+ * \param cancel Text for the "Cancel" action
+ * \param delegate Delegate of the UIAlertView, if any
+ * \param tag Tag for the alert view to use in delegate, if any
+*/
++ (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate tag:(int)tag
 {
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:delegate
                                         cancelButtonTitle:cancel
                                         otherButtonTitles:ok,nil];
+  if (tag != nil)
+  {
+    alert.tag = tag;
+  }
   [alert show];
-  return [alert autorelease];
+  [alert release];
 }
 
 @end
