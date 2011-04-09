@@ -71,7 +71,7 @@
  */
 + (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate
 {
-  [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:ok cancel:cancel delegate:delegate tag:nil];
+  [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:ok cancel:cancel delegate:delegate tag:0];
 }
 
 /**
@@ -87,10 +87,7 @@
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:delegate
                                         cancelButtonTitle:cancel
                                         otherButtonTitles:ok,nil];
-  if (tag != nil)
-  {
-    alert.tag = tag;
-  }
+  alert.tag = tag;
   [alert show];
   [alert release];
 }
