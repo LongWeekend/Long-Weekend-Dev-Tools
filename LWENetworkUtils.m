@@ -12,6 +12,41 @@
 
 @implementation LWENetworkUtils
 
+@synthesize iTunesURL;
+
+/**
+ * Opens a iTunes URL after following Linkshare affiliate redirect
+ */
+- (void)followLinkshareURL:(NSString*)linkShareUrlString
+{
+  self.iTunesURL = [NSURL URLWithString:linkShareUrlString]; 
+  NSURLRequest *referralRequest = [NSURLRequest requestWithURL:self.iTunesURL];
+  NSURLConnection *referralConnection = [[NSURLConnection alloc] initWithRequest:referralRequest delegate:self startImmediately:YES];
+  [referralConnection release];
+}
+
+#pragma mark -
+#pragma mark NSURLRequest Delegate Methods
+
+// DO not call these directly
+// Save the most recent URL in case multiple redirects occur
+- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response 
+{
+  self.iTunesURL = [response URL];
+  LWE_LOG(@"connection %@", [self.iTunesURL absoluteString]);
+  return request;
+}
+
+// No more redirects; use the last URL saved
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection 
+{
+  LWE_LOG(@"connectionDidFinishLoading");
+  [[UIApplication sharedApplication] openURL:self.iTunesURL];
+}
+
+#pragma mark -
+#pragma mark Class Methods
+
 // From: http://www.cocoadev.com/index.pl?BaseSixtyFour
 + (NSString*) base64forData:(NSData*)theData
 {
