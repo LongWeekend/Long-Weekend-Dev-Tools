@@ -18,6 +18,9 @@
 //! Determines if the device is an iPhone or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isAnIPhone;
 
+//! Returns the name of this device
++(NSString*)deviceModel;
+
 /**
  * Returns the filename passed to it, UNLESS the device is an iPad AND the same filename + "@HD" exists.  (ala @2x)
  */

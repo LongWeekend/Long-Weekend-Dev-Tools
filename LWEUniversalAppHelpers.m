@@ -30,6 +30,39 @@
   return ![LWEUniversalAppHelpers isAnIPad];
 }
 
++ (NSString*) deviceModel
+{
+  /*
+  iPhone Simulator == i386
+  iPhone == iPhone1,1
+  3G iPhone == iPhone1,2
+  3GS iPhone == iPhone2,1
+  4 iPhone == iPhone3,1
+  1st Gen iPod == iPod1,1
+  2nd Gen iPod == iPod2,1
+  3rd Gen iPod == iPod3,1
+  */
+  
+  // This implementation is courtesy of John Muchow
+  // http://iphonedevelopertips.com/device/determine-if-iphone-is-3g-or-3gs-determine-if-ipod-is-first-or-second-generation.html
+  size_t size;
+  
+  // Set 'oldp' parameter to NULL to get the size of the data
+  // returned so we can allocate appropriate amount of space
+  sysctlbyname("hw.machine", NULL, &size, NULL, 0); 
+  
+  // Allocate the space to store name
+  char *name = malloc(size);
+  
+  // Get the platform name
+  sysctlbyname("hw.machine", name, &size, NULL, 0);
+  
+  // Place name into a string
+  NSString *machine = [NSString stringWithCString:name];
+  free(name);
+  return machine;
+}
+
 + (NSString*) fileNamed:(NSString*)fileName
 {
   return [LWEUniversalAppHelpers fileNamed:fileName useRetinaIfMissing:NO];
