@@ -26,31 +26,36 @@
 /**
  * \brief Shows standard no-network alert view 
  */
-+ (UIAlertView*) noNetworkAlert;
++ (void) noNetworkAlert;
 
 /**
  * \brief Shows standard no-network alert view with delegate
  */
-+ (UIAlertView*) noNetworkAlertWithDelegate:(id)delegate;
++ (void) noNetworkAlertWithDelegate:(id)delegate;
 
 /**
  * \brief Shows an "OK" alert notification
  */
-+ (UIAlertView*) notificationAlertWithTitle:(NSString*)title message:(NSString*)message;
++ (void) notificationAlertWithTitle:(NSString*)title message:(NSString*)message;
 
 /**
  * \brief Shows an "OK" alert notification (with delegate)
  */
-+ (UIAlertView*) notificationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate;
++ (void) notificationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate;
 
 /**
  * \brief Shows a Cancel/OK confirmation alert with standard OK/Cancel
  */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate;
++ (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate;
 
 /**
  * \brief Shows a Cancel/OK confirmation alert with customized OK/Cancel
  */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate;
++ (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate;
+
+/**
+ * \brief Shows a Cancel/OK confirmation alert with customized OK/Cancel and takes an optional tag for the alert view
+ */
++ (void) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate tag:(int)tag;
 
 @end

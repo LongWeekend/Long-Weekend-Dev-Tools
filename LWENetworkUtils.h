@@ -20,5 +20,8 @@
 + (BOOL) networkAvailable;
 + (BOOL) networkAvailableFor:(NSString*)hostURL;
 + (BOOL) networkReachableForHost:(NSString*)hostURLOrNil showAlert:(BOOL) showAlert;
+- (void) followLinkshareURL:(NSString*)linkShareUrlString;
+
+@property (nonatomic, retain) NSURL* iTunesURL;
 
 @end
