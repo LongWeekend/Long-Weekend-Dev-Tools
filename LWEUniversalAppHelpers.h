@@ -8,6 +8,36 @@
 
 #import <Foundation/Foundation.h>
 
+// There can only be X device types where X = (number of bits - 4) in an int on this platform.  Since that's
+// usually 32-bits for compatibility, we have 28 device classes.
+typedef enum
+{
+  kLWEDeviceClassUnknown,
+  kLWEDeviceClassSimulator,
+  kLWEDeviceClassIPhone,
+  kLWEDeviceClassIPodTouch,
+  kLWEDeviceClassIPad,
+  kLWEDeviceClassCount
+} kLWEDeviceClass;
+
+typedef enum
+{
+  // Device class keys - least significant bits, use kLWEDeviceClass
+  // Device "ranking" flags - more significant bits
+  kLWEDeviceTypeUnknown    = (0 << kLWEDeviceClassCount) | kLWEDeviceClassUnknown,
+  kLWEDeviceTypeIPhone     = (0 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeIPodTouch1 = (0 << kLWEDeviceClassCount) | kLWEDeviceClassIPodTouch,
+  kLWEDeviceTypeIPhone3G   = (1 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeIPodTouch2 = (1 << kLWEDeviceClassCount) | kLWEDeviceClassIPodTouch,
+  kLWEDeviceTypeIPhone3GS  = (2 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeIPodTouch3 = (2 << kLWEDeviceClassCount) | kLWEDeviceClassIPodTouch,
+  kLWEDeviceTypeIPhone4    = (3 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeIPodTouch4 = (3 << kLWEDeviceClassCount) | kLWEDeviceClassIPodTouch,
+  kLWEDeviceTypeIPad       = (4 << kLWEDeviceClassCount) | kLWEDeviceClassIPad,
+  kLWEDeviceTypeIPhone5    = (5 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeIPad2      = (5 << kLWEDeviceClassCount) | kLWEDeviceClassIPad,
+  kLWEDeviceTypeSimulator  = (6 << kLWEDeviceClassCount) | kLWEDeviceClassSimulator,
+} kLWEDeviceType;
 
 @interface LWEUniversalAppHelpers : NSObject
 {
@@ -19,7 +49,10 @@
 +(BOOL)isAnIPhone;
 
 //! Returns the name of this device
-+(NSString*)deviceModel;
++ (NSString*)deviceModelString;
+
++ (kLWEDeviceType)deviceTypeWithString:(NSString*)deviceString;
++ (kLWEDeviceType)deviceType;
 
 /**
  * Returns the filename passed to it, UNLESS the device is an iPad AND the same filename + "@HD" exists.  (ala @2x)
