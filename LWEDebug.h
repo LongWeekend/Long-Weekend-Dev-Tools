@@ -14,6 +14,15 @@
   #define LWE_ASSERT(STATEMENT) do { assert(STATEMENT); } while(0)
 #endif
 
+// Errors
+#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
+  #define LWE_LOG_ERROR(MSG,...) do {\
+  [FlurryAPI logError:MSG message:[NSString stringWithFormat:MSG,## __VA_ARGS__] error:nil]; \
+  } while (0)
+#else
+  #define LWE_LOG_ERROR(MSG,...);
+#endif
+
 // Exceptions - for app store, do nothing, otherwise throw!
 #if defined(LWE_RELEASE_APP_STORE)
   #define LWE_ASSERT_EXC(STATEMENT,MSG,...) do { (void) sizeof(STATEMENT); } while(0)
