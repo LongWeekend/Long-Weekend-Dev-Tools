@@ -142,7 +142,7 @@
   sysctlbyname("hw.machine", name, &size, NULL, 0);
   
   // Place name into a string
-  NSString *machine = [NSString stringWithCString:name];
+  NSString *machine = [NSString stringWithCString:name encoding:NSASCIIStringEncoding];
   free(name);
   return machine;
 }
