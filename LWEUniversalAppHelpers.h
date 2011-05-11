@@ -39,6 +39,15 @@ typedef enum
   kLWEDeviceTypeSimulator  = (6 << kLWEDeviceClassCount) | kLWEDeviceClassSimulator,
 } kLWEDeviceType;
 
+/**
+ * This class helps applications be universal: work on any iOS device (iPhone, iPod Touch, iPad)
+ * This includes device identification helper methods, filename selector methods (e.g. using 
+ * HD file extensions for iPad-specific resources).
+ * 
+ * Note that this class is RELATED to LWERetinaUtils, which is responsible for device resolution/display
+ * universality issues, but the roles of each class are distinct.  An iPad could theoretically also be
+ * Retina someday; this class should/would not care about that at that point.
+ */
 @interface LWEUniversalAppHelpers : NSObject
 {
 }
@@ -48,10 +57,24 @@ typedef enum
 //! Determines if the device is an iPhone or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isAnIPhone;
 
-//! Returns the name of this device
+/**
+ * \brief Returns the name of this device, e.g. "iPhone 2,1" for an iPhone 3GS.
+ * This method returns the string by making a C system call asking the system to identify its
+ * hardware.
+ */
 + (NSString*)deviceModelString;
 
+/**
+ * Converts a device string (retrieved likely from the hardware via a call to -deviceModelString)
+ * into a kLWEDeviceType enum value that identifies the device.
+ * \param deviceString Should be a string from -deviceModelString -- something of the format "iPhone 2,1"
+ * \return The device type, as a member of enum kLWEDeviceType
+ */
 + (kLWEDeviceType)deviceTypeWithString:(NSString*)deviceString;
+
+/**
+ * Helper method that calls +deviceTypeWithString: with the return val of +deviceModelString as the param
+ */
 + (kLWEDeviceType)deviceType;
 
 /**

@@ -12,6 +12,7 @@
 
 @implementation LWEUniversalAppHelpers
 
+// TODO: this is a bit of a naive implementation - change this to use deviceModelString?
 + (BOOL) isAnIPad
 {
     #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200  // this is when the UI_USER_INTERFACE_IDIOM was added
@@ -26,6 +27,7 @@
     #endif
 }
 
+// TODO: this is a bit of a naive implementation
 + (BOOL)isAnIPhone
 {
   return ![LWEUniversalAppHelpers isAnIPad];
@@ -38,7 +40,7 @@
 }
 
 /**
- * We have this method separated out so we can unit test it.
+ * This method is separated out so we can unit test it.
  * Techincally this could be private, as deviceType is the only
  * one that calls it.
  */
@@ -154,7 +156,7 @@
 
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
 {
-  NSString *returnVal = nil;
+  NSString *returnVal = fileName;
   if ([LWEUniversalAppHelpers isAnIPad])
   {
     NSRange lastPeriod = [fileName rangeOfString:@"." options:NSBackwardsSearch];
@@ -169,26 +171,26 @@
       ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:@"@HD."];
     }
     
-    if (useRetina)
+    // Assign first, if we care about retina/file existence, we may change once more
+    returnVal = ipadName;
+    if (useRetina && [LWEFile fileExists:ipadName] == NO)
     {
-      if ([LWEFile fileExists:ipadName])
-      {
-        returnVal = ipadName;
-      }
-      else
-      {
-        returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
-      }
+      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
     }
-    else
+  }
+  else
+  {
+    // We have an iPod Touch/iPhone.  Do the bug check for 4.0.x and be done with it. (ticket #449)
+    NSString *ver = [[UIDevice currentDevice] systemVersion];
+    if ([ver isEqualToString:@"4.0"] || [ver isEqualToString:@"4.0.1"] || [ver isEqualToString:@"4.0.2"])
     {
-      // Don't care about whether the file exists or not
-      returnVal = ipadName;
+      // "Upsize" the filename here instead of just returning the image, because UIImage won't
+      // do it for us given a 1x filename.
+      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
     }
-    return returnVal;
   }
   
-  return fileName; // we didn't do anything fancy, just return the fileName
+  return returnVal;
 }
 
 @end
