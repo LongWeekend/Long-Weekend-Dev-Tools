@@ -30,9 +30,17 @@
 // This method changes the name no matter what
 + (NSString*) retinaFilenameForName:(NSString *)name
 {
-  NSString *stringToAdd = @"@2x.";
+  NSString *retinaName = nil;
   NSRange lastPeriod = [name rangeOfString:@"." options:NSBackwardsSearch];
-  NSString *retinaName = [name stringByReplacingCharactersInRange:lastPeriod withString:stringToAdd];
+  if (lastPeriod.location == NSNotFound)
+  {
+    // Append only - there is no extension (ticket #568)
+    retinaName = [name stringByAppendingString:@"@2x"];
+  }
+  else
+  {
+    retinaName = [name stringByReplacingCharactersInRange:lastPeriod withString:@"@2x."];
+  }
   return retinaName;
 }
 
