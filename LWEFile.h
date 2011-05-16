@@ -21,7 +21,6 @@ typedef enum {
 + (NSString*) createBundlePathWithFilename:(NSString*) filename;
 + (NSString*) createDocumentPathWithFilename:(NSString*) filename;
 + (NSString*) createLibraryPathWithFilename:(NSString*)filename;
-+ (NSString*) applicationDirectory;
 
 + (BOOL) createDirectoryIfNotExisting:(NSString*)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes error:(NSError **)error;
 + (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error;
@@ -29,5 +28,5 @@ typedef enum {
 + (BOOL) fileExists:(NSString*)filename;
 + (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite;
 + (NSInteger) getTotalDiskSpaceInBytes;
-+ (void) printFilesInDocsDir;
++ (void) printFilesInDirectory:(NSString*)dir;
 @end
