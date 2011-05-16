@@ -38,12 +38,44 @@
  */
 + (NSString*) createDocumentPathWithFilename:(NSString*)filename
 {
+  NSString *returnVal = nil;
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *path = [documentsDirectory stringByAppendingPathComponent:filename];
-  return path;
+  if (paths && [paths count] > 0)
+  {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    returnVal = [documentsDirectory stringByAppendingPathComponent:filename];
+  }
+  return returnVal;
 }
 
+/**
+ * Returns the app's base directory
+ */
++ (NSString*) applicationDirectory
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    returnVal = [paths objectAtIndex:0];
+  }
+  return returnVal;
+}
+
+/**
+ * Takes a single filename and returns a full path pointing at that filename in the current app's library directory
+ */
++ (NSString*) createLibraryPathWithFilename:(NSString*)filename
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    returnVal = [documentsDirectory stringByAppendingPathComponent:filename];
+  }
+  return returnVal;
+}
 
 /**
  * Just delete the damn thing.

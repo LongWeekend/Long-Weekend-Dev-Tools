@@ -20,6 +20,9 @@ typedef enum {
 
 + (NSString*) createBundlePathWithFilename:(NSString*) filename;
 + (NSString*) createDocumentPathWithFilename:(NSString*) filename;
++ (NSString*) createLibraryPathWithFilename:(NSString*)filename;
++ (NSString*) applicationDirectory;
+
 + (BOOL) createDirectoryIfNotExisting:(NSString*)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes error:(NSError **)error;
 + (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error;
 + (BOOL) deleteFile:(NSString*)filename;
