@@ -186,7 +186,7 @@
     {
       // "Upsize" the filename here instead of just returning the image, because UIImage won't
       // do it for us given a 1x filename.
-      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      returnVal = [LWERetinaUtils retinaSafeImageName:fileName];
     }
   }
   
