@@ -65,6 +65,20 @@
 }
 
 /**
+ * Returns the app's base directory
+ */
++ (NSString*) applicationDirectory
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    returnVal = [paths objectAtIndex:0];
+  }
+  return returnVal;
+}
+
+/**
  * Just delete the damn thing.
  */
 + (BOOL) deleteFile:(NSString*)filename
