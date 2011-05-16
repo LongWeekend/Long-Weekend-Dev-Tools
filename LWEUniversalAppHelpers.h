@@ -78,9 +78,15 @@ typedef enum
 + (kLWEDeviceType)deviceType;
 
 /**
- * Returns the filename passed to it, UNLESS the device is an iPad AND the same filename + "@HD" exists.  (ala @2x)
+ * Adds a @HD extension to the name, if it is an iPad
  */
 + (NSString*) fileNamed:(NSString*)fileName;
+
+/**
+ * Adds an @HD extension to the name if the device is an iPad.  If the @HD filename does not exist
+ * and useRetinaIfMissing is YES, it will be @2x instead.
+ * Also, if NON ipad and is a retina device on 4.0.x, this method will return @2x
+ */
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
 
 /**

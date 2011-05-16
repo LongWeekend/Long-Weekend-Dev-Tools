@@ -149,10 +149,28 @@
   return machine;
 }
 
+/**
+ * If iPad, will append "@HD" to the filename - does NOT check for file existence
+ */
 + (NSString*) fileNamed:(NSString*)fileName
 {
-  return [LWEUniversalAppHelpers fileNamed:fileName useRetinaIfMissing:NO];
+  NSString *returnVal = fileName;
+  if ([LWEUniversalAppHelpers isAnIPad])
+  {
+    NSRange lastPeriod = [fileName rangeOfString:@"." options:NSBackwardsSearch];
+    if (lastPeriod.location == NSNotFound)
+    {
+      // Append only
+      returnVal = [fileName stringByAppendingString:@"@HD"];
+    }
+    else
+    {
+      returnVal = [fileName stringByReplacingCharactersInRange:lastPeriod withString:@"@HD."];
+    }
+  }
+  return returnVal;
 }
+
 
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
 {
