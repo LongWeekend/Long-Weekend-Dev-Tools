@@ -15,21 +15,12 @@
  * depending on their device.
  */
 @interface LWERetinaUtils : NSObject
-{
-
-}
 
 /**
  * \brief   Tells you whether or not the device has a retina display
  * \return   YES if iPhone 4
  */
 + (BOOL) isRetinaDisplay;
-
-/**
- * \brief   Detects if the app isrunning on an iPad or not
- * \return   Returns YES if the device is an iPad, or NO is not
- */
-+ (BOOL) isPadDevice;
 
 /**
  * \brief Returns a retina filename for any file name provided.
@@ -50,6 +41,7 @@
  * \brief   Returns a CGRect that is OK to use for either retina or non-retina display
  * \param   rect Any CGRect
  * \return   If iPhone4, CGRect width&height properties will be 2x of parameter rect
+ * DEPRECATED
  */
 + (CGRect) retinaSafeCGRect:(CGRect)rect;
 
@@ -58,6 +50,7 @@
  * \brief   Returns a CGPoint that is OK to use for either retina or non-retina display
  * \param   rect Any CGPoint
  * \return   If iPhone4, CGPoint width&height properties will be 2x of parameter rect
+ * DEPRECATED
  */
 + (CGPoint) retinaSafeCGPoint:(CGPoint)point;
 
@@ -66,6 +59,7 @@
  * \brief   Returns a screen dimension (x,y,w,h) converted to retina coordinate space as necessary (e.g. x=100 becomes x=200)
  * \param   dimension Any integer
  * \return   If iPhone4, dimension will be 2x of parameter dimension
+ * DEPRECATED
  */
 + (NSInteger) retinaSafeDimension:(NSInteger)dimension;
 @end

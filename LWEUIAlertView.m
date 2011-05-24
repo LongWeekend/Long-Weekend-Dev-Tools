@@ -27,8 +27,8 @@
 + (UIAlertView*) noNetworkAlertWithDelegate:(id)delegate
 {
   return [LWEUIAlertView notificationAlertWithTitle:NSLocalizedString(@"No Network Access",@"Network.UnableToConnect_AlertViewTitle")
-                                            message:NSLocalizedString(@"Please check your network connection and try again.",@"Network.UnableToConnect_AlertViewMessage")
-                                           delegate:delegate];
+                                     message:NSLocalizedString(@"Please check your network connection and try again.",@"Network.UnableToConnect_AlertViewMessage")
+                                    delegate:delegate];
 }
 
 /**
@@ -71,9 +71,23 @@
  */
 + (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate
 {
+  return [LWEUIAlertView confirmationAlertWithTitle:title message:message ok:ok cancel:cancel delegate:delegate tag:0];
+}
+
+/**
+ * \param title Title of the UIAlertView
+ * \param message Message content of the UIAlertView
+ * \param ok Text for the "OK" action 
+ * \param cancel Text for the "Cancel" action
+ * \param delegate Delegate of the UIAlertView, if any
+ * \param tag Tag for the alert view to use in delegate, if any
+*/
++ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate tag:(int)tag
+{
   UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title message:message delegate:delegate
                                         cancelButtonTitle:cancel
                                         otherButtonTitles:ok,nil];
+  alert.tag = tag;
   [alert show];
   return [alert autorelease];
 }

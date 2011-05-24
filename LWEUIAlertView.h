@@ -53,4 +53,9 @@
  */
 + (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate;
 
+/**
+ * \brief Shows a Cancel/OK confirmation alert with customized OK/Cancel and takes an optional tag for the alert view
+ */
++ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate tag:(int)tag;
+
 @end

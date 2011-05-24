@@ -38,12 +38,45 @@
  */
 + (NSString*) createDocumentPathWithFilename:(NSString*)filename
 {
+  NSString *returnVal = nil;
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  NSString *documentsDirectory = [paths objectAtIndex:0];
-  NSString *path = [documentsDirectory stringByAppendingPathComponent:filename];
-  return path;
+  if (paths && [paths count] > 0)
+  {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    returnVal = [documentsDirectory stringByAppendingPathComponent:filename];
+  }
+  return returnVal;
 }
 
+
+/**
+ * Takes a single filename and returns a full path pointing at that filename in the current app's library directory
+ */
++ (NSString*) createLibraryPathWithFilename:(NSString*)filename
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    returnVal = [documentsDirectory stringByAppendingPathComponent:filename];
+  }
+  return returnVal;
+}
+
+/**
+ * Returns the app's base directory
+ */
++ (NSString*) applicationDirectory
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    returnVal = [paths objectAtIndex:0];
+  }
+  return returnVal;
+}
 
 /**
  * Just delete the damn thing.
@@ -103,33 +136,24 @@
 }
 
 /**
- * Prints the Files in the Documents Directory for Debugging Purposes
+ * Prints the Files in the a Directory for Debugging Purposes
  */
-+ (void) printFilesInDocsDir
++ (void) printFilesInDirectory:(NSString*)dir
 {
-  NSString* docsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSError *error;
-  id directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:docsDir error:&error];
-  for(id file in directoryContent)
+  NSError *error = nil;
+  id directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dir error:&error];
+  if (error == nil)
   {
-    LWE_LOG(@"file named %@", file);
+    for (NSString *file in directoryContent)
+    {
+      LWE_LOG(@"file named: %@", file);
+    }
+  }
+  else
+  {
+    LWE_LOG(@"error printing files in directory %@ -- error: %@",dir,error);
   }
 }
-
-/**
- * Prints the Files in the Documents Directory for Debugging Purposes
- */
-+ (void) printFilesInBundle
-{
-  NSString* bundelDir = [[NSBundle mainBundle] resourcePath];
-  NSError *error;
-  id directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:bundelDir error:&error];
-  for(id file in directoryContent)
-  {
-    LWE_LOG(@"file named %@", file);
-  }
-}
-
 
 
 /**
@@ -162,9 +186,9 @@
   LWE_LOG(@"Exploded string reconstituted: '%@.%@'",[explodedString objectAtIndex:0],[explodedString objectAtIndex:1]);
 #pragma unused(explodedString)
   
-//  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:[explodedString objectAtIndex:0] ofType:[explodedString objectAtIndex:1]];
+  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:[explodedString objectAtIndex:0] ofType:[explodedString objectAtIndex:1]];
 //  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
-  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"Phone" ofType:@"sqlite"];
+//  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"Phone" ofType:@"sqlite"];
   LWE_LOG(@"Copying file from :%@",bundlePath);
   NSError *error = nil;
 	BOOL result = [fileManager copyItemAtPath:bundlePath toPath:destPath error:&error];
