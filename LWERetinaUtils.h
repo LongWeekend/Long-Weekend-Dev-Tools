@@ -37,29 +37,4 @@
  */
 + (NSString*) retinaSafeImageName:(NSString*)name;
 
-/**
- * \brief   Returns a CGRect that is OK to use for either retina or non-retina display
- * \param   rect Any CGRect
- * \return   If iPhone4, CGRect width&height properties will be 2x of parameter rect
- * DEPRECATED
- */
-+ (CGRect) retinaSafeCGRect:(CGRect)rect;
-
-
-/**
- * \brief   Returns a CGPoint that is OK to use for either retina or non-retina display
- * \param   rect Any CGPoint
- * \return   If iPhone4, CGPoint width&height properties will be 2x of parameter rect
- * DEPRECATED
- */
-+ (CGPoint) retinaSafeCGPoint:(CGPoint)point;
-
-
-/**
- * \brief   Returns a screen dimension (x,y,w,h) converted to retina coordinate space as necessary (e.g. x=100 becomes x=200)
- * \param   dimension Any integer
- * \return   If iPhone4, dimension will be 2x of parameter dimension
- * DEPRECATED
- */
-+ (NSInteger) retinaSafeDimension:(NSInteger)dimension;
 @end
