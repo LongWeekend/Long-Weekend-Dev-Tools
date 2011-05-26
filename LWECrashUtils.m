@@ -18,7 +18,7 @@
  */
 void LWEUncaughtExceptionHandler(NSException *exception)
 {
-  NSString *appBinaryName = CONVERT_SYMBOL_TO_NSSTRING(${PRODUCT_NAME});
+  NSString *appBinaryName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleExecutable"];
   NSMutableString *debugInfoStr = [NSMutableString string];
   
   // Get device (HW) & version information
