@@ -1,9 +1,8 @@
 //
-//  LWEHDUtils.m
-//  jFlash
+//  LWERetinaUtils.m
 //
 //  Created by Mark Makdad on 8/10/10.
-//  Copyright 2010 Long Weekend Inc. All rights reserved.
+//  Copyright 2010 Long Weekend LLC. All rights reserved.
 //
 
 #import "LWERetinaUtils.h"
@@ -56,49 +55,6 @@
   else
   {
     return name;
-  }
-}
-
-#pragma mark -
-#pragma mark DEPRECATED METHODS
-
-// MMA: May/11/11
-// This can be deprecated, both iOS AND Cocos now support scaleFactor
-+ (CGRect) retinaSafeCGRect:(CGRect)rect
-{
-  if ([LWERetinaUtils isRetinaDisplay])
-  {
-    rect.size.width = rect.size.width * 2.0f;
-    rect.size.height = rect.size.height * 2.0f;
-    rect.origin.x = rect.origin.x * 2.0f;
-    rect.origin.y = rect.origin.y * 2.0f;
-  }
-  return rect;
-}
-
-// MMA: May/11/11
-// This can be deprecated, both iOS AND Cocos now support scaleFactor
-+ (CGPoint) retinaSafeCGPoint:(CGPoint)point
-{
-  if ([LWERetinaUtils isRetinaDisplay])
-  {
-    point.x = point.x * 2.0f;
-    point.y = point.y * 2.0f;
-  }
-  return point;
-}
-
-// MMA: May/11/11
-// This can be deprecated, both iOS AND Cocos now support scaleFactor
-+ (NSInteger) retinaSafeDimension:(NSInteger)dimension
-{
-  if ([LWERetinaUtils isRetinaDisplay])
-  {
-    return dimension *2;
-  }
-  else
-  {
-    return dimension;
   }
 }
 

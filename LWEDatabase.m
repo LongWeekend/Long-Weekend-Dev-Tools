@@ -54,7 +54,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
     self.dao = [FMDatabase databaseWithPath:pathToDatabase];
     
     // only allow error tracing in a non-release versions.  APP Store version should never have these on
-    #if defined(APP_STORE_FINAL)
+    #if defined(LWE_RELEASE_AD_HOC) || defined(LWE_RELEASE_APP_STORE)
       self.dao.logsErrors = NO;
       self.dao.traceExecution = NO;
     #else
@@ -130,22 +130,16 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (BOOL) attachDatabase:(NSString*) pathToDatabase withName:(NSString*) name
 {
+  LWE_ASSERT_EXC([self _databaseIsOpen], @"Database could not be opened");
   BOOL returnVal = NO;
-  if ([self _databaseIsOpen])
+  
+  NSString *sql = [[NSString alloc] initWithFormat:@"ATTACH DATABASE \"%@\" AS %@;",pathToDatabase,name];
+  [self executeUpdate:sql];
+  if (![[self dao] hadError])
   {
-    NSString *sql = [[NSString alloc] initWithFormat:@"ATTACH DATABASE \"%@\" AS %@;",pathToDatabase,name];
-    [self executeUpdate:sql];
-    if (![[self dao] hadError])
-    {
-      returnVal = YES;
-    }
-    [sql release];
+    returnVal = YES;
   }
-  else
-  {
-    // When called with no DB, throw exception
-    [NSException raise:@"Invalid database object in 'dao'" format:@"dao object is: %@",[self dao]];
-  }
+  [sql release];
   return returnVal;
 }
 
@@ -226,10 +220,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (BOOL) _databaseIsOpen
 {
-  if ([[self dao] isKindOfClass:[FMDatabase class]] && [[self dao] goodConnection])
+  if ([self.dao respondsToSelector:@selector(goodConnection)] && [self.dao goodConnection])
+  {
     return YES;
+  }
   else
+  {
     return NO;
+  }
 }
 
 

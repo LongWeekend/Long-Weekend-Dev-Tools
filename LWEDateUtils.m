@@ -8,6 +8,7 @@
 
 #import "LWEDateUtils.h"
 
+// TODO: MMA - shouldn't this just be a category on NSDateFormatter??!
 @implementation LWEDateUtils
 
 /**
@@ -22,7 +23,7 @@
   [tmpFormatter setTimeStyle:timeStyle];
   
   // This is an iOS4 call
-  if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 4.0)
+  if ([tmpFormatter respondsToSelector:@selector(setDoesRelativeDateFormatting:)])
   {
     [tmpFormatter setDoesRelativeDateFormatting:relative];
   }

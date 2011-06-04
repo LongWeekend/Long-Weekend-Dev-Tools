@@ -46,3 +46,10 @@ if (OBJ)\
   OBJ = nil;\
 }\
 } while(0)
+
+
+//Convert a preprocessor symbol to an NSString
+//EXAMPLE//  NSString *version = CONVERT_SYMBOL_TO_NSSTRING(SRC_ROOT);
+
+#define CONVERT_SYMBOL_TO_NSSTRING_2(x) @#x
+#define CONVERT_SYMBOL_TO_NSSTRING(x) CONVERT_SYMBOL_TO_NSSTRING_2(x)

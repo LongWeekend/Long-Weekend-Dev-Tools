@@ -182,6 +182,7 @@
   // Now do the actual copy
   NSFileManager *fileManager = [NSFileManager defaultManager];
   
+  // TODO: MMA - why does this exist??!
   NSArray *explodedString = [filename componentsSeparatedByString:@"."];
   LWE_LOG(@"Exploded string reconstituted: '%@.%@'",[explodedString objectAtIndex:0],[explodedString objectAtIndex:1]);
 #pragma unused(explodedString)
