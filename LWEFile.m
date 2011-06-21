@@ -64,6 +64,22 @@
   return returnVal;
 }
 
+
+/**
+ * Creates a temporary path with a filename
+ */
++ (NSString*) createTemporaryPathWithFilename:(NSString*) filename
+{
+  NSString *returnVal = nil;
+  NSString *tmpDir = NSTemporaryDirectory();
+  if (tmpDir)
+  {
+    returnVal = [NSString stringWithFormat:@"%@%@",tmpDir,filename];
+  }
+  return returnVal;
+}
+
+
 /**
  * Returns the app's base directory
  */
