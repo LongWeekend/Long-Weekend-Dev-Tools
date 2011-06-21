@@ -6,7 +6,7 @@
 //  Copyright 2011 Long Weekend, LLC. All rights reserved.
 //
 
-#import "NSArray+Blocks.h"
+#import "NSArray+LWEBlocks.h"
 
 
 @implementation NSArray (Blocks)
