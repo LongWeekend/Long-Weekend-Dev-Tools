@@ -84,7 +84,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
     managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
   }
 
-  NSError *error;
+  NSError *error = nil;
   NSPersistentStoreCoordinator* coordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel] autorelease];
   
   //merging options
