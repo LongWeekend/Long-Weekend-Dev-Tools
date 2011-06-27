@@ -83,7 +83,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   {
     managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
   }
-
+  
   NSError *error = nil;
   NSPersistentStoreCoordinator* coordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel] autorelease];
   
@@ -209,7 +209,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
     }
     else
     {
-      NSAssert2([stringOrPredicate isKindOfClass:[NSPredicate class]], @"Second parameter passed to %s is of unexpected class %@", sel_getName(_cmd), [stringOrPredicate class]);
+      LWE_ASSERT_EXC([stringOrPredicate isKindOfClass:[NSPredicate class]], @"Second parameter passed to %s is of unexpected class %@", sel_getName(_cmd), [stringOrPredicate class]);
       predicate = (NSPredicate *)stringOrPredicate;
     }
     [fetchRequest setPredicate:predicate];
@@ -246,10 +246,8 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   id entity; // the entity we will populate
 
   // we require the attribute identifier to be unique so error if we get more than one entity
-#if !defined(LWE_RELEASE_APP_STORE)
-  NSAssert(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);
-#endif
-  
+  LWE_ASSERT_EXC(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);  
+
   // set entity to the existing one if it exists
   if ([entityArray count] == 1) 
   {
@@ -303,7 +301,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
       }
     }
     // Now fail
-    NSAssert2(0, @"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
+    LWE_LOG_ERROR(@"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
     returnVal = NO;
   }
   return returnVal;
