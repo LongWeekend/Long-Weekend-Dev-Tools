@@ -19,8 +19,11 @@
 
 
 #import "LWEDownloader.h"
-#import "FlurryAPI.h"
 #import "Reachability.h"
+
+#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_AD_HOC)
+#import "FlurryAPI.h"
+#endif
 
 @implementation LWEDownloader
 
@@ -465,10 +468,12 @@
       [self _updateInternalState:kDownloaderDecompressFail withTaskMessage:NSLocalizedString(@"Failed to decompress",@"LWEDownloader.decompressFail")];
       [pool release];
 
+#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_AD_HOC)
       // Adding Flurry event here, hope to never see this
       NSDictionary *dataToSend = [NSDictionary dictionaryWithObjectsAndKeys:[self targetFilename],@"filename",[NSNumber numberWithInt:requestSize],@"request_size",nil];
       [FlurryAPI logEvent:@"pluginUnzipFailed" withParameters:dataToSend];
       return NO;
+#endif
     }
   }
   fclose(dest);
