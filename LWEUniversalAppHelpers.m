@@ -7,6 +7,7 @@
 //
 
 #import "LWEUniversalAppHelpers.h"
+#import "LWERetinaUtils.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
 

@@ -7,7 +7,6 @@
 #import "LWEScrollView.h"
 #import "LWEGoogleAnalyticsHelper.h"
 #import "UIWebView+LWENoBounces.h"
-#import "DebugUIView.h"
 
 // Requires REACHABILITY 2.0
 #import "LWENetworkUtils.h"

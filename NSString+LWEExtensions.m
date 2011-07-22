@@ -13,7 +13,6 @@
  * This code first found on: 
  * http://iphonedevelopertips.com/core-services/create-md5-hash-from-nsstring-nsdata-or-file.html
  */
-
 - (NSString*) MD5
 {
   // Create pointer to the string as UTF8
@@ -31,6 +30,16 @@
     [output appendFormat:@"%02x",md5Buffer[i]];
   
   return output;
+}
+
+/**
+ * This code found on:
+ * http://simonwoodside.com/weblog/2009/4/22/how_to_really_url_encode/
+ * Example call [mystring urlEncodeUsingEncoding:kCFStringEncodingUTF8];
+ */
+-(NSString *)urlEncodeUsingEncoding:(NSStringEncoding)encoding 
+{
+	return (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)self, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ", CFStringConvertNSStringEncodingToEncoding(encoding));
 }
 
 @end
