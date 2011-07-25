@@ -13,7 +13,7 @@
 - (BOOL) containsOnlyCharactersInString:(NSString*)characterString
 {
   NSCharacterSet *invalidCharSet = [[NSCharacterSet characterSetWithCharactersInString:characterString] invertedSet];
-  NSString *filtered = [[text componentsSeparatedByCharactersInSet:invalidCharSet] componentsJoinedByString:@""];
+  NSString *filtered = [[self componentsSeparatedByCharactersInSet:invalidCharSet] componentsJoinedByString:@""];
   return [self isEqualToString:filtered];
 }
 
