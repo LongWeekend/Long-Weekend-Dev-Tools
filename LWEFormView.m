@@ -338,7 +338,7 @@
     charCount = [self _maximumLengthForField:(UIControl*)textField];
   }
   NSString *newText = [NSString stringWithFormat:@"%@%@",textField.text,string];
-  return [LWETextValidator text:newText passesValidationType:validationTypes maxLength:charCount];
+  return [newText passesValidationType:validationTypes maxLength:charCount];
 }
 
 #pragma mark -
@@ -399,7 +399,7 @@
     charCount = [self _maximumLengthForField:(UIControl*)textView];
   }
   NSString *newText = [NSString stringWithFormat:@"%@%@",textView.text,text];
-  return [LWETextValidator text:newText passesValidationType:validationTypes maxLength:charCount];
+  return [newText passesValidationType:validationTypes maxLength:charCount];
 }
 
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "LWETextValidator.h"
+#import "NSString+LWETextValidator.h"
 
 @class LWEFormView;
 
