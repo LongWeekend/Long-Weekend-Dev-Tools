@@ -1,7 +1,5 @@
-//
-//  NSString+LWEExtensions.m
-//  phone
-//
+// NSString+LWEExtensions.m
+
 
 #import "NSString+LWEExtensions.h"
 #import <CommonCrypto/CommonDigest.h>

@@ -1,7 +1,4 @@
-//
-//  NSString+LWEExtensions.h
-//  phone
-//
+// NSString+LWEExtensions.h
 
 #import <Foundation/Foundation.h>
 

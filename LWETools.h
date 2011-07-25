@@ -1,3 +1,6 @@
+// USE OF THIS FILE IS DEPRECATED!! MMA
+#warning(use of this file is DEPRECATED)
+
 #import "LWEDebug.h"
 #import "LWEFile.h"
 #import "LWELocalNotifications.h"
