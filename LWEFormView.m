@@ -7,8 +7,7 @@
 //
 
 #import "LWEFormView.h"
-#import "LWEViewAnimationUtils.h"
-#import "LWEMacros.h"
+#import "LWEFormDatePickerField.h"
 
 // Private Methods
 @interface LWEFormView ()
@@ -18,6 +17,7 @@
 - (UIResponder*) _nextFieldAfterField:(UIResponder*)field;
 - (BOOL) _isLastField:(UIResponder*)field;
 - (void) _handleFocusAfterField:(UIResponder*)field;
+- (void) _handleEnteringFocus:(UIResponder*)field;
 - (BOOL) _formIsBeingEdited;
 
 - (void) _hideKeyboardResettingScroll:(BOOL)resetScroll;
@@ -37,6 +37,25 @@
 
 #pragma mark - Class Plumbing (init/dealloc)
 
+- (id) initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  if (self)
+  {
+  }
+  return self;
+}
+
+- (id) initWithFrame:(CGRect)frame
+{
+  return [self initWithCoder:nil];
+}
+
+- (id) init
+{
+  return [self initWithCoder:nil];
+}
+
 - (void)dealloc
 {
   // Need to set this to nil; if we don't, the willRemoveSubview: call in the superclass
@@ -49,14 +68,15 @@
 
 - (void) didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
-  // Lazy create this because we're never sure *which* init will be called
   if (self.formOrder == nil)
   {
     self.userInteractionEnabled = YES;
     self.formOrder = [NSArray array];
     self.animationInterval = 0.5;
+    self.topPadding = 20.0f;
   }
   
+  // TODO: MMA this is starting to get hacky.  Time for a better solution?
   BOOL isTextField = [theSubview isKindOfClass:[UITextField class]];
   BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
   if (isTextView || isTextField)
@@ -154,7 +174,7 @@
   {
     nextIndex = currIndex + 1;
   }
-  UIControl *nextField = [self.formOrder objectAtIndex:nextIndex];
+  UIResponder *nextField = [self.formOrder objectAtIndex:nextIndex];
   return nextField;
 }
 
@@ -235,6 +255,47 @@
   }  
 }
 
+/**
+ * This method is called any time a field gets focus; if we need to, we can notify
+ * the delegate or lazy-load any non-standard input views (pickers et al)
+ */
+- (void) _handleEnteringFocus:(UIResponder*)field
+{
+  if ([field isKindOfClass:[LWEFormDatePickerField class]])
+  {
+    LWEFormDatePickerField *pickerField = (LWEFormDatePickerField*)field;
+    BOOL isLastField = [self _isLastField:pickerField];
+    NSString *nextBtnStr = nil;
+    if (isLastField)
+    {
+      nextBtnStr = NSLocalizedString(@"Done",@"Done");
+    }
+    else
+    {
+      nextBtnStr = NSLocalizedString(@"Next", @"Next");
+    }
+    
+    // Make the toolbar item based on the name
+    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithTitle:nextBtnStr style:UIBarButtonItemStyleDone target:self action:@selector(_doneButtonPressed:)];
+    [pickerField setDoneButton:barButton];
+    [barButton release];
+  }
+
+  // Notify the delegate if we're going to start editing a form
+  if ([self _formIsBeingEdited] == NO)
+  {
+    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
+  }
+}
+
+#pragma mark - Date Picker Helpers
+
+- (void) _doneButtonPressed:(id)sender
+{
+  [self _handleFocusAfterField:sender];
+}
+
+
 #pragma mark - Methods - View Scrolling Helpers
 
 /**
@@ -275,7 +336,7 @@
  */
 - (void) _scrollToView:(UIView*)control
 {
-  // 20pts is a buffer so we don't scroll the title off the top of the screen
+  // topPadding is a buffer so we don't scroll the title off the top of the screen
   CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
   [self _scrollToPoint:CGPointMake(0,yDiff)];
 }
@@ -283,13 +344,11 @@
 
 #pragma mark - UITextFieldDelegate
 
+
 // Notify the delegate if we're going to start editing a form
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-  if ([self _formIsBeingEdited] == NO)
-  {
-    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
-  }
+  [self _handleEnteringFocus:textField];
   return YES;
 }
 
@@ -352,16 +411,12 @@
   return [newText passesValidationType:validationTypes maxLength:charCount];
 }
 
-#pragma mark -
-#pragma mark UITextViewDelegate
+#pragma mark - UITextViewDelegate
+
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-  // Notify the delegate if we're going to start editing a form
-  if ([self _formIsBeingEdited] == NO)
-  {
-    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
-  }
+  [self _handleEnteringFocus:textView];
   return YES;
 }
 
