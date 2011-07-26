@@ -1,9 +1,21 @@
+// LWECoreData.m
 //
-//  LWECoreData.m
+// Copyright (c) 2010, 2011 Long Weekend LLC
 //
-//  Created by シャロット ロス on 6/13/10.
-//  Copyright 2010 LONG WEEKEND INC. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWECoreData.h"
 #import "LWEDebug.h"
@@ -19,8 +31,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 */
 @implementation LWECoreData
 
-#pragma mark -
-#pragma mark Persistent Store Methods
+#pragma mark - Persistent Store Methods
 
 /**
  * Creates an autoreleased managed object context and associates a persistent store coordinator
@@ -102,8 +113,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   return coordinator;
 }
 
-#pragma mark -
-#pragma mark retrieval methods
+#pragma mark - Retrieval methods
 
 /**
  * Gets all entities for a given entity & context ("SELECT * FROM foo" in SQL)
@@ -218,8 +228,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 }
 
 
-#pragma mark -
-#pragma mark addLables
+#pragma mark - addLables
 
 /**
  * Adds a plist to a entity, assumes that the plist has same attribute key names. Will update or create an entity
@@ -278,8 +287,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   return entity;
 }
 
-#pragma mark -
-#pragma mark persiste methods
+#pragma mark - persist methods
 
 /**
  * Saves the current objectContext
@@ -313,7 +321,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
  * \param context managedObjectContext to delete from
  * \return returns YES on success, NO on delete failure (swallows exception)
  */
-+ (BOOL) delete:(id)entity fromContext:(NSManagedObjectContext *)context
++ (BOOL) delete:(NSManagedObject*)entity fromContext:(NSManagedObjectContext *)context
 {
 	[context deleteObject:entity];
   @try

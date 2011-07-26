@@ -1,4 +1,4 @@
-// LWEUILabelUtils.h
+// LWEGoogleAnalyticsHelper.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -17,22 +17,28 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+// TODO: MMA merge this with a Flurry helper to create a generalized reporting class
+
 #import <Foundation/Foundation.h>
 
-#define READING_MIN_FONTSIZE  14.0
-#define READING_MAX_FONTSIZE  20.0
-#define READING_DEF_FONTSIZE  14.0
+@interface LWEGoogleAnalyticsHelper : NSObject
 
-#define HEADWORD_MIN_FONTSIZE 20.0
-#define HEADWORD_MAX_FONTSIZE 38.0
-#define HEADWORD_DEF_FONTSIZE 14.0
+/*
+ start session, attempt to send saved sessions to server 
+ */
++ (void)startSession:(NSString *)apiKey;
 
-@interface LWEUILabelUtils : NSObject
+/*
+ log events or errors after session has started
+ */
++ (void)logEvent:(NSString *)eventName;
++ (void)logEvent:(NSString *)eventName withAction:(NSString*)actionString withLabel:(NSString*)label andValue:(NSInteger)intValue;
++ (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString;
 
-+ (CGRect) makeFrameForText:(NSString*)text fontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin;
-+ (void)resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize;
-+ (void)resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-+ (void)autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-+ (void)autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText;
+/* 
+ wrapper for calling the stop tracker method
+ */
++ (void) stopTracker;
 
 @end

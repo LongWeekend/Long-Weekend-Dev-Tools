@@ -1,4 +1,3 @@
-//
 //  PageViewController.m
 //  PagingScrollView
 //
@@ -10,7 +9,6 @@
 //  that any redistribution (in part or whole) of source code must retain
 //  this copyright and permission notice. Attribution in compiled projects is
 //  appreciated but not required.
-//
 
 #import "LWEPageViewController.h"
 #import <QuartzCore/QuartzCore.h>
