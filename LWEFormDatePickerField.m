@@ -31,13 +31,10 @@
   self = [super initWithCoder:aDecoder];
   if (self)
   {
-    
     self.date = [NSDate date];
-    self.doneButton = [[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next",@"Next") style:UIBarButtonItemStyleDone target:self action:@selector(doneButtonPressed:)] autorelease];
     
     UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
     toolbar.barStyle = UIBarStyleBlack;
-    toolbar.items = [NSArray arrayWithObject:self.doneButton];
     self.inputAccessoryView = toolbar;
     [toolbar release];
     
@@ -49,13 +46,6 @@
     [picker release];
   }
   return self;
-}
-
-- (void) doneButtonPressed:(id)sender
-{
-  LWE_ASSERT_EXC([self isFirstResponder],@"There's no way this can get called unless you are first responder?!");
-  
-  [self canResignFirstResponder];
 }
 
 - (void) pickerValueChanged:(UIDatePicker*)sender
@@ -82,6 +72,12 @@
 
 - (BOOL) becomeFirstResponder
 {
+  // Put the done button on the right side.
+  UIBarButtonItem *blankSpace = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease];
+  
+  UIToolbar *toolbar = (UIToolbar*)self.inputAccessoryView;
+  toolbar.items = [NSArray arrayWithObjects:blankSpace,self.doneButton,nil];
+
   // Pass along these attributes before showing the picker
   UIDatePicker *picker = (UIDatePicker*)self.inputView;
   picker.maximumDate = self.maximumDate;

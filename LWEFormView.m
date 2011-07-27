@@ -15,6 +15,7 @@
 - (void) _removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 
 - (UIResponder*) _nextFieldAfterField:(UIResponder*)field;
+- (UIResponder*) _currentResponder;
 - (BOOL) _isLastField:(UIResponder*)field;
 - (void) _handleFocusAfterField:(UIResponder*)field;
 - (void) _handleEnteringFocus:(UIResponder*)field;
@@ -113,19 +114,17 @@
 
 - (void) _hideKeyboardResettingScroll:(BOOL)resetScroll
 {
-  for (UIResponder *responder in self.formOrder)
+  UIResponder *responder = [self _currentResponder];
+  if (responder)
   {
-    if ([responder isFirstResponder])
+    [responder resignFirstResponder];
+    if (resetScroll)
     {
-      [responder resignFirstResponder];
-      if (resetScroll)
-      {
-        [self scrollToOrigin];
-      }
-      
-      // Tell the delegate we finished editing, in case they want to do something
-      LWE_DELEGATE_CALL(@selector(formDidFinishEditing:),self);
+      [self scrollToOrigin];
     }
+
+    // Tell the delegate we finished editing, in case they want to do something
+    LWE_DELEGATE_CALL(@selector(formDidFinishEditing:),self);
   }
 }
 
@@ -159,6 +158,18 @@
   self.formOrder = [newArray sortedArrayUsingDescriptors:[NSArray arrayWithObject:sorter]];
   
   [controlObject setDelegate:self];
+  
+  // In addition to becoming the delegate, in the case of a picker form, also set up the button
+  if ([controlObject isKindOfClass:[LWEFormDatePickerField class]])
+  {
+    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next", @"Next")
+                                                                  style:UIBarButtonItemStyleDone
+                                                                 target:self
+                                                                 action:@selector(_doneButtonPressed:)];
+    LWEFormDatePickerField *pickerField = (LWEFormDatePickerField*)controlObject;
+    pickerField.doneButton = barButton;
+    [barButton release];
+  }
 }
 
 /**
@@ -187,20 +198,29 @@
   return (currIndex == ([self.formOrder count] - 1));
 }
 
+
+/**
+ * Tells us who the current responder is
+ */
+- (UIResponder*) _currentResponder
+{
+  UIResponder *currentResponder = nil;
+  for (UIResponder *responder in self.formOrder)
+  {
+    if ([responder isFirstResponder])
+    {
+      currentResponder = responder;
+    }
+  }
+  return currentResponder;
+}
+
 /**
  * Returns YES if the form is actively being edited (e.g. if anyone is first responder)
  */
 - (BOOL) _formIsBeingEdited
 {
-  BOOL returnVal = NO;
-  for (UIResponder *responder in self.formOrder)
-  {
-    if ([responder isFirstResponder])
-    {
-      returnVal = YES;
-    }
-  }
-  return returnVal;
+  return ([self _currentResponder] != nil);
 }
 
 #pragma mark - Private Methods - validation
@@ -261,26 +281,6 @@
  */
 - (void) _handleEnteringFocus:(UIResponder*)field
 {
-  if ([field isKindOfClass:[LWEFormDatePickerField class]])
-  {
-    LWEFormDatePickerField *pickerField = (LWEFormDatePickerField*)field;
-    BOOL isLastField = [self _isLastField:pickerField];
-    NSString *nextBtnStr = nil;
-    if (isLastField)
-    {
-      nextBtnStr = NSLocalizedString(@"Done",@"Done");
-    }
-    else
-    {
-      nextBtnStr = NSLocalizedString(@"Next", @"Next");
-    }
-    
-    // Make the toolbar item based on the name
-    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithTitle:nextBtnStr style:UIBarButtonItemStyleDone target:self action:@selector(_doneButtonPressed:)];
-    [pickerField setDoneButton:barButton];
-    [barButton release];
-  }
-
   // Notify the delegate if we're going to start editing a form
   if ([self _formIsBeingEdited] == NO)
   {
@@ -292,7 +292,8 @@
 
 - (void) _doneButtonPressed:(id)sender
 {
-  [self _handleFocusAfterField:sender];
+  UIResponder *responder = [self _currentResponder];
+  [self _handleFocusAfterField:responder];
 }
 
 
