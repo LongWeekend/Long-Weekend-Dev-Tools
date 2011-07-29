@@ -145,6 +145,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   BOOL returnVal = NO;
   
   NSString *sql = [[NSString alloc] initWithFormat:@"ATTACH DATABASE \"%@\" AS %@;",pathToDatabase,name];
+  LWE_LOG(@"Debug: Trying to attach %@ as %@", pathToDatabase, name);
   [self executeUpdate:sql];
   if (![[self dao] hadError])
   {
