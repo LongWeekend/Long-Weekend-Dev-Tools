@@ -448,6 +448,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
     [consumer release];
     consumer = nil;
   }
+  [self setConsumer:nil];
   [self setDb:nil];
   [self setContext:nil];
   [self setAuthenticationView:nil];
