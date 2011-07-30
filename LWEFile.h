@@ -38,6 +38,7 @@ typedef enum
 + (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error;
 + (BOOL) deleteFile:(NSString*)filename;
 + (BOOL) fileExists:(NSString*)filename;
++ (BOOL) copyFromBundleWithFilename:(NSString *)source toDocumentsWithFilename:(NSString *)dest shouldOverwrite:(BOOL)overwrite;
 + (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite;
 + (NSInteger) getTotalDiskSpaceInBytes;
 + (void) printFilesInDirectory:(NSString*)dir;

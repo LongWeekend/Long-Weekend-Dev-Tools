@@ -182,6 +182,47 @@
   }
 }
 
+/**
+ *  \brief    Copy a file from a certain path to another path. 
+ *  \details  Note that both paths has to be a full path, not a relative.
+ */
++ (BOOL) copyFromBundleWithFilename:(NSString *)source toDocumentsWithFilename:(NSString *)dest shouldOverwrite:(BOOL)overwrite
+{
+  NSString *destPath = [LWEFile createDocumentPathWithFilename:dest];
+  if ([LWEFile fileExists:destPath])
+  {
+    if (overwrite)
+    {
+      if (![LWEFile deleteFile:destPath])
+      {
+        LWE_LOG(@"Could not delete file in overwrite mode on copy: %@",destPath);
+        return NO;
+      }
+    }
+    else
+    {
+      LWE_LOG(@"Not overwriting file: %@",destPath);
+      return NO;  
+    }
+  }
+  
+  // Now do the actual copy
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  
+  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:source];
+  LWE_LOG(@"Copying file from: %@ to: %@", bundlePath, destPath);
+  NSError *error = nil;
+	BOOL result = [fileManager copyItemAtPath:bundlePath toPath:destPath error:&error];
+  if (result)
+  {
+    return YES;
+  }
+  else
+  {
+    LWE_LOG(@"Error copying file: %@", error);
+    return NO;
+  }
+}
 
 /**
  * Helper function to copy files from the main bundle to the docs directory

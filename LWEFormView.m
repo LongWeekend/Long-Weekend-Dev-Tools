@@ -1,25 +1,13 @@
-// LWEFormView.m
 //
-// Copyright (c) 2011 Long Weekend LLC
+//  LWEFormView.m
+//  phone
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
-// associated documentation files (the "Software"), to deal in the Software without restriction,
-// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
-// subject to the following conditions:
+//  Created by Mark Makdad on 7/19/11.
+//  Copyright 2011 Long Weekend LLC. All rights reserved.
 //
-// The above copyright notice and this permission notice shall be included in all copies or substantial
-// portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWEFormView.h"
-#import "LWEViewAnimationUtils.h"
-#import "LWEMacros.h"
+#import "LWEFormDatePickerField.h"
 
 // Private Methods
 @interface LWEFormView ()
@@ -27,8 +15,10 @@
 - (void) _removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 
 - (UIResponder*) _nextFieldAfterField:(UIResponder*)field;
+- (UIResponder*) _currentResponder;
 - (BOOL) _isLastField:(UIResponder*)field;
 - (void) _handleFocusAfterField:(UIResponder*)field;
+- (void) _handleEnteringFocus:(UIResponder*)field;
 - (BOOL) _formIsBeingEdited;
 
 - (void) _hideKeyboardResettingScroll:(BOOL)resetScroll;
@@ -48,6 +38,25 @@
 
 #pragma mark - Class Plumbing (init/dealloc)
 
+- (id) initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  if (self)
+  {
+  }
+  return self;
+}
+
+- (id) initWithFrame:(CGRect)frame
+{
+  return [self initWithCoder:nil];
+}
+
+- (id) init
+{
+  return [self initWithCoder:nil];
+}
+
 - (void)dealloc
 {
   // Need to set this to nil; if we don't, the willRemoveSubview: call in the superclass
@@ -60,14 +69,15 @@
 
 - (void) didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
-  // Lazy create this because we're never sure *which* init will be called
   if (self.formOrder == nil)
   {
     self.userInteractionEnabled = YES;
     self.formOrder = [NSArray array];
     self.animationInterval = 0.5;
+    self.topPadding = 20.0f;
   }
   
+  // TODO: MMA this is starting to get hacky.  Time for a better solution?
   BOOL isTextField = [theSubview isKindOfClass:[UITextField class]];
   BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
   if (isTextView || isTextField)
@@ -104,19 +114,17 @@
 
 - (void) _hideKeyboardResettingScroll:(BOOL)resetScroll
 {
-  for (UIResponder *responder in self.formOrder)
+  UIResponder *responder = [self _currentResponder];
+  if (responder)
   {
-    if ([responder isFirstResponder])
+    [responder resignFirstResponder];
+    if (resetScroll)
     {
-      [responder resignFirstResponder];
-      if (resetScroll)
-      {
-        [self scrollToOrigin];
-      }
-      
-      // Tell the delegate we finished editing, in case they want to do something
-      LWE_DELEGATE_CALL(@selector(formDidFinishEditing:),self);
+      [self scrollToOrigin];
     }
+
+    // Tell the delegate we finished editing, in case they want to do something
+    LWE_DELEGATE_CALL(@selector(formDidFinishEditing:),self);
   }
 }
 
@@ -150,6 +158,18 @@
   self.formOrder = [newArray sortedArrayUsingDescriptors:[NSArray arrayWithObject:sorter]];
   
   [controlObject setDelegate:self];
+  
+  // In addition to becoming the delegate, in the case of a picker form, also set up the button
+  if ([controlObject isKindOfClass:[LWEFormDatePickerField class]])
+  {
+    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next", @"Next")
+                                                                  style:UIBarButtonItemStyleDone
+                                                                 target:self
+                                                                 action:@selector(_doneButtonPressed:)];
+    LWEFormDatePickerField *pickerField = (LWEFormDatePickerField*)controlObject;
+    pickerField.doneButton = barButton;
+    [barButton release];
+  }
 }
 
 /**
@@ -165,7 +185,7 @@
   {
     nextIndex = currIndex + 1;
   }
-  UIControl *nextField = [self.formOrder objectAtIndex:nextIndex];
+  UIResponder *nextField = [self.formOrder objectAtIndex:nextIndex];
   return nextField;
 }
 
@@ -178,20 +198,29 @@
   return (currIndex == ([self.formOrder count] - 1));
 }
 
+
+/**
+ * Tells us who the current responder is
+ */
+- (UIResponder*) _currentResponder
+{
+  UIResponder *currentResponder = nil;
+  for (UIResponder *responder in self.formOrder)
+  {
+    if ([responder isFirstResponder])
+    {
+      currentResponder = responder;
+    }
+  }
+  return currentResponder;
+}
+
 /**
  * Returns YES if the form is actively being edited (e.g. if anyone is first responder)
  */
 - (BOOL) _formIsBeingEdited
 {
-  BOOL returnVal = NO;
-  for (UIResponder *responder in self.formOrder)
-  {
-    if ([responder isFirstResponder])
-    {
-      returnVal = YES;
-    }
-  }
-  return returnVal;
+  return ([self _currentResponder] != nil);
 }
 
 #pragma mark - Private Methods - validation
@@ -246,6 +275,28 @@
   }  
 }
 
+/**
+ * This method is called any time a field gets focus; if we need to, we can notify
+ * the delegate or lazy-load any non-standard input views (pickers et al)
+ */
+- (void) _handleEnteringFocus:(UIResponder*)field
+{
+  // Notify the delegate if we're going to start editing a form
+  if ([self _formIsBeingEdited] == NO)
+  {
+    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
+  }
+}
+
+#pragma mark - Date Picker Helpers
+
+- (void) _doneButtonPressed:(id)sender
+{
+  UIResponder *responder = [self _currentResponder];
+  [self _handleFocusAfterField:responder];
+}
+
+
 #pragma mark - Methods - View Scrolling Helpers
 
 /**
@@ -286,21 +337,19 @@
  */
 - (void) _scrollToView:(UIView*)control
 {
-  // 20pts is a buffer so we don't scroll the title off the top of the screen
-  CGFloat yDiff = (control.frame.origin.y * -1) + 20.0f;
+  // topPadding is a buffer so we don't scroll the title off the top of the screen
+  CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
   [self _scrollToPoint:CGPointMake(0,yDiff)];
 }
 
 
 #pragma mark - UITextFieldDelegate
 
+
 // Notify the delegate if we're going to start editing a form
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-  if ([self _formIsBeingEdited] == NO)
-  {
-    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
-  }
+  [self _handleEnteringFocus:textField];
   return YES;
 }
 
@@ -329,6 +378,17 @@
 {
   _formIsDirty = YES;
   
+  // Ask the delegate first, if it's no there, then a no is a no.
+  if (self.delegate && [self.delegate respondsToSelector:@selector(formField:shouldChangeCharactersInRange:replacementString:)])
+  {
+    BOOL delegateResponse = [self.delegate formField:textField shouldChangeCharactersInRange:range replacementString:string];
+    if (delegateResponse == NO)
+    {
+      // If we are yes, trickle down and let the rest of the method deal with it.
+      return NO;
+    }
+  }
+  
   // If it's a backspace, basically ignore all validation - quick return
   BOOL isBackspace = ([string isEqualToString:@""] && (range.length == 1));
   if (isBackspace)
@@ -352,16 +412,12 @@
   return [newText passesValidationType:validationTypes maxLength:charCount];
 }
 
-#pragma mark -
-#pragma mark UITextViewDelegate
+#pragma mark - UITextViewDelegate
+
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-  // Notify the delegate if we're going to start editing a form
-  if ([self _formIsBeingEdited] == NO)
-  {
-    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
-  }
+  [self _handleEnteringFocus:textView];
   return YES;
 }
 
@@ -382,18 +438,30 @@
 {
   _formIsDirty = YES;
 
+  // Ask the delegate first, if it's no there, then a no is a no.
+  if (self.delegate && [self.delegate respondsToSelector:@selector(formField:shouldChangeCharactersInRange:replacementString:)])
+  {
+    BOOL delegateResponse = [self.delegate formField:textView shouldChangeCharactersInRange:range replacementString:text];
+    if (delegateResponse == NO)
+    {
+      // If we are yes, trickle down and let the rest of the method deal with it.
+      return NO;
+    }
+  }
+
+  // else catch 'return' button taps and exit the field - quick return
+	if ([text isEqualToString:@"\n"])
+  {
+    [self _handleFocusAfterField:textView];
+    return NO;
+	}
+
   // If backspace, let it by no matter what
   BOOL isBackspace = ([text isEqualToString:@""] && (range.length == 1));
   if (isBackspace)
   {
     return YES;
   }
-  // else catch 'return' button taps and exit the field - quick return
-	else if ([text isEqualToString:@"\n"])
-  {
-    [self _handleFocusAfterField:textView];
-    return NO;
-	}
 
   // Now worry about text validation - Don't validate email now.
   // it's a regex so it won't validate until they've finished typing it
