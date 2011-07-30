@@ -8,6 +8,7 @@
 
 #import "LWEFormView.h"
 #import "LWEFormDatePickerField.h"
+#import "LWEViewAnimationUtils.h"
 
 // Private Methods
 @interface LWEFormView ()
