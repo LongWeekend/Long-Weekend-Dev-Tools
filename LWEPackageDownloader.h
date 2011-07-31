@@ -28,6 +28,12 @@
 - (void) unpackageFailed:(LWEPackage*)package withError:(NSError*)error;
 @end
 
+/**
+ * This class downloads & unzips "packages".  Any time you have a ZIP file available
+ * via HTTP that you want to download, unzip, and do osmething with, this is your class.
+ * You can define what is to be downloaded and where it should be unzipped to by 
+ * using the LWEPackage class.  
+ */
 @interface LWEPackageDownloader : NSObject <UA_ASIHTTPRequestDelegate, LWEDecompressorDelegate>
 
 //! Implement this to receive events when a package unwrap succeeds or fails
@@ -38,6 +44,11 @@
 
 //! List of packages this class is handling.  Packages are not removed from this array after unwrapping.
 @property (retain) NSArray *packages;
+
+/**
+ * Designated initializer.
+ */
+- (id) initWithDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate;
 
 /**
  * Call this method to add an LWEPackage object to the end of the 

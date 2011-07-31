@@ -49,6 +49,16 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   return self;
 }
 
+- (id) initWithDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate
+{
+  self = [self init];
+  if (self)
+  {
+    self.delegate = aDelegate;
+  }
+  return self;
+}
+
 - (void) dealloc
 {
   [self.queue cancelAllOperations];
