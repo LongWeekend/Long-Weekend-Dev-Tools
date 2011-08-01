@@ -51,6 +51,14 @@
 - (id) initWithDownloaderDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate;
 
 /**
+ * Call this method to remove an LWEPackage object.  NOTE that 
+ * after a package is unwrapped, it is NOT automatically removed from
+ * the queue, so you may want to call this method in your -unpackageFinished: or 
+ * -unpackageFailed: delegate callback.
+ */
+- (void) dequeuePackage:(LWEPackage*)package;
+
+/**
  * Call this method to add an LWEPackage object to the end of the 
  * downloader queue.  Calling this method alone will not start
  * downloading - you must call -startUnwrapping to start the 

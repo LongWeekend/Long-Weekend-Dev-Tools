@@ -96,6 +96,13 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   }
 }
 
+- (void) dequeuePackage:(LWEPackage*)package
+{
+  NSMutableArray *newPackages = [self.packages mutableCopy];
+  [newPackages removeObject:package];
+  self.packages = (NSArray*)[newPackages autorelease];
+}
+
 - (void) queuePackage:(LWEPackage*)package
 {
   NSMutableArray *newPackages = [self.packages mutableCopy];
