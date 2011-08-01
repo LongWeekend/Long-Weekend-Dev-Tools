@@ -52,9 +52,9 @@
 
 /**
  * Call this method to remove an LWEPackage object.  NOTE that 
- * after a package is unwrapped, it is NOT automatically removed from
- * the queue, so you may want to call this method in your -unpackageFinished: or 
- * -unpackageFailed: delegate callback.
+ * after a package is unwrapped, this method is called automatically 
+ * by the class *BEFORE* the delegate callbacks to -unpackageFinished: or 
+ * -unpackageFailed:.  Failed unpackages should be re-queued.
  */
 - (void) dequeuePackage:(LWEPackage*)package;
 

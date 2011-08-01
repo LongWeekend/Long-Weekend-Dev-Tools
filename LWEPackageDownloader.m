@@ -168,13 +168,15 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 {
   LWEPackage *package = [aDecompressor.userInfo objectForKey:kLWEPackageUserInfoKey];
   package.isUnwrapped = YES;
-  
+  [self dequeuePackage:package];
+   
   LWE_DELEGATE_CALL(@selector(unpackageFinished:),package);
 }
 
 - (void) decompressFailed:(LWEDecompressor*)aDecompressor error:(NSError*)error
 {
   LWEPackage *package = [aDecompressor.userInfo objectForKey:kLWEPackageUserInfoKey];
+  [self dequeuePackage:package];
   
   if (self.delegate && [self.delegate respondsToSelector:@selector(unpackageFailed:withError:)])
   {
