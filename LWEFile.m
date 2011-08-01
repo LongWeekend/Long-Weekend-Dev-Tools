@@ -110,20 +110,22 @@
  */
 + (BOOL) deleteFile:(NSString*)filename
 {
-  // Sanity checks
-  if (filename == nil) return NO;
-  
-  NSError *error;
-  NSFileManager *fm = [NSFileManager defaultManager];
-  if (![fm removeItemAtPath:filename error:&error])
+  // Sanity check
+  if (filename == nil)
   {
-    LWE_LOG(@"Could not delete file at specified location: %@",filename);
     return NO;
+  }
+  
+  NSError *error = nil;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  if ([fm removeItemAtPath:filename error:&error])
+  {
+    return YES;
   }
   else
   {
-    LWE_LOG(@"File at specified location deleted: %@",filename);
-    return YES;
+    LWE_LOG(@"Could not delete file at specified location: %@ (error: %@)",filename,error);
+    return NO;
   }
 }
 
@@ -134,12 +136,14 @@
 + (BOOL) fileExists:(NSString*)filename
 {
   // Sanity checks
-  if (filename == nil) return NO;
+  if (filename == nil)
+  {
+    return NO;
+  }
 
   NSFileManager *fm = [NSFileManager defaultManager];
   if ([fm fileExistsAtPath:filename])
   {
-//    LWE_LOG(@"File found at specified location: %@",filename);
     return YES;
   }
   else
@@ -154,7 +158,7 @@
  */
 + (BOOL) createDirectoryIfNotExisting:(NSString*)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes error:(NSError **)error
 {
-  if (![LWEFile fileExists:path])
+  if ([LWEFile fileExists:path] == NO)
   {
     NSFileManager *fm = [NSFileManager defaultManager];
     return [fm createDirectoryAtPath:path withIntermediateDirectories:createIntermediates attributes:attributes error:error];
@@ -193,7 +197,7 @@
   {
     if (overwrite)
     {
-      if (![LWEFile deleteFile:destPath])
+      if ([LWEFile deleteFile:destPath] == NO)
       {
         LWE_LOG(@"Could not delete file in overwrite mode on copy: %@",destPath);
         return NO;
