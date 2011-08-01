@@ -55,6 +55,9 @@ extern NSString * const LWECoreDataObjectId;
 //! Saves the current context
 + (BOOL) save:(NSManagedObjectContext *)managedObjectContext;
 
+//! Deletes the provided entity from the object's context
++ (BOOL) delete:(NSManagedObject*)entity
+
 //! Deletes the provided entity from the provided context
 + (BOOL) delete:(NSManagedObject*)entity fromContext:(NSManagedObjectContext *)context;
 

@@ -316,6 +316,25 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 }
 
 /**
+ * Deletes an entity from the MOC associated with the object.
+ * \param entity Object to delete
+ * \return returns YES on success, NO on delete failure (swallows exception)
+ */
++ (BOOL) delete:(NSManagedObject*)entity
+{
+  [entity.managedObjectContext deleteObject:entity];
+  @try
+  {
+    [LWECoreData save:entity.managedObjectContext];
+  }
+  @catch (NSException *exception)
+  {
+    return NO;
+  }
+  return YES;
+}
+
+/**
  * Deletes an entity from the current objectContext
  * \param entity Object to delete
  * \param context managedObjectContext to delete from
