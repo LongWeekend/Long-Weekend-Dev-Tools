@@ -49,7 +49,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   return self;
 }
 
-- (id) initWithDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate
+- (id) initWithDownloaderDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate
 {
   self = [self init];
   if (self)

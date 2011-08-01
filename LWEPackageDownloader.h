@@ -48,7 +48,7 @@
 /**
  * Designated initializer.
  */
-- (id) initWithDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate;
+- (id) initWithDownloaderDelegate:(id<LWEPackageDownloaderDelegate>)aDelegate;
 
 /**
  * Call this method to add an LWEPackage object to the end of the 
