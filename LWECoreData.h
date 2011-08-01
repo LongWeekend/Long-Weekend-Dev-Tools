@@ -34,6 +34,9 @@ extern NSString * const LWECoreDataObjectId;
 //! Creates an autoreleased persistent store coordinator using the pathname for a versioned model.
 + (NSPersistentStoreCoordinator*) persistentStoreCoordinatorFromPathForVersionedModel:(NSString*)storePath modelNameOrNil:(NSString*)modelName;
 
+//! Returns 1 object - useful for when you are pulling things out by an ID or something where you are sure there will be one or none.  Returns nil if not found.
++ (NSManagedObject*) fetchOne:(NSString*)entityName managedObjectContext:(NSManagedObjectContext*)managedObjectContext predicate:(id)stringOrPredicate, ...;
+
 //! Returns all entities of a given type from a given context (SELECT * FROM x)
 + (NSArray *) fetchAll:(NSString *)entityName managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 

@@ -116,6 +116,24 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 #pragma mark - Retrieval methods
 
 /**
+ * Gets an entity for a given entity & context ("SELECT * FROM foo WHERE x = y" in SQL), when you only expect 1 results (lookup based on ID, etc)
+ * \param entityName Name of the Core Data entity to fetch
+ * \param managedObjectContext Which ObjectContext to use
+ * \param predicate the NSPredicate "where clause" of the query
+ */
++ (NSManagedObject*) fetchOne:(NSString*)entityName managedObjectContext:(NSManagedObjectContext*)managedObjectContext predicate:(id)stringOrPredicate, ...
+{
+  NSManagedObject *returnVal = nil;
+  NSArray *results = [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil withLimit:1 predicate:stringOrPredicate];
+  NSInteger numResults = [results count];
+  if (numResults == 1)
+  {
+    returnVal = [results objectAtIndex:0];
+  }
+  return returnVal;
+}
+
+/**
  * Gets all entities for a given entity & context ("SELECT * FROM foo" in SQL)
  * \param entityName Name of the Core Data entity to fetch
  * \param managedObjectContext Which ObjectContext to use
