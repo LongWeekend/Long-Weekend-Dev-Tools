@@ -1,4 +1,4 @@
-// LWEUILabelUtils.h
+// LWEPackage.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -19,20 +19,31 @@
 
 #import <Foundation/Foundation.h>
 
-#define READING_MIN_FONTSIZE  14.0
-#define READING_MAX_FONTSIZE  20.0
-#define READING_DEF_FONTSIZE  14.0
+@interface LWEPackage : NSObject
 
-#define HEADWORD_MIN_FONTSIZE 20.0
-#define HEADWORD_MAX_FONTSIZE 38.0
-#define HEADWORD_DEF_FONTSIZE 14.0
+/**
+ * Designated initializer.  Pass it a URL and a local filename.
+ * This method will automatically infer a value for unpackagePath,
+ * the same directory as the local filepath.
+ */
++ (id) packageWithUrl:(NSURL*)url destinationFilepath:(NSString*)filepath;
 
-@interface LWEUILabelUtils : NSObject
+//! The filename of the package, no path.  This is the final part of the URL.
+- (NSString *) packageFilename;
 
-+ (CGRect) makeFrameForText:(NSString*)text fontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin;
-+ (void)resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize;
-+ (void)resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-+ (void)autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-+ (void)autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText;
+//! The name of the package.  This is the final part of the URL, stripping the extension.
+- (NSString *) packageName;
+
+//! LWEPackageDownloader sets this to YES if this package has already been unwrapped (downloaded & decompressed).
+@property BOOL isUnwrapped;
+
+//! The URL of the content before downloading
+@property (retain) NSURL *packageUrl;
+
+//! The local filepath where the content will be downloaded to (e.g. this is a local .zip file)
+@property (retain) NSString *destinationFilepath;
+
+//! The local path where the content will be decompressed to (e.g. this is a folder)
+@property (retain) NSString *unpackagePath;
 
 @end

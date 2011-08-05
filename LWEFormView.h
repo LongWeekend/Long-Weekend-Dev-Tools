@@ -35,6 +35,7 @@
 - (void) formWillBeginEditing:(LWEFormView*)formView;
 - (void) formDidFinishEditing:(LWEFormView*)formView;
 - (void) formDidChangeFirstResponder:(LWEFormView*)formView;
+- (BOOL) formField:(id)field shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)text;
 
 - (LWETextValidationTypes) validationTypesForField:(UIControl*)field;
 - (NSInteger) maximumLengthForField:(UIControl*)field;

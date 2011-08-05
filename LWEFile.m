@@ -1,10 +1,21 @@
+// LWEFile.m
 //
-//  LWEFile.m
-//  jFlash
+// Copyright (c) 2010, 2011 Long Weekend LLC
 //
-//  Created by Mark Makdad on 3/13/10.
-//  Copyright 2010 LONG WEEKEND INC.. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWEFile.h"
 #import "LWEDebug.h"
@@ -99,20 +110,22 @@
  */
 + (BOOL) deleteFile:(NSString*)filename
 {
-  // Sanity checks
-  if (filename == nil) return NO;
-  
-  NSError *error;
-  NSFileManager *fm = [NSFileManager defaultManager];
-  if (![fm removeItemAtPath:filename error:&error])
+  // Sanity check
+  if (filename == nil)
   {
-    LWE_LOG(@"Could not delete file at specified location: %@",filename);
     return NO;
+  }
+  
+  NSError *error = nil;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  if ([fm removeItemAtPath:filename error:&error])
+  {
+    return YES;
   }
   else
   {
-    LWE_LOG(@"File at specified location deleted: %@",filename);
-    return YES;
+    LWE_LOG(@"Could not delete file at specified location: %@ (error: %@)",filename,error);
+    return NO;
   }
 }
 
@@ -123,12 +136,14 @@
 + (BOOL) fileExists:(NSString*)filename
 {
   // Sanity checks
-  if (filename == nil) return NO;
+  if (filename == nil)
+  {
+    return NO;
+  }
 
   NSFileManager *fm = [NSFileManager defaultManager];
   if ([fm fileExistsAtPath:filename])
   {
-//    LWE_LOG(@"File found at specified location: %@",filename);
     return YES;
   }
   else
@@ -143,7 +158,7 @@
  */
 + (BOOL) createDirectoryIfNotExisting:(NSString*)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes error:(NSError **)error
 {
-  if (![LWEFile fileExists:path])
+  if ([LWEFile fileExists:path] == NO)
   {
     NSFileManager *fm = [NSFileManager defaultManager];
     return [fm createDirectoryAtPath:path withIntermediateDirectories:createIntermediates attributes:attributes error:error];
@@ -171,6 +186,47 @@
   }
 }
 
+/**
+ *  \brief    Copy a file from a certain path to another path. 
+ *  \details  Note that both paths has to be a full path, not a relative.
+ */
++ (BOOL) copyFromBundleWithFilename:(NSString *)source toDocumentsWithFilename:(NSString *)dest shouldOverwrite:(BOOL)overwrite
+{
+  NSString *destPath = [LWEFile createDocumentPathWithFilename:dest];
+  if ([LWEFile fileExists:destPath])
+  {
+    if (overwrite)
+    {
+      if ([LWEFile deleteFile:destPath] == NO)
+      {
+        LWE_LOG(@"Could not delete file in overwrite mode on copy: %@",destPath);
+        return NO;
+      }
+    }
+    else
+    {
+      LWE_LOG(@"Not overwriting file: %@",destPath);
+      return NO;  
+    }
+  }
+  
+  // Now do the actual copy
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  
+  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:source];
+  LWE_LOG(@"Copying file from: %@ to: %@", bundlePath, destPath);
+  NSError *error = nil;
+	BOOL result = [fileManager copyItemAtPath:bundlePath toPath:destPath error:&error];
+  if (result)
+  {
+    return YES;
+  }
+  else
+  {
+    LWE_LOG(@"Error copying file: %@", error);
+    return NO;
+  }
+}
 
 /**
  * Helper function to copy files from the main bundle to the docs directory
