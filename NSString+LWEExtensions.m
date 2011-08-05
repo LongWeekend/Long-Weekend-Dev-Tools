@@ -41,5 +41,8 @@
 {
 	return (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)self, NULL, (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ", CFStringConvertNSStringEncodingToEncoding(encoding));
 }
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 @end

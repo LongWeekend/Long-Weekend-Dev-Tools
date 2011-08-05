@@ -10,5 +10,8 @@
 
 - (NSString*) MD5;
 - (NSString *) urlEncodeUsingEncoding:(NSStringEncoding)encoding;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 @end
