@@ -34,7 +34,7 @@
  */
 - (id) init
 {
-  if (self = [super init])
+  if ((self = [super init]))
   {
     // Default values for URL & metadata dictionary
     [self setTargetURL:nil];
