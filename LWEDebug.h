@@ -18,6 +18,8 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+#import "FlurryAPI.h"
+
 // Assertions - for app store do nothing, otherwise assert!
 #if defined(LWE_RELEASE_APP_STORE)
   #define LWE_ASSERT(STATEMENT) do { (void) sizeof(STATEMENT); } while(0)

@@ -7,5 +7,4 @@
 
 - (NSString*) MD5;
 - (NSString *) urlEncodeUsingEncoding:(NSStringEncoding)encoding;
-
 @end
