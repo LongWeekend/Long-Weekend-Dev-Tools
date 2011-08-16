@@ -21,7 +21,7 @@
 
 @implementation LWEPackage
 
-@synthesize packageUrl, destinationFilepath, unpackagePath, isUnwrapped;
+@synthesize packageUrl, destinationFilepath, unpackagePath, isUnwrapped, userInfo;
 
 //! Initializer, conveninence method autoreleased
 + (id) packageWithUrl:(NSURL*)url destinationFilepath:(NSString*)filepath
@@ -57,6 +57,7 @@
 
 - (void) dealloc
 {
+  [userInfo release];
   [packageUrl release];
   [unpackagePath release];
   [destinationFilepath release];
