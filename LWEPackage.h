@@ -46,4 +46,7 @@
 //! The local path where the content will be decompressed to (e.g. this is a folder)
 @property (retain) NSString *unpackagePath;
 
+//! A userinfo dictionary, put anything you want in here.
+@property (retain) NSDictionary *userInfo;
+
 @end
