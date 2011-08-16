@@ -9,11 +9,6 @@
 #import "LWELoadingView.h"
 #import "LWEViewUtility.h"
 
-// Private
-@interface LWELoadingView ()
-CGFloat _totalHeight;
-@end
-
 @implementation LWELoadingView
 
 //@synthesize totalHeight;
@@ -25,6 +20,7 @@ CGFloat _totalHeight;
 
 + (id)loadingView:(UIView *)aSuperview withText:(NSString *)text calculateNavigationBar:(BOOL)calculateNavigationBar
 {	
+  CGFloat _totalHeight;
 	CGRect borderFrame = [[UIScreen mainScreen] bounds]; //[aSuperview bounds];
 	LWELoadingView *loadingView = [[[LWELoadingView alloc] initWithFrame:borderFrame] autorelease];
 	if (!loadingView)
