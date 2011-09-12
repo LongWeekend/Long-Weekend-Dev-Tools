@@ -1,10 +1,21 @@
+// LWERetinaUtils.m
 //
-//  LWEHDUtils.m
-//  jFlash
+// Copyright (c) 2011 Long Weekend LLC
 //
-//  Created by Mark Makdad on 8/10/10.
-//  Copyright 2010 Long Weekend Inc. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWERetinaUtils.h"
 #import "LWEUniversalAppHelpers.h"
@@ -56,49 +67,6 @@
   else
   {
     return name;
-  }
-}
-
-#pragma mark -
-#pragma mark DEPRECATED METHODS
-
-// MMA: May/11/11
-// This can be deprecated, both iOS AND Cocos now support scaleFactor
-+ (CGRect) retinaSafeCGRect:(CGRect)rect
-{
-  if ([LWERetinaUtils isRetinaDisplay])
-  {
-    rect.size.width = rect.size.width * 2.0f;
-    rect.size.height = rect.size.height * 2.0f;
-    rect.origin.x = rect.origin.x * 2.0f;
-    rect.origin.y = rect.origin.y * 2.0f;
-  }
-  return rect;
-}
-
-// MMA: May/11/11
-// This can be deprecated, both iOS AND Cocos now support scaleFactor
-+ (CGPoint) retinaSafeCGPoint:(CGPoint)point
-{
-  if ([LWERetinaUtils isRetinaDisplay])
-  {
-    point.x = point.x * 2.0f;
-    point.y = point.y * 2.0f;
-  }
-  return point;
-}
-
-// MMA: May/11/11
-// This can be deprecated, both iOS AND Cocos now support scaleFactor
-+ (NSInteger) retinaSafeDimension:(NSInteger)dimension
-{
-  if ([LWERetinaUtils isRetinaDisplay])
-  {
-    return dimension *2;
-  }
-  else
-  {
-    return dimension;
   }
 }
 

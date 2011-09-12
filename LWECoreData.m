@@ -1,9 +1,21 @@
+// LWECoreData.m
 //
-//  LWECoreData.m
+// Copyright (c) 2010, 2011 Long Weekend LLC
 //
-//  Created by シャロット ロス on 6/13/10.
-//  Copyright 2010 LONG WEEKEND INC. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWECoreData.h"
 #import "LWEDebug.h"
@@ -19,8 +31,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 */
 @implementation LWECoreData
 
-#pragma mark -
-#pragma mark Persistent Store Methods
+#pragma mark - Persistent Store Methods
 
 /**
  * Creates an autoreleased managed object context and associates a persistent store coordinator
@@ -83,8 +94,8 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   {
     managedObjectModel = [NSManagedObjectModel mergedModelFromBundles:nil];
   }
-
-  NSError *error;
+  
+  NSError *error = nil;
   NSPersistentStoreCoordinator* coordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:managedObjectModel] autorelease];
   
   //merging options
@@ -102,8 +113,25 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   return coordinator;
 }
 
-#pragma mark -
-#pragma mark retrieval methods
+#pragma mark - Retrieval methods
+
+/**
+ * Gets an entity for a given entity & context ("SELECT * FROM foo WHERE x = y" in SQL), when you only expect 1 results (lookup based on ID, etc)
+ * \param entityName Name of the Core Data entity to fetch
+ * \param managedObjectContext Which ObjectContext to use
+ * \param predicate the NSPredicate "where clause" of the query
+ */
++ (NSManagedObject*) fetchOne:(NSString*)entityName managedObjectContext:(NSManagedObjectContext*)managedObjectContext predicate:(id)stringOrPredicate, ...
+{
+  NSManagedObject *returnVal = nil;
+  NSArray *results = [LWECoreData fetch:entityName managedObjectContext:managedObjectContext withSortDescriptors:nil withLimit:1 predicate:stringOrPredicate];
+  NSInteger numResults = [results count];
+  if (numResults == 1)
+  {
+    returnVal = [results objectAtIndex:0];
+  }
+  return returnVal;
+}
 
 /**
  * Gets all entities for a given entity & context ("SELECT * FROM foo" in SQL)
@@ -209,7 +237,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
     }
     else
     {
-      NSAssert2([stringOrPredicate isKindOfClass:[NSPredicate class]], @"Second parameter passed to %s is of unexpected class %@", sel_getName(_cmd), [stringOrPredicate class]);
+      LWE_ASSERT_EXC([stringOrPredicate isKindOfClass:[NSPredicate class]], @"Second parameter passed to %s is of unexpected class %@", sel_getName(_cmd), [stringOrPredicate class]);
       predicate = (NSPredicate *)stringOrPredicate;
     }
     [fetchRequest setPredicate:predicate];
@@ -218,8 +246,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 }
 
 
-#pragma mark -
-#pragma mark addLables
+#pragma mark - addLables
 
 /**
  * Adds a plist to a entity, assumes that the plist has same attribute key names. Will update or create an entity
@@ -246,10 +273,8 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   id entity; // the entity we will populate
 
   // we require the attribute identifier to be unique so error if we get more than one entity
-#if !defined(LWE_RELEASE_APP_STORE)
-  NSAssert(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);
-#endif
-  
+  LWE_ASSERT_EXC(([entityArray count] < 2), @"More than one entity of type %@ found for attribute %@. Must be unique.", entityName, attributeName);  
+
   // set entity to the existing one if it exists
   if ([entityArray count] == 1) 
   {
@@ -280,8 +305,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
   return entity;
 }
 
-#pragma mark -
-#pragma mark persiste methods
+#pragma mark - persist methods
 
 /**
  * Saves the current objectContext
@@ -303,10 +327,29 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
       }
     }
     // Now fail
-    NSAssert2(0, @"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
+    LWE_LOG_ERROR(@"This is embarrassing. %s We failed to save because: %@", sel_getName(_cmd), [error localizedDescription]);
     returnVal = NO;
   }
   return returnVal;
+}
+
+/**
+ * Deletes an entity from the MOC associated with the object.
+ * \param entity Object to delete
+ * \return returns YES on success, NO on delete failure (swallows exception)
+ */
++ (BOOL) delete:(NSManagedObject*)entity
+{
+  [entity.managedObjectContext deleteObject:entity];
+  @try
+  {
+    [LWECoreData save:entity.managedObjectContext];
+  }
+  @catch (NSException *exception)
+  {
+    return NO;
+  }
+  return YES;
 }
 
 /**
@@ -315,7 +358,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
  * \param context managedObjectContext to delete from
  * \return returns YES on success, NO on delete failure (swallows exception)
  */
-+ (BOOL) delete:(id)entity fromContext:(NSManagedObjectContext *)context
++ (BOOL) delete:(NSManagedObject*)entity fromContext:(NSManagedObjectContext *)context
 {
 	[context deleteObject:entity];
   @try

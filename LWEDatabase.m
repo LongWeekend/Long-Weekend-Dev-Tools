@@ -1,10 +1,21 @@
+// LWEDatabase.m
 //
-//  LWEDatabase.m
-//  jFlash
+// Copyright (c) 2011 Long Weekend LLC
 //
-//  Created by Mark Makdad on 3/7/10.
-//  Copyright 2010 LONG WEEKEND INC.. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWEDatabase.h"
 #import "LWEDebug.h"
@@ -54,7 +65,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
     self.dao = [FMDatabase databaseWithPath:pathToDatabase];
     
     // only allow error tracing in a non-release versions.  APP Store version should never have these on
-    #if defined(APP_STORE_FINAL)
+    #if defined(LWE_RELEASE_AD_HOC) || defined(LWE_RELEASE_APP_STORE)
       self.dao.logsErrors = NO;
       self.dao.traceExecution = NO;
     #else
@@ -130,22 +141,17 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (BOOL) attachDatabase:(NSString*) pathToDatabase withName:(NSString*) name
 {
+  LWE_ASSERT_EXC([self _databaseIsOpen], @"Database could not be opened");
   BOOL returnVal = NO;
-  if ([self _databaseIsOpen])
+  
+  NSString *sql = [[NSString alloc] initWithFormat:@"ATTACH DATABASE \"%@\" AS %@;",pathToDatabase,name];
+  LWE_LOG(@"Debug: Trying to attach %@ as %@", pathToDatabase, name);
+  [self executeUpdate:sql];
+  if (![[self dao] hadError])
   {
-    NSString *sql = [[NSString alloc] initWithFormat:@"ATTACH DATABASE \"%@\" AS %@;",pathToDatabase,name];
-    [self executeUpdate:sql];
-    if (![[self dao] hadError])
-    {
-      returnVal = YES;
-    }
-    [sql release];
+    returnVal = YES;
   }
-  else
-  {
-    // When called with no DB, throw exception
-    [NSException raise:@"Invalid database object in 'dao'" format:@"dao object is: %@",[self dao]];
-  }
+  [sql release];
   return returnVal;
 }
 
@@ -226,10 +232,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (BOOL) _databaseIsOpen
 {
-  if ([[self dao] isKindOfClass:[FMDatabase class]] && [[self dao] goodConnection])
+  if ([self.dao respondsToSelector:@selector(goodConnection)] && [self.dao goodConnection])
+  {
     return YES;
+  }
   else
+  {
     return NO;
+  }
 }
 
 

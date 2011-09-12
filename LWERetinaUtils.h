@@ -1,10 +1,21 @@
+// LWERetinaUtils.h
 //
-//  LWEHDUtils.h
-//  jFlash
+// Copyright (c) 2011 Long Weekend LLC
 //
-//  Created by Mark Makdad on 8/10/10.
-//  Copyright 2010 Long Weekend Inc. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
 
@@ -37,29 +48,4 @@
  */
 + (NSString*) retinaSafeImageName:(NSString*)name;
 
-/**
- * \brief   Returns a CGRect that is OK to use for either retina or non-retina display
- * \param   rect Any CGRect
- * \return   If iPhone4, CGRect width&height properties will be 2x of parameter rect
- * DEPRECATED
- */
-+ (CGRect) retinaSafeCGRect:(CGRect)rect;
-
-
-/**
- * \brief   Returns a CGPoint that is OK to use for either retina or non-retina display
- * \param   rect Any CGPoint
- * \return   If iPhone4, CGPoint width&height properties will be 2x of parameter rect
- * DEPRECATED
- */
-+ (CGPoint) retinaSafeCGPoint:(CGPoint)point;
-
-
-/**
- * \brief   Returns a screen dimension (x,y,w,h) converted to retina coordinate space as necessary (e.g. x=100 becomes x=200)
- * \param   dimension Any integer
- * \return   If iPhone4, dimension will be 2x of parameter dimension
- * DEPRECATED
- */
-+ (NSInteger) retinaSafeDimension:(NSInteger)dimension;
 @end

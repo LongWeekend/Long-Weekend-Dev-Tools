@@ -1,13 +1,23 @@
-/*
- *  LWEMacros.h
- *  phone
- *
- *  Created by Mark Makdad on 1/31/11.
- *  Copyright 2011 Long Weekend LLC. All rights reserved.
- *
- */
+// LWEMacros.h
+//
+// Copyright (c) 2011 Long Weekend LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Delegate stuff
+#pragma mark - Delegate Stuff
 
 #define LWE_DELEGATE_CALL(SELECTOR,OBJ) do { \
 if (self.delegate && ([self.delegate respondsToSelector:SELECTOR])) \
@@ -20,11 +30,12 @@ else\
 }\
 } while(0)
 
-// UI Color
+#pragma mark - UIColor
 
+// TODO: MMA - why isn't this a static class method?
 #define LWE_UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
-// Timers!
+#pragma mark - Timers
 
 //! Use this one in the dealloc method
 #define LWE_DEALLOC_TIMER(OBJ) do { \
@@ -46,3 +57,11 @@ if (OBJ)\
   OBJ = nil;\
 }\
 } while(0)
+
+#pragma mark - NSString 
+
+//Convert a preprocessor symbol to an NSString
+//EXAMPLE//  NSString *version = CONVERT_SYMBOL_TO_NSSTRING(SRC_ROOT);
+
+#define CONVERT_SYMBOL_TO_NSSTRING_2(x) @#x
+#define CONVERT_SYMBOL_TO_NSSTRING(x) CONVERT_SYMBOL_TO_NSSTRING_2(x)

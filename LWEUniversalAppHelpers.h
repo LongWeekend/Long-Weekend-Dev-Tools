@@ -1,10 +1,26 @@
+// LWEUniversalAppHelpers.h
 //
-//  LWEUniversalAppHelpers.h
-//  Rikai
+// Copyright (c) 2010, 2011 Long Weekend LLC
 //
-//  Created by Ross on 10/11/10.
-//  Copyright 2010 Long Weekend LLC. All rights reserved.
+// EXCEPT for +(NSString*)deviceModelString method implementation, courtesy of 
+// John Muchow:
+// http://iphonedevelopertips.com/device/determine-if-iphone-is-3g-or-3gs-determine-if-ipod-is-first-or-second-generation.html
 //
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 #import <Foundation/Foundation.h>
 
@@ -78,9 +94,15 @@ typedef enum
 + (kLWEDeviceType)deviceType;
 
 /**
- * Returns the filename passed to it, UNLESS the device is an iPad AND the same filename + "@HD" exists.  (ala @2x)
+ * Adds a @HD extension to the name, if it is an iPad
  */
 + (NSString*) fileNamed:(NSString*)fileName;
+
+/**
+ * Adds an @HD extension to the name if the device is an iPad.  If the @HD filename does not exist
+ * and useRetinaIfMissing is YES, it will be @2x instead.
+ * Also, if NON ipad and is a retina device on 4.0.x, this method will return @2x
+ */
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
 
 /**

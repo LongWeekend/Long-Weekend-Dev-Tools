@@ -1,3 +1,6 @@
+// USE OF THIS FILE IS DEPRECATED!! MMA
+#warning(use of this file is DEPRECATED)
+
 #import "LWEDebug.h"
 #import "LWEFile.h"
 #import "LWELocalNotifications.h"
@@ -5,8 +8,8 @@
 #import "LWEUIAlertView.h"
 #import "LWEUITableUtils.h"
 #import "LWEScrollView.h"
+#import "LWEGoogleAnalyticsHelper.h"
 #import "UIWebView+LWENoBounces.h"
-#import "DebugUIView.h"
 
 // Requires REACHABILITY 2.0
 #import "LWENetworkUtils.h"
