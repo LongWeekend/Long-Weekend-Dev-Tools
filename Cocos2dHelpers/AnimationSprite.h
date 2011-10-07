@@ -27,8 +27,12 @@
 
 /** Designated initializers **/
 
+//! Initializes using texture source name and sprite only (default frames seq created from frames array)
+- (id) initWithSourceName:(NSString*)source andSprite:(CCSprite*)lSprite;
+
 //! Initializes using parameters passed, including an existing sprite object
-- (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite andDelay:(NSNumber*)delay andZIndex:(NSInteger)zindex;
+- (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite andDelay:(NSTimeInterval)delay andZIndex:(NSInteger)zindex;
+- (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite andDelay:(NSTimeInterval)delay;
 - (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite;
 
 //! Initializes using a sprite PLIST hash - loads the texture immediately
@@ -78,6 +82,10 @@
 
 //! Returns a CCAction comprising the animation frames which can run on the sprite
 -(id) animateAction;
+
+// Returns a CCAction comprising the already loaded frames in a specified order
+-(id) animateActionWithFrameString:(NSString*)frames;
+-(id) animateActionWithFrameString:(NSString*)frames withFrameDelay:(NSTimeInterval)delay;
 
 //! Make the sprite animate
 -(void) animate;

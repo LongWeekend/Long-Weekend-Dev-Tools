@@ -90,6 +90,7 @@ extern NSString * const kLWEAnimationSpriteHotspotsKey;
 extern NSString * const kLWEAnimationSpriteSourceNameKey;
 extern NSString * const kLWEAnimationSpriteSourceFilenameKey;
 extern NSString * const kLWEAnimationSpriteFrameOrderKey;
+extern NSString * const kLWEAnimationSpriteZwoptexFramesKey;
 extern NSString * const kLWEAnimationSpriteDelayKey;
 extern NSString * const kLWEAnimationSpriteHideOnFinishKey;
 extern NSString * const kLWEAnimationSpritePropertiesKey;

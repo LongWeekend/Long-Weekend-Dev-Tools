@@ -15,7 +15,7 @@
 
 @interface AnimationSprite ()
 - (NSDictionary*) _zwoptexHashFromFilename:(NSString*)sourceFilename;
-- (NSDictionary*) _resolveSprite:(NSDictionary*)spriteDict toAbsolutePath:(NSString*)absolutePath withSourceName:(NSString*)sourceName;
+- (NSDictionary*) _resolveSprite:(NSDictionary*)spriteDict toAbsolutePath:(NSString*)absolutePath withSourceName:(NSString*)aSourceName;
 - (NSDictionary*) _resolveDictionary:(NSDictionary*)dict keys:(NSArray*)keys toAbsolutePath:(NSString*)absolutePath;
 - (NSString*) _resolveFilename:(NSString*)filename toAbsolutePath:(NSString*)absolutePath;
 - (NSDictionary *) _createHotspotsWithDictionary:(NSDictionary *)hotspotDict;
@@ -32,21 +32,36 @@
 @synthesize sprite, hotspots, isDebug, shouldPreload, hideOnFinish;
 
 #pragma mark -
-#pragma mark initializer
+#pragma mark initializers
+
+/**
+ * Init a new AnimationSprite allowing you to pass in a source, frame string and existing sprite object
+ */
+- (id) initWithSourceName:(NSString*)source andSprite:(CCSprite*)lSprite
+{
+  return [self initWithSourceName:source andFrameString:nil andSprite:lSprite andDelay:0.05 andZIndex:1];
+}
 
 /**
  * Init a new AnimationSprite allowing you to pass in a source, frame string and existing sprite object
  */
 - (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite
 {
-  return [self initWithSourceName:source andFrameString:frames andSprite:lSprite andDelay:[NSNumber numberWithFloat:0.05] andZIndex:1];
+  return [self initWithSourceName:source andFrameString:frames andSprite:lSprite andDelay:0.05 andZIndex:1];
 }
 
+/**
+ * Init a new AnimationSprite allowing you to pass in a source, frame string and existing sprite object
+ */
+- (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite andDelay:(NSTimeInterval)delay
+{
+  return [self initWithSourceName:source andFrameString:frames andSprite:lSprite andDelay:delay andZIndex:1];
+}
 
 /**
  * Init a new AnimationSprite allowing you to pass in source, frame string, frame delay, existing sprite object and zindex
  */
-- (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite andDelay:(NSNumber*)delay andZIndex:(NSInteger)zindex
+- (id) initWithSourceName:(NSString*)source andFrameString:(NSString*)frames andSprite:(CCSprite*)lSprite andDelay:(NSTimeInterval)delay andZIndex:(NSInteger)zindex
 {
   // create a properties dictionary
   NSDictionary *propsDict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -57,7 +72,7 @@
   NSDictionary *spriteDict = [NSDictionary dictionaryWithObjectsAndKeys:
                               source, kLWEAnimationSpriteSourceNameKey, 
                               frames, kLWEAnimationSpriteFrameOrderKey,
-                              delay, kLWEAnimationSpriteDelayKey,
+                              [NSNumber numberWithDouble:delay], kLWEAnimationSpriteDelayKey,
                               propsDict, kLWEAnimationSpritePropertiesKey,
                               nil];
   
@@ -129,6 +144,24 @@
       spriteDict = [self _resolveSprite:spriteDict toAbsolutePath:plistPath withSourceName:self.sourceName];
       self.sourceFilename = [spriteDict objectForKey:kLWEAnimationSpriteSourceFilenameKey];
     }
+    
+    // if frame seq is blank/nil, introspect a default frame sequence from plist frames array
+    if(![spriteDict objectForKey:kLWEAnimationSpriteFrameOrderKey])
+    {
+      NSDictionary *tmpTextureDict = [self _zwoptexHashFromFilename:self.sourceFilename];
+      NSString* frameOrderString = [NSMutableString string];
+      NSInteger frameCount = [[tmpTextureDict objectForKey:kLWEAnimationSpriteZwoptexFramesKey] count];
+      for(int i=1; i <= frameCount; i++)
+      {
+        frameOrderString = [NSString stringWithFormat:@"%@%d",frameOrderString,i];
+        if(i!=frameCount)
+        {
+          frameOrderString = [NSString stringWithFormat:@",",frameOrderString];
+
+        }
+      }
+      [spriteDict setValue:frameOrderString forKey:kLWEAnimationSpriteFrameOrderKey];
+    }
 
     // NOTE 2011-10-06
     // These properties are not used directly in AnimationSprite class 
@@ -171,7 +204,7 @@
     // Create the frame sequence array from the PLIST string
     NSMutableString *frameStr = [[spriteDict objectForKey:kLWEAnimationSpriteFrameOrderKey] mutableCopy];
     LWE_ASSERT_EXC(frameStr,@"Sprite: %@ - MUST have a frame sequence, you passed dict: '%@'",self.sourceName,spriteDict);
-    self.frameSequence = [[self class] arrayForNumericalStringSequence:frameStr];
+    self.frameSequence = [[self class] arrayForNumericalStringSequence:[frameStr mutableCopy]];
     [frameStr release];
   }
   return self;
@@ -291,6 +324,26 @@
 }
 
 /**
+ * Returns a CCAction comprising the animation frames which can run on the sprite
+ */
+-(id) animateActionWithFrameString:(NSString*)frames withFrameDelay:(NSTimeInterval)delay
+{
+  // trun frames into array
+  NSArray *aFrameSequence = [[self class] arrayForNumericalStringSequence:[frames mutableCopy]];
+  NSArray *framesArray = [self _ccSpriteFrames:aFrameSequence reverse:NO];
+  CCAnimation *framesAnimated = [CCAnimation animationWithFrames:framesArray delay:delay];
+  return [CCAnimate actionWithAnimation:framesAnimated restoreOriginalFrame:NO];
+}
+
+/**
+ * Returns a CCAction comprising the animation frames which can run on the sprite
+ */
+-(id) animateActionWithFrameString:(NSString*)frames
+{
+  return [self animateActionWithFrameString:frames withFrameDelay:frameDelay];
+}
+
+/**
  * Make the sprite animate
  */
 -(void) animate
@@ -388,9 +441,9 @@
 /**
  * Takes a single sprite dictionary and converts the "source" field into an absolute path
  */
-- (NSDictionary*) _resolveSprite:(NSDictionary*)spriteDict toAbsolutePath:(NSString*)absolutePath withSourceName:(NSString*)sourceName
+- (NSDictionary*) _resolveSprite:(NSDictionary*)spriteDict toAbsolutePath:(NSString*)absolutePath withSourceName:(NSString*)aSourceName
 {
-  NSString *newSourceName = [NSString stringWithFormat:@"%@.plist", sourceName]; // sprite texture definition files end in .plist
+  NSString *newSourceName = [NSString stringWithFormat:@"%@.plist", aSourceName]; // sprite texture definition files end in .plist
   NSMutableDictionary *mutableSpriteDict = [[spriteDict mutableCopy] autorelease];
   [mutableSpriteDict setObject:newSourceName forKey:kLWEAnimationSpriteSourceFilenameKey];
   
@@ -558,6 +611,7 @@
   NSArray *chunks = [seqStr componentsSeparatedByString:@","];
   for(NSString *crumb in chunks)
   {
+    NSAssert(([crumb isEqualToString:@"0"] == NO),@"Frame sequences are **not** zero indexed, number your frames from 1..n");
     NSAssert(([crumb isEqualToString:@""] == NO),@"Frame sequence string has a format error!");
     
     // if crumb contains '-'

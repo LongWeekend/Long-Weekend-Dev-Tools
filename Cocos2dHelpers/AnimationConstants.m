@@ -54,6 +54,7 @@ NSString * const kLWEAnimationsKey = @"animations";
     NSString * const kLWEAnimationSpriteSourceFilenameKey = @"source-file";
 
     NSString * const kLWEAnimationSpriteFrameOrderKey = @"frames";
+    NSString * const kLWEAnimationSpriteZwoptexFramesKey = @"frames";
     NSString * const kLWEAnimationSpriteDelayKey = @"frame-delay";
     NSString * const kLWEAnimationSpriteHideOnFinishKey = @"hide-on-finish";
     NSString * const kLWEAnimationSpritePropertiesKey = @"properties";
