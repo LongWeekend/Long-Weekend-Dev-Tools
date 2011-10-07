@@ -611,8 +611,8 @@
   NSArray *chunks = [seqStr componentsSeparatedByString:@","];
   for(NSString *crumb in chunks)
   {
-    NSAssert(([crumb isEqualToString:@"0"] == NO),@"Frame sequences are **not** zero indexed, number your frames from 1..n");
-    NSAssert(([crumb isEqualToString:@""] == NO),@"Frame sequence string has a format error!");
+    LWE_ASSERT_EXC(([crumb isEqualToString:@"0"] == NO),@"Frame sequences are **not** zero indexed, number your frames from 1..n");
+    LWE_ASSERT_EXC(([crumb isEqualToString:@""] == NO),@"Frame sequence string has a format error!");
     
     // if crumb contains '-'
     NSRange hyphenInString = [crumb rangeOfString:@"-"];
