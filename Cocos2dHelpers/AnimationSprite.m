@@ -29,7 +29,7 @@
 
 // Properties from PLIST
 @synthesize sourceName, sourceSubspriteName, sourceFilename, frameSequence, frameDelay, properties;
-@synthesize sprite, hotspots, isDebug, shouldPreload, hideOnFinish;
+@synthesize sprite, hotspots, isDebug, isAnimating, shouldPreload, hideOnFinish;
 
 #pragma mark -
 #pragma mark initializers
@@ -175,7 +175,7 @@
     
     // Sanity checks
     LWE_ASSERT_EXC(([self.sourceName isEqualToString:@""] == NO && self.sourceName != nil),@"You can't pass a nil/blank value to sourceName.");
-    LWE_ASSERT_EXC((self.sourceFilename != nil),@"This dictionary hasn't been converted to full pathnames - characterManifest.m should do this for us");
+    LWE_ASSERT_EXC((self.sourceFilename != nil),@"This dictionary hasn't been converted to full pathnames!");
     
     // Lazy load texture
     CCTextureCache *cache = [CCTextureCache sharedTextureCache];
@@ -348,6 +348,7 @@
  */
 -(void) animate
 {
+  self.isAnimating = YES;
   animateActionObj = [self.sprite runAction:[self animateAction]];
 }
 
@@ -356,6 +357,7 @@
  */
 -(void) animateRepeated:(NSInteger)times
 {
+  self.isAnimating = YES;
   animateActionObj = [self.sprite runAction:[CCRepeat actionWithAction:(CCFiniteTimeAction*)[self animateAction] times:times]];
 }
 
@@ -364,6 +366,7 @@
  */
 -(void) animateRepeatedForever
 {
+  self.isAnimating = YES;
   animateActionObj = [self.sprite runAction:[CCRepeatForever actionWithAction:[self animateAction]]];
 }
 
@@ -373,6 +376,7 @@
 -(void) stopAnimating
 {
   // tell just that action to stop
+  self.isAnimating = NO;
   [animateActionObj stop];
 }
 
