@@ -156,7 +156,7 @@
         frameOrderString = [NSString stringWithFormat:@"%@%d",frameOrderString,i];
         if(i!=frameCount)
         {
-          frameOrderString = [NSString stringWithFormat:@",",frameOrderString];
+          frameOrderString = [NSString stringWithFormat:@"%@,",frameOrderString];
 
         }
       }
@@ -478,7 +478,12 @@
   if ([LWEFile fileExists:resolved] == NO)
   {
     // Resolved couldn't be found
-    LWE_ASSERT(@"Texture file was not found! Very not cool.");
+    LWE_ASSERT_EXC(YES,@"Texture file was not found! Very not cool.");
+    // PCH 2011109: This causes errors in LLVM 4.2 compiler:
+    //    LWE_ASSERT(@"Some comment");
+    // but this does not:
+    //    NSString *comment =@"Some comment";
+    //    LWE_ASSERT(comment);
   }
   return resolved;
 }
