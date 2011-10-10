@@ -89,6 +89,7 @@
 
 //! Make the sprite animate
 -(void) animate;
+-(void) stopAnimating;
 
 //! Make the sprite animate a number of times
 -(void) animateRepeated:(NSInteger)times;
