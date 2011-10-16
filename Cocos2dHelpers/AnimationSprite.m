@@ -204,7 +204,7 @@
     // Create the frame sequence array from the PLIST string
     NSMutableString *frameStr = [[spriteDict objectForKey:kLWEAnimationSpriteFrameOrderKey] mutableCopy];
     LWE_ASSERT_EXC(frameStr,@"Sprite: %@ - MUST have a frame sequence, you passed dict: '%@'",self.sourceName,spriteDict);
-    self.frameSequence = [[self class] arrayForNumericalStringSequence:[frameStr mutableCopy]];
+    self.frameSequence = [[self class] arrayForNumericalStringSequence:frameStr];
     [frameStr release];
   }
   return self;
@@ -329,9 +329,11 @@
 -(id) animateActionWithFrameString:(NSString*)frames withFrameDelay:(NSTimeInterval)delay
 {
   // trun frames into array
-  NSArray *aFrameSequence = [[self class] arrayForNumericalStringSequence:[frames mutableCopy]];
+  NSMutableString *frameStr = [frames mutableCopy];
+  NSArray *aFrameSequence = [[self class] arrayForNumericalStringSequence:frameStr];
   NSArray *framesArray = [self _ccSpriteFrames:aFrameSequence reverse:NO];
   CCAnimation *framesAnimated = [CCAnimation animationWithFrames:framesArray delay:delay];
+  [frameStr release];
   return [CCAnimate actionWithAnimation:framesAnimated restoreOriginalFrame:NO];
 }
 
