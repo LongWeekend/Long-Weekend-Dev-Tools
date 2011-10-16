@@ -220,7 +220,7 @@
 {
   if (_textureFilename == nil)
   {
-    _textureFilename = [[self _textureFilenameForSource:self.sourceFilename] retain];
+    _textureFilename = [[self _textureFilenameForSource:self.sourceFilename] retain]; // released in -dealloc
   }
   return _textureFilename;
 }
