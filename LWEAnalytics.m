@@ -7,6 +7,7 @@
 //
 
 #import "LWEAnalytics.h"
+#import "LWEDebug.h"
 #import "FlurryAPI.h"
 
 @implementation LWEAnalytics

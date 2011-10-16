@@ -23,6 +23,7 @@
 
 #import "LWEUniversalAppHelpers.h"
 #import "LWERetinaUtils.h"
+#import "LWEFile.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
