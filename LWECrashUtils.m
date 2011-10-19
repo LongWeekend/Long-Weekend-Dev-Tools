@@ -18,6 +18,8 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWECrashUtils.h"
+#import "LWEDebug.h"
+#import "LWEUniversalAppHelpers.h"
 
 #pragma mark - C Functions for FlurryAPI
 
