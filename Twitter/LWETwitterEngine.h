@@ -40,6 +40,12 @@
 
 extern NSString * const LWETwitterErrorDomain;
 
+typedef enum
+{
+  LWETwitterErrorUnknown = -1,
+  LWETwitterErrorUnableToSendTweet = 1
+} LWETwitterErrorCode;
+
 @class OAConsumer;
 @class OAToken;
 @class OAServiceTicket;
@@ -60,7 +66,7 @@ typedef enum
 {
 	LWET_AUTH_OAUTH,
 	LWET_AUTH_XAUTH
-}LWETAuthMode;
+} LWETAuthMode;
 
 /**
  * This is the twitter agent class, which is going to be instantiated with the user consumer key, and its
@@ -71,18 +77,6 @@ typedef enum
  * it will gets report from the auth engine whether the auth has finishes, or failed. 
  */
 @interface LWETwitterEngine : NSObject <LWETAuthProccessDelegate> 
-{
-	LWETUser *loggedUser;
-	LWETwitterOAuth *authObj;
-	OAConsumer *consumer;
-	LWETUserDB *db;
-	NSManagedObjectContext *context;
-	
-	UIViewController *parentForUserAuthenticationView;
-	UIViewController *authenticationView;
-	id<LWETRequestDelegate> delegate;
-	NSString *tmpForUserID;
-}
 
 @property (nonatomic, retain) LWETwitterOAuth *authObj;
 @property (nonatomic, readonly) LWETUser *loggedUser;
@@ -92,15 +86,14 @@ typedef enum
 @property (nonatomic, retain) NSString *tmpForUserID;
 @property (nonatomic, retain) UIViewController *authenticationView;
 @property (nonatomic, assign) UIViewController *parentForUserAuthenticationView;
-@property (nonatomic, assign) id delegate;
+@property (nonatomic, assign) id<LWETRequestDelegate> delegate;
 
 /**
  * Set the user, and logged them on. Check with the core data, wether they have been 
  * logged in, and has their credential on it, or the engine has to authenticate them by having
  * preferred auth mode as the OAuth, or XAuth. 
  */
-- (void)setLoggedUser:(LWETUser *)aUser
-			 authMode:(LWETAuthMode)authMode;
+- (void)setLoggedUser:(LWETUser *)aUser authMode:(LWETAuthMode)authMode;
 
 - (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey;
 
@@ -109,11 +102,11 @@ typedef enum
 - (NSString *)methodNameForTwitterRequestType:(LWETwitterRequestType)lwet;
 
 - (OAMutableURLRequest *)prepareURLForRequestType:(LWETwitterRequestType)lwet 
-										relatedID:(NSString *)str
-									   returnType:(NSString *)retType;
+                                        relatedID:(NSString *)str
+                                       returnType:(NSString *)retType;
 
 - (void)statusRequestTokenTicket:(OAServiceTicket *)ticket 
-				didFailWithError:(NSError *)error;
+                didFailWithError:(NSError *)error;
 
 - (BOOL)_persistUserToken:(OAToken *)userToken;
 
