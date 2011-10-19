@@ -241,12 +241,11 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 {
   if (ticket.didSucceed) 
 	{
-		if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] &&
-        [self.delegate respondsToSelector:@selector(didFinishProcessWithData:)])
+		if ([self.delegate respondsToSelector:@selector(didFinishProcessWithData:)])
 		{
       // Do this on the main thread because we call this from the background mostly!
       // If the delegate has UI stuff in it, it will crash, that's why
-      //      [self.delegate performSelectorOnMainThread:@selector(didFinishProcessWithData:) withObject:data waitUntilDone:NO];
+      [self.delegate performSelectorOnMainThread:@selector(didFinishProcessWithData:) withObject:data waitUntilDone:NO];
 		}
   } 
 	else 
@@ -261,9 +260,9 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 
 - (void)statusRequestTokenTicket:(OAServiceTicket *)ticket didFailWithError:(NSError *)error 
 {
-	if ([self.delegate conformsToProtocol:@protocol(LWETRequestDelegate)] && [self.delegate respondsToSelector:@selector(didFailedWithError:)])
+	if ([self.delegate respondsToSelector:@selector(didFailedWithError:)])
 	{
-    //		[self.delegate performSelectorOnMainThread:@selector(didFailedWithError:) withObject:error waitUntilDone:NO];
+    [self.delegate performSelectorOnMainThread:@selector(didFailedWithError:) withObject:error waitUntilDone:NO];
 	}
 }
 

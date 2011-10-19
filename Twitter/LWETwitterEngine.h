@@ -86,7 +86,7 @@ typedef enum
 @property (nonatomic, retain) NSString *tmpForUserID;
 @property (nonatomic, retain) UIViewController *authenticationView;
 @property (nonatomic, assign) UIViewController *parentForUserAuthenticationView;
-@property (nonatomic, assign) id<LWETRequestDelegate> delegate;
+@property (nonatomic, assign) NSObject<LWETRequestDelegate> *delegate;
 
 /**
  * Set the user, and logged them on. Check with the core data, wether they have been 
