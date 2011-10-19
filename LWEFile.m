@@ -75,6 +75,20 @@
   return returnVal;
 }
 
+/**
+ * Takes a single filename and returns a full path pointing at that filename in the current app's library/Caches directory
+ */
++ (NSString*) createCachesPathWithFilename:(NSString*)filename
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    returnVal = [documentsDirectory stringByAppendingPathComponent:filename];
+  }
+  return returnVal;
+}
 
 /**
  * Creates a temporary path with a filename
