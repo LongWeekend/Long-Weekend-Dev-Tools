@@ -40,7 +40,7 @@
 - (NSUInteger) enumFromString: (NSString*) strVal default: (NSUInteger) def;
 {
   NSUInteger n = [self indexOfObject:strVal];
-  if(!n)
+  if(n==NSNotFound)
   {
     n = def;
   }
