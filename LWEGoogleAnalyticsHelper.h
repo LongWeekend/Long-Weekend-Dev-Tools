@@ -23,6 +23,7 @@
 #import <Foundation/Foundation.h>
 
 @interface LWEGoogleAnalyticsHelper : NSObject
++ (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo;
 
 /*
  start session, attempt to send saved sessions to server 
