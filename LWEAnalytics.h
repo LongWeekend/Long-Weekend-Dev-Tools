@@ -22,7 +22,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LWEGoogleAnalyticsHelper : NSObject
+@interface LWEAnalytics : NSObject
 + (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo;
 
 /*

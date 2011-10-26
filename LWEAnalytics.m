@@ -18,7 +18,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#import "LWEGoogleAnalyticsHelper.h"
+#import "LWEAnalytics.h"
 #if defined(LWE_USE_FLURRY)
   #import "FlurryAPI.h"
 #endif 
@@ -27,7 +27,7 @@
 #endif
 static const NSInteger kGANDispatchPeriodSec = 10;
 
-@implementation LWEGoogleAnalyticsHelper
+@implementation LWEAnalytics
 
 + (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo
 {
