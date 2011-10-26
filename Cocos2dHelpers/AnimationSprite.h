@@ -93,9 +93,11 @@
 
 //! Make the sprite animate a number of times
 -(void) animateRepeated:(NSInteger)times;
+-(id) animateActionRepeated:(NSInteger)times;
 
 //! Make the sprite animate repeating forever (or until stopped)
 -(void) animateRepeatedForever;
+-(id) animateActionRepeatedForever;
 
 /** Cocos related methods **/
 

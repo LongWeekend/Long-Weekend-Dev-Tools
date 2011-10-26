@@ -360,7 +360,15 @@
 -(void) animateRepeated:(NSInteger)times
 {
   self.isAnimating = YES;
-  animateActionObj = [self.sprite runAction:[CCRepeat actionWithAction:(CCFiniteTimeAction*)[self animateAction] times:times]];
+  animateActionObj = [self.sprite runAction:[self animateActionRepeated:times]];
+}
+
+/**
+ * Return action for animated sprite repeated a number of times
+ */
+-(id) animateActionRepeated:(NSInteger)times
+{
+  return [CCRepeat actionWithAction:(CCFiniteTimeAction*)[self animateAction] times:times];
 }
 
 /**
@@ -369,7 +377,15 @@
 -(void) animateRepeatedForever
 {
   self.isAnimating = YES;
-  animateActionObj = [self.sprite runAction:[CCRepeatForever actionWithAction:[self animateAction]]];
+  animateActionObj = [self.sprite runAction:[self animateActionRepeatedForever]];
+}
+
+/**
+ * Return action for animated sprite repeating forever (or until stopped)
+ */
+-(id) animateActionRepeatedForever
+{
+  return [CCRepeatForever actionWithAction:[self animateAction]];
 }
 
 /**
