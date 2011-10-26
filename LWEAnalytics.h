@@ -18,13 +18,26 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-// TODO: MMA merge this with a Flurry helper to create a generalized reporting class
+// Uncomment the following lines to enable various analytics trackers
+#define LWE_USE_FLURRY 1
+//#define LWE_USE_GAN 1
 
 #import <Foundation/Foundation.h>
 
 @interface LWEAnalytics : NSObject
-+ (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo;
 
+//================= FLURRY METHODS =============
+
+#if defined(LWE_USE_FLURRY)
+/**
+ * Logs a non-timed Flurry event with parameters
+ */
++ (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo;
+#endif
+
+//================= GOOGLE ANALYTICS METHODS =============
+
+#if defined(LWE_USE_GAN)
 /*
  start session, attempt to send saved sessions to server 
  */
@@ -41,5 +54,6 @@
  wrapper for calling the stop tracker method
  */
 + (void) stopTracker;
+#endif
 
 @end

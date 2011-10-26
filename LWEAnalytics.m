@@ -19,15 +19,21 @@
 
 
 #import "LWEAnalytics.h"
+#import "LWEDebug.h"
 #if defined(LWE_USE_FLURRY)
   #import "FlurryAPI.h"
 #endif 
 #if defined(LWE_USE_GAN)
   #import "GANTracker.h"
 #endif
+
 static const NSInteger kGANDispatchPeriodSec = 10;
 
 @implementation LWEAnalytics
+
+//================= FLURRY ANALYTICS METHODS =============
+
+#if defined(LWE_USE_FLURRY)
 
 + (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo
 {
@@ -37,8 +43,13 @@ static const NSInteger kGANDispatchPeriodSec = 10;
   LWE_LOG(@"LWEAnalytics Event: %@",eventName);
   LWE_LOG(@"LWEAnalytics Parameters: %@",userInfo);
 #endif
-  
 }
+
+#endif
+
+//================= GOOGLE ANALYTICS METHODS =============
+
+#if defined(LWE_USE_GAN)
 
 //! Instantiate a GAN session with apiKey (e.g. UA-00000000-1)
 + (void)startSession:(NSString *)apiKey
@@ -81,5 +92,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 {
   [[GANTracker sharedTracker] stopTracker];
 }
+
+#endif
 
 @end
