@@ -38,7 +38,7 @@
 {
   [[SimpleAudioEngine sharedEngine] unloadEffect:fxName];
   
-  LWE_ASSERT_EXC([self.loadedSounds indexOfObject:fxName], @"Tried to unload FX: '%@' but it doesn't exist in the preloaded array.", fxName);
+  LWE_ASSERT_EXC(([self.loadedSounds indexOfObject:fxName] != NSNotFound), @"Tried to unload FX: '%@' but it doesn't exist in the preloaded array.", fxName);
   [self.loadedSounds removeObject:fxName];
 }
 
