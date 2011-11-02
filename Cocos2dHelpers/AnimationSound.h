@@ -11,9 +11,10 @@
 
 @interface AnimationSound : NSObject
 
--(void)unloadFX:(NSString*)fxName;
--(void)preloadFX:(NSString*)fxName;
--(void)stopAllFX;
+- (void) unloadFX:(NSString*)fxName;
+- (void) preloadFX:(NSString*)fxName;
+- (void) stopAllFX;
+- (void) unloadAllFX;
 
 -(BOOL)fxIsPlaying:(NSString*)fxName;
 
@@ -25,5 +26,6 @@
 
 @property (retain) NSMutableDictionary *soundsPlaying;
 @property (retain) NSMutableDictionary *delayedSounds;
+@property (retain) NSMutableArray *loadedSounds;
 
 @end
