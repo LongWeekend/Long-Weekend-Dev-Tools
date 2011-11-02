@@ -3,7 +3,7 @@
 //  TrialConsumerOAuthforIPhone
 //
 //  Created by Rendy Pranata on 15/07/10.
-//  Copyright 2010 CRUX. All rights reserved.
+//  Copyright 2010 Long Weekend LLC. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -29,7 +29,7 @@
  * for OAuth authentication method
  * has finished
  */
-@protocol LWETAuthProccessDelegate
+@protocol LWETAuthProccessDelegate <NSObject>
 @optional
 - (void)didFinishAuthProcessWithAccessToken:(OAToken *)userToken;
 - (void)didFailAuthProcessWithError:(NSError *)error;

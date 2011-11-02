@@ -31,6 +31,7 @@ typedef enum
 + (NSString*) createBundlePathWithFilename:(NSString*) filename;
 + (NSString*) createDocumentPathWithFilename:(NSString*) filename;
 + (NSString*) createLibraryPathWithFilename:(NSString*) filename;
++ (NSString*) createCachesPathWithFilename:(NSString*)filename;
 + (NSString*) createTemporaryPathWithFilename:(NSString*) filename;
 + (NSString*) applicationDirectory;
 
