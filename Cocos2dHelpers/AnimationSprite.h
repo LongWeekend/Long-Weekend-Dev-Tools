@@ -120,7 +120,7 @@
 @property BOOL isDebug;
 
 //! If YES, it means the sprite is being animated using the internal animation function (not set when animated externally using [sprite runaction:action])
-@property BOOL isAnimating;
+@property (atomic) BOOL isAnimating;
 
 //! If YES, this sprite should hide after animating.  Default YES.
 @property BOOL hideOnFinish;
