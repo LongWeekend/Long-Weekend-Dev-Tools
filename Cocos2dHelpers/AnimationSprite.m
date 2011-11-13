@@ -395,7 +395,7 @@
 {
   // tell just that action to stop
   self.isAnimating = NO;
-  [animateActionObj stop];
+  [self.sprite stopAction:animateActionObj];
 }
 
 /**
