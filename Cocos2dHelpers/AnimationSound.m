@@ -10,27 +10,48 @@
 #import "SimpleAudioEngine.h"
 
 @implementation AnimationSound
-@synthesize soundsPlaying, delayedSounds;
+@synthesize soundsPlaying, delayedSounds, loadedSounds;
 
 -(id) init
 {
   if ((self = [super init])) 
   {
-    self.soundsPlaying = [[[NSMutableDictionary alloc] init] autorelease];
-    self.delayedSounds = [[[NSMutableDictionary alloc] init] autorelease];
+    self.loadedSounds = [NSMutableArray array];
+    self.soundsPlaying = [NSMutableDictionary dictionary];
+    self.delayedSounds = [NSMutableDictionary dictionary];
   }
   return self;
+}
+
+- (void) unloadAllFX
+{
+  // We don't want to mutate our array as we're iterating it)
+  NSArray *tmpArray = [self.loadedSounds copy];
+  for (NSString *fxName in tmpArray)
+  {
+    [self unloadFX:fxName];
+  }
+  [tmpArray release];
 }
 
 -(void) unloadFX:(NSString *)fxName
 {
   [[SimpleAudioEngine sharedEngine] unloadEffect:fxName];
+  
+  LWE_ASSERT_EXC(([self.loadedSounds indexOfObject:fxName] != NSNotFound), @"Tried to unload FX: '%@' but it doesn't exist in the preloaded array.", fxName);
+  [self.loadedSounds removeObject:fxName];
 }
 
 //! Loads effect into memory before using it, not required but reduces the delay
 -(void) preloadFX:(NSString*)fxName
 {
   [[SimpleAudioEngine sharedEngine] preloadEffect:fxName];
+  
+  // Add our preloaded FX to our array, but only once
+  if ([self.loadedSounds containsObject:fxName] == NO)
+  {
+    [self.loadedSounds addObject:fxName];
+  }
 }
 
 -(void) stopAllFX
@@ -113,6 +134,8 @@
 //! Play sound after delay with a different pitch
 -(void) playFX:(NSString*)fxName pitch:(Float32)pitch gain:(Float32)gain withDelay:(NSTimeInterval)delay
 {
+  [self preloadFX:fxName];
+
   if (delay > 0)
   {
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:fxName,@"fxName",[NSNumber numberWithFloat:pitch],@"fxPitch",[NSNumber numberWithFloat:gain],@"fxGain",nil];
@@ -149,8 +172,9 @@
 {
   // Cancel any delayed starts
   [NSObject cancelPreviousPerformRequestsWithTarget:self];
-  self.soundsPlaying = nil;
-  self.delayedSounds = nil;
+  [loadedSounds release];
+  [soundsPlaying release];
+  [delayedSounds release];
   [super dealloc];
 }
 

@@ -93,9 +93,11 @@
 
 //! Make the sprite animate a number of times
 -(void) animateRepeated:(NSInteger)times;
+-(id) animateActionRepeated:(NSInteger)times;
 
 //! Make the sprite animate repeating forever (or until stopped)
 -(void) animateRepeatedForever;
+-(id) animateActionRepeatedForever;
 
 /** Cocos related methods **/
 
@@ -118,7 +120,7 @@
 @property BOOL isDebug;
 
 //! If YES, it means the sprite is being animated using the internal animation function (not set when animated externally using [sprite runaction:action])
-@property BOOL isAnimating;
+@property (atomic) BOOL isAnimating;
 
 //! If YES, this sprite should hide after animating.  Default YES.
 @property BOOL hideOnFinish;

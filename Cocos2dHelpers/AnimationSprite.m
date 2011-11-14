@@ -204,7 +204,7 @@
     // Create the frame sequence array from the PLIST string
     NSMutableString *frameStr = [[spriteDict objectForKey:kLWEAnimationSpriteFrameOrderKey] mutableCopy];
     LWE_ASSERT_EXC(frameStr,@"Sprite: %@ - MUST have a frame sequence, you passed dict: '%@'",self.sourceName,spriteDict);
-    self.frameSequence = [[self class] arrayForNumericalStringSequence:[frameStr mutableCopy]];
+    self.frameSequence = [[self class] arrayForNumericalStringSequence:frameStr];
     [frameStr release];
   }
   return self;
@@ -220,7 +220,7 @@
 {
   if (_textureFilename == nil)
   {
-    _textureFilename = [[self _textureFilenameForSource:self.sourceFilename] retain];
+    _textureFilename = [[self _textureFilenameForSource:self.sourceFilename] retain]; // released in -dealloc
   }
   return _textureFilename;
 }
@@ -329,9 +329,11 @@
 -(id) animateActionWithFrameString:(NSString*)frames withFrameDelay:(NSTimeInterval)delay
 {
   // trun frames into array
-  NSArray *aFrameSequence = [[self class] arrayForNumericalStringSequence:[frames mutableCopy]];
+  NSMutableString *frameStr = [frames mutableCopy];
+  NSArray *aFrameSequence = [[self class] arrayForNumericalStringSequence:frameStr];
   NSArray *framesArray = [self _ccSpriteFrames:aFrameSequence reverse:NO];
   CCAnimation *framesAnimated = [CCAnimation animationWithFrames:framesArray delay:delay];
+  [frameStr release];
   return [CCAnimate actionWithAnimation:framesAnimated restoreOriginalFrame:NO];
 }
 
@@ -358,7 +360,15 @@
 -(void) animateRepeated:(NSInteger)times
 {
   self.isAnimating = YES;
-  animateActionObj = [self.sprite runAction:[CCRepeat actionWithAction:(CCFiniteTimeAction*)[self animateAction] times:times]];
+  animateActionObj = [self.sprite runAction:[self animateActionRepeated:times]];
+}
+
+/**
+ * Return action for animated sprite repeated a number of times
+ */
+-(id) animateActionRepeated:(NSInteger)times
+{
+  return [CCRepeat actionWithAction:(CCFiniteTimeAction*)[self animateAction] times:times];
 }
 
 /**
@@ -367,7 +377,15 @@
 -(void) animateRepeatedForever
 {
   self.isAnimating = YES;
-  animateActionObj = [self.sprite runAction:[CCRepeatForever actionWithAction:[self animateAction]]];
+  animateActionObj = [self.sprite runAction:[self animateActionRepeatedForever]];
+}
+
+/**
+ * Return action for animated sprite repeating forever (or until stopped)
+ */
+-(id) animateActionRepeatedForever
+{
+  return [CCRepeatForever actionWithAction:[self animateAction]];
 }
 
 /**
@@ -377,7 +395,7 @@
 {
   // tell just that action to stop
   self.isAnimating = NO;
-  [animateActionObj stop];
+  [self.sprite stopAction:animateActionObj];
 }
 
 /**
