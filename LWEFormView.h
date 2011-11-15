@@ -15,7 +15,7 @@
  * Any object that you try to add as a "field" must conform to
  * this protocol (specifically, it has a delegate)
  */
-@protocol LWEFormViewFieldProtocol <NSObject, NSCoding>
+@protocol LWEFormViewFieldProtocol <NSObject, NSCoding, UIAppearance, UIAppearanceContainer>
 - (id) delegate;
 - (void) setDelegate:(id)aDelegate;
 @end

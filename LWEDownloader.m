@@ -35,7 +35,7 @@
 @implementation LWEDownloader
 
 @synthesize targetURL, targetFilename, taskMessage, statusMessage, delegate;
-@synthesize progress;
+@synthesize downloaderState = downloaderState;
 
 /**
  * Default initializer
