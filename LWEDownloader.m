@@ -25,9 +25,17 @@
 #import "FlurryAPI.h"
 #endif
 
+@interface LWEDownloader ()
+// Psuedo private methods
+- (BOOL) _updateInternalState:(NSInteger)nextState;
+- (BOOL) _updateInternalState:(NSInteger)nextState withTaskMessage:(NSString*)taskMsg;
+- (void) _updateIdleTimerStatus;
+@end
+
 @implementation LWEDownloader
 
 @synthesize targetURL, targetFilename, taskMessage, statusMessage, delegate;
+@synthesize progress;
 
 /**
  * Default initializer
@@ -97,7 +105,7 @@
 /**
  * Sets progress complete (delegate from ASIHTTPRequest)
  */
-- (void) setProgress:(float)tmpProgress
+- (void) setProgress:(CGFloat)tmpProgress
 {
   // Set and then fire a notification so we know we've updated
   progress = tmpProgress;
@@ -122,7 +130,7 @@
 /**
  * Getter for progress
  */
-- (float) progress
+- (CGFloat) progress
 {
   return progress;
 }
@@ -385,6 +393,8 @@
     case kDownloaderInstallFail:
       returnVal = YES;
       break;
+    default:
+      break;
   }
   return returnVal;
 }
@@ -442,7 +452,7 @@
   int guessedFilesize = (requestSize * 2.4);
   float decompressionProgress = 0.0f;
 
-  while (uncompressedLength = gzread(file, buffer, CHUNK))
+  while ((uncompressedLength = gzread(file, buffer, CHUNK)))
   {
     // Update progress bar
     totalUncompressed = totalUncompressed + CHUNK;
@@ -539,10 +549,10 @@
  * Delegate method for ASIHTTPRequest which is called when the response headers come back
  * We extract "content length" to determine the number of bytes to be downloaded
  */
-- (void)requestReceivedResponseHeaders:(ASIHTTPRequest *)request
+- (void)request:(ASIHTTPRequest*)request didReceiveResponseHeaders:(NSDictionary *)headers
 {
   int httpStatusCode = [request responseStatusCode];
-  NSString *contentLength = [[request responseHeaders] objectForKey:@"Content-Length"];
+  NSString *contentLength = [headers objectForKey:@"Content-Length"];
 
   if (contentLength && httpStatusCode == HTTP_CODE_200_FOUND)
   {
