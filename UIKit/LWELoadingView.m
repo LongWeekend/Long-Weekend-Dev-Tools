@@ -91,15 +91,15 @@
  */
 - (void) removeFromSuperview
 {
-  // Run the normal UI removeFromSuperview
-	[super removeFromSuperview];
-  
 	// Set up the animation
 	CATransition *animation = [CATransition animation];
 	[animation setType:kCATransitionFade];
 	
 	UIView *aSuperview = [self superview];
 	[[aSuperview layer] addAnimation:animation forKey:@"layerAnimation"];
+  
+  // Run the normal UI removeFromSuperview
+	[super removeFromSuperview];
 }
 
 /*
