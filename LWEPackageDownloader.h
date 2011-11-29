@@ -18,14 +18,23 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "UA_ASINetworkQueue.h"
-#import "UA_ASIHTTPRequest.h"
+#import "ASINetworkQueue.h"
+#import "ASIHTTPRequest.h"
 #import "LWEPackage.h"
 #import "LWEDecompressor.h"
+#import "LWELongRunningTaskProtocol.h"
 
+@class LWEPackageDownloader;
 @protocol LWEPackageDownloaderDelegate <NSObject>
+@optional
 - (void) unpackageFinished:(LWEPackage*)package;
 - (void) unpackageFailed:(LWEPackage*)package withError:(NSError*)error;
+@end
+
+@protocol LWEPackageDownloaderProgressDelegate <NSObject>
+@optional
+- (void) packageDownloader:(LWEPackageDownloader *)downloader progressDidUpdate:(CGFloat)progress;
+- (void) packageDownloader:(LWEPackageDownloader *)downloader statusDidUpdate:(NSString *)string;
 @end
 
 /**
@@ -34,13 +43,16 @@
  * You can define what is to be downloaded and where it should be unzipped to by 
  * using the LWEPackage class.  
  */
-@interface LWEPackageDownloader : NSObject <UA_ASIHTTPRequestDelegate, LWEDecompressorDelegate>
+@interface LWEPackageDownloader : NSObject <ASIHTTPRequestDelegate, LWEDecompressorDelegate, LWELongRunningTaskProtocol>
 
 //! Implement this to receive events when a package unwrap succeeds or fails
 @property (assign) id<LWEPackageDownloaderDelegate> delegate;
 
+//! Implement this to receive events as the progress completes
+@property (assign) id<LWEPackageDownloaderProgressDelegate> progressDelegate;
+
 //! The underlying network queue for HTTP requests to get the packages
-@property (retain) UA_ASINetworkQueue *queue;
+@property (retain) ASINetworkQueue *queue;
 
 //! List of packages this class is handling.  Packages are not removed from this array after unwrapping.
 @property (retain) NSArray *packages;
@@ -67,13 +79,36 @@
 - (void) queuePackage:(LWEPackage*)package;
 
 /**
- * Starts the queue, downloading & unwrapping each package serially
+ * Starts the queue, downloading & unwrapping each package
  */
-- (void) startUnwrapping;
+- (void) start;
+
+/**
+ * Cancels the queue - note that if something is actively downloading, this will not stop it
+ */
+- (void) cancel;
+
+/**
+ * Returns YES if it is possible to call -cancel.
+ */
+- (BOOL) canCancelTask;
+
+/**
+ * Returns YES if it is possible to call -start
+ */
+- (BOOL) canStartTask;
+
+//! Returns YES if the task is in a successful terminal state.
+- (BOOL) isSuccessState;
+
+//! Returns YES if the task is in a failed terminal state.
+- (BOOL) isFailureState;
+
 
 /**
  * Call this method to begin downloading immediately and then
  * unwrap the package.  This bypasses the queue.
+ * TODO: consider taking this internal?
  */
 - (void) unwrapPackage:(LWEPackage*)package;
 

@@ -22,13 +22,16 @@
 
 // Private Method Prototypes
 @interface LWEPackageDownloader ()
-- (UA_ASIHTTPRequest*) _requestForPackage:(LWEPackage*)package;
+- (ASIHTTPRequest*) _requestForPackage:(LWEPackage *)package;
+- (void) _updateStatusMessage:(NSString *)status;
+@property (retain) NSString *currentStatus;
 @end
 
 @implementation LWEPackageDownloader
 @synthesize queue;
 @synthesize packages;
-@synthesize delegate;
+@synthesize delegate, progressDelegate;
+@synthesize currentStatus;
 
 NSString * const kLWEPackageDownloaderTempDirectory = @"LWEPackageDownloader";
 NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
@@ -40,11 +43,12 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   self = [super init];
   if (self)
   {
-    self.queue = [UA_ASINetworkQueue queue];
+    self.queue = [ASINetworkQueue queue];
+    self.queue.downloadProgressDelegate = self;
     self.packages = [NSArray array];
     
     // Will throttle bandwidth based on a user-defined limit when WWAN (not Wi-Fi) is active
-    [UA_ASIHTTPRequest throttleBandwidthForWWANUsingLimit:14800];
+    [ASIHTTPRequest throttleBandwidthForWWANUsingLimit:14800];
   }
   return self;
 }
@@ -62,6 +66,9 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 - (void) dealloc
 {
   [self.queue cancelAllOperations];
+  self.queue.delegate = nil;
+  self.queue.downloadProgressDelegate = nil;
+  [currentStatus release];
   [queue release];
   [packages release];
   [super dealloc];
@@ -69,14 +76,39 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 #pragma mark - Public Methods
 
+// TODO: Let's get rid of this guy if we can. MMA 11.29.2011
 - (void) unwrapPackage:(LWEPackage*)package
 {
   LWE_ASSERT_EXC([self.packages containsObject:package] == NO,@"You can't manually unpackage a queued package.");
-  UA_ASIHTTPRequest *request = [self _requestForPackage:package];
+  ASIHTTPRequest *request = [self _requestForPackage:package];
+  request.downloadProgressDelegate = self;
   [request start];
 }
 
-- (void) startUnwrapping
+
+- (BOOL) isSuccessState
+{
+  // This is wrong
+  return (self.queue.operationCount == 0);
+}
+
+- (BOOL) isFailureState
+{
+  // This is wrong
+  return (self.queue.operationCount == 0);
+}
+
+- (BOOL) canCancelTask
+{
+  return (self.queue.isSuspended == NO);
+}
+
+- (BOOL) canStartTask
+{
+  return self.queue.isSuspended;
+}
+
+- (void) start
 {
   // Create the final temporary directory in the library folder if we need to
   NSError *error = nil;
@@ -85,15 +117,31 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   {
     for (LWEPackage *package in self.packages)
     {
-      UA_ASIHTTPRequest *request = [self _requestForPackage:package];
+      ASIHTTPRequest *request = [self _requestForPackage:package];
       [self.queue addOperation:request];
     }
     [self.queue go];
+    [self _updateStatusMessage:NSLocalizedString(@"Connecting to server", @"LWEPackageDownloader.Status.ConnectingToServer")];
   }
   else
   {
     LWE_LOG_ERROR(@"Error creating temporary download directory: %@, error: %@",downloadTempDirectory,error);
   }
+}
+
+- (CGFloat) progress
+{
+  return ((CGFloat)self.queue.bytesDownloadedSoFar / (CGFloat)self.queue.totalBytesToDownload);
+}
+
+- (void) cancel
+{
+  [self.queue cancelAllOperations];
+}
+
+- (NSString *) taskMessage
+{
+  return self.currentStatus;
 }
 
 - (void) dequeuePackage:(LWEPackage*)package
@@ -112,9 +160,9 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 #pragma mark - Privates
 
-- (UA_ASIHTTPRequest*) _requestForPackage:(LWEPackage*)package
+- (ASIHTTPRequest*) _requestForPackage:(LWEPackage*)package
 {
-  UA_ASIHTTPRequest *request = [UA_ASIHTTPRequest requestWithURL:package.packageUrl];
+  ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:package.packageUrl];
   request.userInfo = [NSDictionary dictionaryWithObject:package forKey:kLWEPackageUserInfoKey];
   request.downloadDestinationPath = package.destinationFilepath;      // The full file will be moved here if and when the request completes successfully
   request.temporaryFileDownloadPath = [LWEFile createLibraryPathWithFilename:[NSString stringWithFormat:@"%@/%@",kLWEPackageDownloaderTempDirectory,[package packageFilename]]];
@@ -123,9 +171,32 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   return request;
 }
 
+- (void) _updateStatusMessage:(NSString*)status
+{
+  self.currentStatus = status;
+  if (self.progressDelegate && [self.progressDelegate respondsToSelector:@selector(packageDownloader:statusDidUpdate:)])
+  {
+    [self.progressDelegate packageDownloader:self statusDidUpdate:status];
+  }
+}
+
 #pragma mark - ASIHTTPRequestDelegate
 
-- (void)requestReceivedResponseHeaders:(UA_ASIHTTPRequest *)request
+- (void)setProgress:(CGFloat)newProgress
+{
+  // Just pass this on to our delegate
+  if (self.progressDelegate && [self.progressDelegate respondsToSelector:@selector(packageDownloader:progressDidUpdate:)])
+  {
+    [self.progressDelegate packageDownloader:self progressDidUpdate:newProgress];
+  }
+
+  // Total amount downloaded so far for all requests in this queue
+  NSInteger kbDownloaded = (NSInteger)((CGFloat)self.queue.bytesDownloadedSoFar / 1024.0f);
+  NSString *status = [NSString stringWithFormat:NSLocalizedString(@"Downloading (%d KB)",@"LWEPackageDownloader.status.DownloadingWithKB"),kbDownloaded];
+  [self _updateStatusMessage:status];
+}
+
+- (void)requestReceivedResponseHeaders:(ASIHTTPRequest *)request
 {
   LWE_LOG(@"Server Header Response: %d, %@", request.responseStatusCode, request.responseHeaders);
   
@@ -137,7 +208,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   }
 }
 
-- (void)requestFinished:(UA_ASIHTTPRequest *)request
+- (void)requestFinished:(ASIHTTPRequest *)request
 {
   LWEPackage *package = (LWEPackage*)[request.userInfo objectForKey:kLWEPackageUserInfoKey];
   LWE_ASSERT_EXC(package,@"This request had no package associated with it!");
@@ -151,9 +222,11 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   decompressor.userInfo = request.userInfo;
   [decompressor decompressContentAtPath:request.downloadDestinationPath
                                  toPath:package.unpackagePath asynchronously:YES];
+  
+  [self _updateStatusMessage:NSLocalizedString(@"Decompressing", @"LWEPackageDownloader.Status.Decompressing")];
 }
 
-- (void)requestFailed:(UA_ASIHTTPRequest *)request
+- (void)requestFailed:(ASIHTTPRequest *)request
 {
   LWEPackage *package = [request.userInfo objectForKey:kLWEPackageUserInfoKey];
   if (self.delegate && [self.delegate respondsToSelector:@selector(unpackageFailed:withError:)])
@@ -169,7 +242,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   LWEPackage *package = [aDecompressor.userInfo objectForKey:kLWEPackageUserInfoKey];
   package.isUnwrapped = YES;
   [self dequeuePackage:package];
-   
+  [self _updateStatusMessage:NSLocalizedString(@"Finished", @"LWEPackageDownloader.Status.Finished")];
   LWE_DELEGATE_CALL(@selector(unpackageFinished:),package);
 }
 
