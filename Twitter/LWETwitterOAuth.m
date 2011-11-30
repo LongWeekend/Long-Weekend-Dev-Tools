@@ -267,7 +267,7 @@
 		}
 		
 		//allocate the token object with the one just retreived from the server
-		self.accessToken = [[OAToken alloc] initWithHTTPResponseBody:responseBody];
+		self.accessToken = [[[OAToken alloc] initWithHTTPResponseBody:responseBody] autorelease];
 
 		LWE_LOG(@"action token success with key %@ and secret %@", self.accessToken.key, self.accessToken.secret);
 		[responseBody release];
