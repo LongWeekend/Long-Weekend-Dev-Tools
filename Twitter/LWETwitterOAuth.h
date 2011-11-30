@@ -38,11 +38,6 @@ typedef enum
 @interface LWETwitterOAuth : NSObject <LWETAuthenticationViewDelegate>
 {
 	BOOL isAuthenticated;
-	id<LWETAuthProccessDelegate> delegate;
-	UIViewController<LWETAuthenticationViewProtocol> *authentiactionView;
-	
-	OAConsumer *consumer;
-	OAToken *accessToken;
 }
 
 @property (nonatomic, assign) id<LWETAuthProccessDelegate> delegate;
