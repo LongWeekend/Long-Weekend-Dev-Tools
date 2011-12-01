@@ -31,68 +31,82 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 
 @implementation LWEAnalytics
 
-//================= FLURRY ANALYTICS METHODS =============
-
-#if defined(LWE_USE_FLURRY)
++ (void) logEvent:(NSString *)eventName
+{
+  return [[self class] logEvent:eventName parameters:nil];
+}
 
 + (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo
 {
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
+  #if defined(LWE_USE_FLURRY)
   [FlurryAPI logEvent:eventName withParameters:userInfo];
+  #elif defined(LWE_USE_GAN)
+  NSError *error = nil;
+  [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", eventName] withError:&error];
+  // Some GAN code here
+  #endif
 #else
   LWE_LOG(@"LWEAnalytics Event: %@",eventName);
   LWE_LOG(@"LWEAnalytics Parameters: %@",userInfo);
 #endif
 }
 
+
++ (void) logError:(NSString *)errorName parameters:(NSDictionary*)userInfo
+{
+#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
+#if defined(LWE_USE_FLURRY)
+  [FlurryAPI logError:eventName withParameters:userInfo];
+#elif defined(LWE_USE_GAN)
+  NSError *error = nil;
+  [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", errorName] withError:&error];
+  // Some GAN code here
 #endif
-
-//================= GOOGLE ANALYTICS METHODS =============
-
-#if defined(LWE_USE_GAN)
+#else
+  LWE_LOG(@"LWEAnalytics ERROR: %@",errorName);
+  LWE_LOG(@"LWEAnalytics Parameters: %@",userInfo);
+#endif
+}
 
 //! Instantiate a GAN session with apiKey (e.g. UA-00000000-1)
 + (void)startSession:(NSString *)apiKey
 {
+#if defined(LWE_USE_GAN)
   [[GANTracker sharedTracker] startTrackerWithAccountID:apiKey dispatchPeriod:kGANDispatchPeriodSec delegate:nil];
-}
-
-//! Log a simple GAN Event with the string provided (logged as pageview)
-+ (void)logEvent:(NSString *)eventName
-{
-  NSError *error;
-  if (![[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", eventName] withError:&error])
-  {
-    NSLog(@"error in trackPageview");
-  }
+#endif
 }
 
 //! Log a GAN Event with all details provided
 + (void)logEvent:(NSString *)eventName withAction:(NSString*)actionString withLabel:(NSString*)label andValue:(NSInteger)intValue
 {
+#if defined(LWE_USE_GAN)
   NSError *error;
   if( ![[GANTracker sharedTracker] trackEvent:eventName action:actionString label:label value:intValue withError:&error] )
   {
     NSLog(@"error in trackEvent");
   }
+#endif
 }
 
 //! Set a custom GAN variable, not sure how to use these?!?!
 + (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString
 {
+#if defined(LWE_USE_GAN)
   NSError *error;
   if (![[GANTracker sharedTracker] setCustomVariableAtIndex:index name:name value:valueString withError:&error]) 
   {
     NSLog(@"error in setCustomVariableAtIndex");
   }
+#endif
 }
 
 //! Simple wrapper for stopping the tracker
 + (void) stopTracker
 {
+#if defined(LWE_USE_GAN)
   [[GANTracker sharedTracker] stopTracker];
-}
-
 #endif
+}
 
 @end

@@ -54,9 +54,6 @@ void LWEUncaughtExceptionHandler(NSException *exception)
       }
     }
   }
-#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
-  [NSClassFromString(@"FlurryAPI") logError:[exception name] message:debugInfoStr exception:exception];
-#else
-  LWE_LOG(@"Unhandled exception %@: stack trace (if available) follows\n%@",[exception name],debugInfoStr);
-#endif
+  NSDictionary *userInfo = [NSDictionary dictionaryWithObject:debugInfoStr forKey:@"backtrace"];
+  [LWEAnalytics logError:exception.name parameters:userInfo];
 }
