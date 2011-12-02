@@ -111,7 +111,9 @@
 {
   // Note: reachability only accepts host names, not fully qualified URLs
   NSURL *url = [NSURL URLWithString:hostURL];
-  Reachability *reachability = [Reachability reachabilityWithHostName:[url host]];
+  NSString *hostName = [url host];
+  LWE_ASSERT_EXC(hostName, @"Can't check reachability for nil.  Input URL was: %@", hostURL);
+  Reachability *reachability = [Reachability reachabilityWithHostName:hostName];
   NetworkStatus status = [reachability currentReachabilityStatus];
   if ((status != ReachableViaWiFi) && (status != ReachableViaWWAN))
   {
