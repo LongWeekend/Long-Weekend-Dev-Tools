@@ -27,6 +27,14 @@
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
+/**
+ * Returns a string suitable for inserting into a sqlite db
+ */
++ (NSString*) sqliteEscapedString:(NSString*)string
+{
+  return [string stringByReplacingOccurrencesOfString:@"'" withString:@"''" options:NSLiteralSearch range:NSMakeRange(0, string.length)]; 
+}
+
 
 /**
  * Returns true if file was able to be copied from the bundle - overwrites

@@ -31,6 +31,7 @@
 }
 
 + (LWEDatabase *)sharedLWEDatabase;
++ (NSString*) sqliteEscapedString:(NSString*)string;
 - (BOOL) copyDatabaseFromBundle:(NSString*)filename;
 - (BOOL) openDatabase:(NSString*) pathToDatabase;
 - (BOOL) closeDatabase;
