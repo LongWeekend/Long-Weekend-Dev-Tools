@@ -26,34 +26,41 @@
 
 @interface LWEAnalytics : NSObject
 
-//================= FLURRY METHODS =============
-
-#if defined(LWE_USE_FLURRY)
 /**
- * Logs a non-timed Flurry event with parameters
+ * Logs a non-timed event
+ */
++ (void) logEvent:(NSString *)eventName;
+
+/**
+ * Logs a non-timed event with parameters
  */
 + (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo;
-#endif
 
-//================= GOOGLE ANALYTICS METHODS =============
+/**
+ * Logs an error
+ */
++ (void) logError:(NSString *)errorName message:(NSString *)errorMsg;
 
-#if defined(LWE_USE_GAN)
-/*
- start session, attempt to send saved sessions to server 
+/**
+ * TODO: DOCME
+ */
++ (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString;
+
+/**
+ * start session, attempt to send saved sessions to server 
+ * NOOP if not using Google Analytics
  */
 + (void)startSession:(NSString *)apiKey;
+
+/**
+ * wrapper for calling the stop tracker method
+ * NOOP if not using Google Analytics
+ */
++ (void) stopTracker;
 
 /*
  log events or errors after session has started
  */
-+ (void)logEvent:(NSString *)eventName;
 + (void)logEvent:(NSString *)eventName withAction:(NSString*)actionString withLabel:(NSString*)label andValue:(NSInteger)intValue;
-+ (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString;
-
-/* 
- wrapper for calling the stop tracker method
- */
-+ (void) stopTracker;
-#endif
 
 @end
