@@ -39,7 +39,7 @@
 /**
  * Logs an error
  */
-+ (void) logError:(NSString *)errorName parameters:(NSDictionary*)userInfo;
++ (void) logError:(NSString *)errorName message:(NSString *)errorMsg;
 
 /**
  * TODO: DOCME

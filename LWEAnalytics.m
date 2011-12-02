@@ -53,19 +53,18 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 }
 
 
-+ (void) logError:(NSString *)errorName parameters:(NSDictionary*)userInfo
++ (void) logError:(NSString *)errorName message:(NSString *)errorMsg
 {
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
 #if defined(LWE_USE_FLURRY)
-  [FlurryAPI logError:eventName withParameters:userInfo];
+  [FlurryAPI logError:errorName message:errorMsg exception:nil];
 #elif defined(LWE_USE_GAN)
   NSError *error = nil;
   [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", errorName] withError:&error];
   // Some GAN code here
 #endif
 #else
-  LWE_LOG(@"LWEAnalytics ERROR: %@",errorName);
-  LWE_LOG(@"LWEAnalytics Parameters: %@",userInfo);
+  LWE_LOG(@"LWEAnalytics ERROR: %@ MSG : %@",errorName,errorMsg);
 #endif
 }
 

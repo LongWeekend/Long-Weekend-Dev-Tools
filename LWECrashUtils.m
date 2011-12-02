@@ -54,6 +54,5 @@ void LWEUncaughtExceptionHandler(NSException *exception)
       }
     }
   }
-  NSDictionary *userInfo = [NSDictionary dictionaryWithObject:debugInfoStr forKey:@"backtrace"];
-  [LWEAnalytics logError:exception.name parameters:userInfo];
+  [LWEAnalytics logError:exception.name message:debugInfoStr];
 }
