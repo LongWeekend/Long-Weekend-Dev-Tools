@@ -197,9 +197,12 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   }
 
   // Total amount downloaded so far for all requests in this queue
-  NSInteger kbDownloaded = (NSInteger)((CGFloat)self.queue.bytesDownloadedSoFar / 1024.0f);
-  NSString *status = [NSString stringWithFormat:NSLocalizedString(@"Downloading (%d KB)",@"LWEPackageDownloader.status.DownloadingWithKB"),kbDownloaded];
-  [self _updateStatusMessage:status];
+  if (newProgress > 0.0f)
+  {
+    NSInteger kbDownloaded = (NSInteger)((CGFloat)self.queue.bytesDownloadedSoFar / 1024.0f);
+    NSString *status = [NSString stringWithFormat:NSLocalizedString(@"Downloading (%d KB)",@"LWEPackageDownloader.status.DownloadingWithKB"),kbDownloaded];
+    [self _updateStatusMessage:status];
+  }
 }
 
 - (void)requestReceivedResponseHeaders:(ASIHTTPRequest *)request
