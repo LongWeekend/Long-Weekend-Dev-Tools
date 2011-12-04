@@ -43,6 +43,8 @@
 - (CGFloat) progress;
 
 @optional
+//! If YES, the task is running
+- (BOOL) isActive;
 
 //! If YES, it is possible to call -cancel.  May change, and is not thread safe.
 - (BOOL) canCancelTask;

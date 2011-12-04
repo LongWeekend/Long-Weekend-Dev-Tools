@@ -98,9 +98,14 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   return (self.queue.operationCount == 0);
 }
 
-- (BOOL) canCancelTask
+- (BOOL) isActive
 {
   return (self.queue.isSuspended == NO);
+}
+
+- (BOOL) canCancelTask
+{
+  return [self isActive];
 }
 
 - (BOOL) canStartTask

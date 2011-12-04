@@ -54,7 +54,7 @@
 //! The underlying network queue for HTTP requests to get the packages
 @property (retain) ASINetworkQueue *queue;
 
-//! List of packages this class is handling.  Packages are not removed from this array after unwrapping.
+//! List of packages this class is handling.  Packages are removed from this array after unwrapping/error.
 @property (retain) NSArray *packages;
 
 /**
