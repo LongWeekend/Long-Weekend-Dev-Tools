@@ -44,6 +44,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   if (self)
   {
     self.queue = [ASINetworkQueue queue];
+    self.queue.showAccurateProgress = YES;
     self.queue.downloadProgressDelegate = self;
     self.packages = [NSArray array];
     
