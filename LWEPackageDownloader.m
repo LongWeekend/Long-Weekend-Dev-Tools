@@ -101,7 +101,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 - (BOOL) isActive
 {
-  return (self.queue.isSuspended == NO);
+  return (self.queue.isSuspended == NO && self.queue.operationCount > 0);
 }
 
 - (BOOL) canCancelTask
