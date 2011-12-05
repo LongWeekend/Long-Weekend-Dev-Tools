@@ -24,15 +24,14 @@
 #import "LWEFile.h"
 #import "Constants.h"
 
+extern NSString * const LWEDatabaseTempAttachName;
+
 //! LWE Database singleton, maintains active connections
 @interface LWEDatabase : NSObject
-{
-  FMDatabase *dao;
-}
 
 + (LWEDatabase *)sharedLWEDatabase;
 + (NSString*) sqliteEscapedString:(NSString*)string;
-- (BOOL) copyDatabaseFromBundle:(NSString*)filename;
+- (void) asynchCopyDatabaseFromBundle:(NSString *)filename completionBlock:(dispatch_block_t)completionBlock;
 - (BOOL) openDatabase:(NSString*) pathToDatabase;
 - (BOOL) closeDatabase;
 - (NSString*) databaseVersion;
@@ -45,13 +44,6 @@
 - (FMResultSet*) executeQuery:(NSString*)sql;
 - (BOOL) executeUpdate:(NSString*)sql;
 
-// Semiprivate method
-- (BOOL) _databaseIsOpen;
-- (void) _postNotification:(NSNotification *)aNotification;
-
-@property (nonatomic, retain) FMDatabase *dao;
+@property (nonatomic, readonly, retain) FMDatabase *dao;
 
 @end
-
-extern NSString * const LWEDatabaseCopyDatabaseDidSucceed;
-extern NSString * const LWEDatabaseTempAttachName;
