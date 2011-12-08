@@ -106,7 +106,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 - (BOOL) canCancelTask
 {
-  return [self isActive];
+  return ([self isActive] == NO);
 }
 
 - (BOOL) canStartTask
@@ -143,6 +143,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 - (void) cancel
 {
   [self.queue cancelAllOperations];
+  LWE_DELEGATE_CALL(@selector(unpackageCancelled:),self);
 }
 
 - (NSString *) taskMessage

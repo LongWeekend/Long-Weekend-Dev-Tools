@@ -28,6 +28,7 @@
 @protocol LWEPackageDownloaderDelegate <NSObject>
 @optional
 - (void) unpackageFinished:(LWEPackage*)package;
+- (void) unpackageCancelled:(LWEPackage*)package;
 - (void) unpackageFailed:(LWEPackage*)package withError:(NSError*)error;
 @end
 
