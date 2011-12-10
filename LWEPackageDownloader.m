@@ -127,6 +127,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
       [self.queue addOperation:request];
     }
     [self.queue go];
+    LWE_DELEGATE_CALL(@selector(packageDownloaderStarted:), self);
     [self _updateStatusMessage:NSLocalizedString(@"Connecting to server", @"LWEPackageDownloader.Status.ConnectingToServer")];
   }
   else
@@ -143,7 +144,6 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 - (void) cancel
 {
   [self.queue cancelAllOperations];
-  LWE_DELEGATE_CALL(@selector(unpackageCancelled:),self);
 }
 
 - (NSString *) taskMessage
@@ -243,6 +243,12 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   {
     [self.delegate unpackageFailed:package withError:request.error];
   }
+  
+  // Nothing more to do, call delegate
+  if (self.queue.operationCount == 0)
+  {
+    LWE_DELEGATE_CALL(@selector(packageDownloaderFinished:), self);
+  }
 }
 
 #pragma mark - LWEDecompressorDelegate
@@ -254,6 +260,12 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   [self dequeuePackage:package];
   [self _updateStatusMessage:NSLocalizedString(@"Finished", @"LWEPackageDownloader.Status.Finished")];
   LWE_DELEGATE_CALL(@selector(unpackageFinished:),package);
+  
+  // Nothing more to do, call delegate
+  if (self.queue.operationCount == 0)
+  {
+    LWE_DELEGATE_CALL(@selector(packageDownloaderFinished:), self);
+  }
 }
 
 - (void) decompressFailed:(LWEDecompressor*)aDecompressor error:(NSError*)error
@@ -264,6 +276,12 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   if (self.delegate && [self.delegate respondsToSelector:@selector(unpackageFailed:withError:)])
   {
     [self.delegate unpackageFailed:package withError:error];
+  }
+
+  // Nothing more to do, call delegate
+  if (self.queue.operationCount == 0)
+  {
+    LWE_DELEGATE_CALL(@selector(packageDownloaderFinished:), self);
   }
 }
 
