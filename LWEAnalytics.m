@@ -31,6 +31,15 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 
 @implementation LWEAnalytics
 
++ (void) startSessionWithKey:(NSString *)key
+{
+#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
+  #if defined(LWE_USE_FLURRY)
+  [FlurryAPI startSession:key];    // add analytics if this is live
+  #endif
+#endif 
+}
+
 + (void) logEvent:(NSString *)eventName
 {
   return [[self class] logEvent:eventName parameters:nil];

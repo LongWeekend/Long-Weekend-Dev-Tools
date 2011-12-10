@@ -26,6 +26,8 @@
 
 @interface LWEAnalytics : NSObject
 
++ (void) startSessionWithKey:(NSString *)key;
+
 /**
  * Logs a non-timed event
  */
