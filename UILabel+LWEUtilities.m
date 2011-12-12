@@ -17,24 +17,18 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "LWEUILabelUtils.h"
-#import "LWEDebug.h"
+#import "UILabel+LWEUtilities.h"
 
 //! Contains static convenience methods for dealing with UILabels
 @implementation UILabel (LWEUtilities)
 
-//! Shorter Convenience Method: Resize without parentViewSize option
-- (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
-{
-  [self resizeWithMinFontSize:minFontSize maxFontSize:maxFontSize forParentViewSize:CGSizeZero];
-}
-
 //! Resize font within constraints, works with multi-line labels.
-- (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize
+- (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
 {
   UIFont *newFont = self.font;
   CGRect newFrame = self.frame;
-  CGSize expectedLabelSize;
+  CGSize expectedLabelSize = CGSizeZero;
+  CGSize parentViewSize = self.superview.frame.size;
   
   // Initialize
   expectedLabelSize.height = 0;
@@ -42,18 +36,15 @@
   // Loop from Max Font to Min Font Size until one fits, or scrolling is inevitable
   for (NSInteger i = maxFontSize; i > minFontSize; i=i-2)
   {
-    // Set next font size.
+    // Set next font size - constraining the width & passing unlimited height is the way to get good values
     newFont = [newFont fontWithSize:i];
     CGSize constraintSize = self.frame.size;
     constraintSize.width = constraintSize.width-5;
-    constraintSize.height = 6000.0f;
-    
-    // WARNING: this uses "word wrap" (not good for very long JPN strings!)
+    constraintSize.height = CGFLOAT_MAX;
     expectedLabelSize = [self.text sizeWithFont:newFont constrainedToSize:constraintSize lineBreakMode:self.lineBreakMode];
-    LWE_LOG(@"Label Size w:%f h: %f",expectedLabelSize.width,expectedLabelSize.height);
     
     // Break if this fontsize fits within the available scrollable height?
-    if (parentViewSize.height != 0 && expectedLabelSize.height < parentViewSize.height)
+    if (expectedLabelSize.height < parentViewSize.height)
     {
       break;
     }
@@ -62,40 +53,6 @@
   self.frame = newFrame;
   self.font = newFont;
   [self setNeedsDisplay];
-}
-
-//! Shorter Convenience Method: AutoSize without specifying font sizes!
-- (void) autosizeForScrollView:(UIScrollView *)scrollViewContainer 
-{
-  [self autosizeForScrollView:scrollViewContainer minFontSize:READING_MIN_FONTSIZE maxFontSize:READING_MAX_FONTSIZE];
-}
-
-//! Resize UIScrollView.contentSize based on expected label size and reset scroll pos!
-- (void) autosizeForScrollView:(UIScrollView *)scrollViewContainer minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
-{
-  // Use our snazzy font resizer (works with multiple lines!)
-  [self resizeWithMinFontSize:minFontSize maxFontSize:maxFontSize forParentViewSize:scrollViewContainer.frame.size];
-  CGSize expectedLabelSize = self.frame.size;
-  
-  // Resize label according to expected label text size
-  CGRect newLabelFrame = self.frame;
-  newLabelFrame.size.height = expectedLabelSize.height;
-  self.frame = newLabelFrame;
-  
-  // Update the contentSize attrib
-  scrollViewContainer.contentSize = CGSizeMake(self.frame.size.width, self.frame.size.height);
-  
-  // Vertically align the reading label
-  CGSize labelSize = self.frame.size;
-  if (labelSize.height < scrollViewContainer.frame.size.height)
-  {
-    CGRect labelFrame = self.frame;
-    CGFloat yOffset = ((scrollViewContainer.frame.size.height - labelSize.height)/2);
-    labelFrame.origin.y = yOffset;
-    self.frame = labelFrame;
-  }
-  
-  scrollViewContainer.contentOffset = CGPointZero;
 }
 
 //! Makes a frame for a text based on provided width, margin, and font size

@@ -30,9 +30,6 @@
 @interface UILabel (LWEUtilities)
 
 - (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-- (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize;
-- (void) autosizeForScrollView:(UIScrollView *)scrollViewContainer;
-- (void) autosizeForScrollView:(UIScrollView *)scrollViewContainer minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
 - (void) adjustFrameWithFontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin;
 
 @end
