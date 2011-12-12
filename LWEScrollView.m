@@ -19,39 +19,39 @@
 
 #import "LWEScrollView.h"
 
-@implementation LWEScrollView
+@implementation UIScrollView (LWEUtilities)
 
 /*!
  @method     
  @abstract   Sets up a scrollview to scoll horizontally through an array of views
  @discussion Assumes you have provided views that will fit within the scrollview provided.
  */
-+ (void)setupScrollView:(UIScrollView*)scrollView withDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding
+- (void)setupWithDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding;
 {
-  scrollView.delegate = theDelegate;
+  self.delegate = theDelegate;
   
-  [scrollView setCanCancelContentTouches:NO];
+  [self setCanCancelContentTouches:NO];
   
-  scrollView.clipsToBounds = YES;
-  scrollView.scrollEnabled = YES;
+  self.clipsToBounds = YES;
+  self.scrollEnabled = YES;
   
   CGFloat cx = 0.0f;
   
-  for (UIView* viewToAddToScrollView in views) 
+  for (UIView *viewToAddToScrollView in views) 
   {
     CGRect rect = viewToAddToScrollView.frame;
     cx += leftPadding;
     rect.origin.x = cx;
-    rect.origin.y = ((scrollView.frame.size.height - viewToAddToScrollView.frame.size.height) / 2);
+    rect.origin.y = ((self.frame.size.height - viewToAddToScrollView.frame.size.height) / 2);
    	viewToAddToScrollView.frame = rect;
     cx += rect.size.width;
     
     // add the new view as a subview for the scroll view to handle
-    [scrollView addSubview:viewToAddToScrollView];
+    [self addSubview:viewToAddToScrollView];
   }
   cx += rightPadding;
   
-  [scrollView setContentSize:CGSizeMake(cx, scrollView.bounds.size.height - topPadding - bottomPadding)];
+  [self setContentSize:CGSizeMake(cx, self.bounds.size.height - topPadding - bottomPadding)];
 }
 
 @end
