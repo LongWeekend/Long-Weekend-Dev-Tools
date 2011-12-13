@@ -25,6 +25,7 @@
 //! Resize font within constraints, works with multi-line labels.
 - (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
 {
+  LWE_ASSERT_EXC(minFontSize <= maxFontSize, @"Min font size must be less or equal to max font size.");
   UIFont *newFont = self.font;
   CGRect newFrame = self.frame;
   CGSize expectedLabelSize = CGSizeZero;
@@ -39,7 +40,7 @@
     // Set next font size - constraining the width & passing unlimited height is the way to get good values
     newFont = [newFont fontWithSize:i];
     CGSize constraintSize = self.frame.size;
-    constraintSize.width = constraintSize.width-5;
+    constraintSize.width = constraintSize.width;
     constraintSize.height = CGFLOAT_MAX;
     expectedLabelSize = [self.text sizeWithFont:newFont constrainedToSize:constraintSize lineBreakMode:self.lineBreakMode];
     
