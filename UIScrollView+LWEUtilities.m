@@ -21,6 +21,25 @@
 
 @implementation UIScrollView (LWEUtilities)
 
+- (void) resizeScrollViewWithContentView:(UIView *)view
+{
+  // Sets the scroll view content size to be the same as the content view & reset view
+  self.contentSize = view.frame.size;
+  self.contentOffset = CGPointZero;
+
+  // Vertically align the view
+  if (view.frame.size.height < self.frame.size.height)
+  {
+    CGFloat yOffset = ((self.frame.size.height - view.frame.size.height) / 2);
+    view.frame = CGRectMake(view.frame.origin.x,
+                            yOffset,
+                            view.frame.size.width,
+                            view.frame.size.height);
+  }
+}
+
+
+
 /*!
  @method     
  @abstract   Sets up a scrollview to scoll horizontally through an array of views

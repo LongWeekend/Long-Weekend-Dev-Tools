@@ -20,5 +20,6 @@
 #import <Foundation/Foundation.h>
 
 @interface UIScrollView (LWEUtilities)
+- (void) resizeScrollViewWithContentView:(UIView *)view;
 - (void)setupWithDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding;
 @end
