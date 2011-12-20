@@ -49,7 +49,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
     self.packages = [NSArray array];
     
     // Will throttle bandwidth based on a user-defined limit when WWAN (not Wi-Fi) is active
-    [ASIHTTPRequest throttleBandwidthForWWANUsingLimit:14800];
+    [ASIHTTPRequest setShouldThrottleBandwidthForWWAN:YES];
   }
   return self;
 }
