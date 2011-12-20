@@ -172,7 +172,16 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:package.packageUrl];
   request.userInfo = [NSDictionary dictionaryWithObject:package forKey:kLWEPackageUserInfoKey];
   request.downloadDestinationPath = package.destinationFilepath;      // The full file will be moved here if and when the request completes successfully
-  request.temporaryFileDownloadPath = [LWEFile createLibraryPathWithFilename:[NSString stringWithFormat:@"%@/%@",kLWEPackageDownloaderTempDirectory,[package packageFilename]]];
+  NSString *downloadFilePath = [LWEFile createLibraryPathWithFilename:[NSString stringWithFormat:@"%@/%@",kLWEPackageDownloaderTempDirectory,[package packageFilename]]];
+  
+  // NB: MMA found that if the app crashes/is killed before the download is complete (not backgrounded), 
+  // it will fail with the strange "connection failure occurred" message when we try again.  Somehow, deleting the
+  // file in its place forces it to start over, but it definitely stops the problem from occurring.
+  if ([LWEFile fileExists:downloadFilePath])
+  {
+    [LWEFile deleteFile:downloadFilePath];
+  }
+  request.temporaryFileDownloadPath = downloadFilePath;
   request.allowResumeForFileDownloads = YES;
   request.delegate = self;
   return request;
