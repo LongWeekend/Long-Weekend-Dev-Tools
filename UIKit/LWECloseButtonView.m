@@ -14,7 +14,7 @@
 @end
 
 @implementation LWECloseButtonView
-@synthesize isSelected;
+@synthesize isSelected, delegate;
 
 - (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -32,6 +32,10 @@
 
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+  if (self.delegate && [self.delegate respondsToSelector:@selector(dismiss)])
+  {
+    [self.delegate dismiss];
+  }
   // Call -dismiss on the responder chain -- the parent should respond to this (Progress Bar)
   [[UIApplication sharedApplication] sendAction:@selector(dismiss) to:nil from:self forEvent:event];
   self.isSelected = NO;

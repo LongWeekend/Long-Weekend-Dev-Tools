@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol LWECloseButtonViewDelegate <NSObject>
+@required
+- (void) dismiss;
+@end
+
 // The width in points of the border around the view
 #define CLOSE_BUTTON_VIEW_BORDER_WIDTH 1.5f
 
@@ -25,5 +30,7 @@
 #define CLOSE_BUTTON_X_WIDTH 3.0f
 
 @interface LWECloseButtonView : UIView
+
+@property (assign) IBOutlet id <LWECloseButtonViewDelegate> delegate;
 
 @end
