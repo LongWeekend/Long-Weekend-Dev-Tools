@@ -30,7 +30,6 @@ extern NSString * const LWEDatabaseTempAttachName;
 @interface LWEDatabase : NSObject
 
 + (LWEDatabase *)sharedLWEDatabase;
-+ (NSString*) sqliteEscapedString:(NSString*)string;
 - (void) asynchCopyDatabaseFromBundle:(NSString *)filename completionBlock:(dispatch_block_t)completionBlock;
 - (BOOL) openDatabase:(NSString*) pathToDatabase;
 - (BOOL) closeDatabase;

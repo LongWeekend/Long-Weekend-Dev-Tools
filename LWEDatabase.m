@@ -33,14 +33,6 @@ NSString * const LWEDatabaseTempAttachName          = @"LWEDATABASETMP";
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
-/**
- * Returns a string suitable for inserting into a sqlite db
- */
-+ (NSString*) sqliteEscapedString:(NSString*)string
-{
-  return [string stringByReplacingOccurrencesOfString:@"'" withString:@"''" options:NSLiteralSearch range:NSMakeRange(0, string.length)]; 
-}
-
 - (void) asynchCopyDatabaseFromBundle:(NSString *)filename completionBlock:(dispatch_block_t)completionBlock;
 {
   dispatch_queue_t queue = dispatch_queue_create("com.longweekendmobile.databasecopy",NULL);
