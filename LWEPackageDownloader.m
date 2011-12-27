@@ -89,8 +89,8 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 - (BOOL) isSuccessState
 {
-  // This is wrong
-  return (self.queue.operationCount == 0);
+  // This is wrong - doesn't take failures into account
+  return (self.queue.isSuspended == NO && self.queue.operationCount == 0);
 }
 
 - (BOOL) isFailureState
@@ -106,7 +106,7 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 - (BOOL) canCancelTask
 {
-  return ([self isActive] == NO);
+  return YES; //([self isActive] == NO);
 }
 
 - (BOOL) canStartTask
@@ -143,7 +143,13 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 - (void) cancel
 {
+  self.queue.delegate = nil;
+  self.queue.downloadProgressDelegate = nil;
   [self.queue cancelAllOperations];
+  
+  // A cancelled NSOperationQueue isn't reusable, so we need to make another one
+  self.queue = [ASINetworkQueue queue];
+  self.queue.downloadProgressDelegate = self;
 }
 
 - (NSString *) taskMessage
