@@ -24,10 +24,6 @@ if (self.delegate && ([self.delegate respondsToSelector:SELECTOR])) \
 {\
   [self.delegate performSelector:SELECTOR withObject:OBJ];\
 }\
-else\
-{\
-  NSLog(@"Delegate is not set, or does not respond to %@,",NSStringFromSelector(SELECTOR));\
-}\
 } while(0)
 
 #pragma mark - UIColor
