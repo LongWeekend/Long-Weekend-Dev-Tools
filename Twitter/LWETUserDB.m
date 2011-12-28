@@ -16,7 +16,8 @@
  
 - (id)init
 {
-	if ([super init])
+  self = [super init];
+	if (self)
 	{
 		/*place for future customazation*/
 	}

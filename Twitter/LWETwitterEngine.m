@@ -398,8 +398,8 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	if (self = [super init])
 	{
 		self.db = [[LWETUserDB alloc] init];
-		self.context = [db managedObjectContext];
-		consumer = [[OAConsumer alloc] initWithKey:consumerKey secret:privateKey];
+		self.context = self.db.managedObjectContext;
+		self.consumer = [[[OAConsumer alloc] initWithKey:consumerKey secret:privateKey] autorelease];
 	}
 	return self;
 }
@@ -415,20 +415,12 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 																										
 - (void) dealloc
 {
-  if (consumer)
-  {
-    [consumer release];
-    consumer = nil;
-  }
-  [self setDb:nil];
-  [self setContext:nil];
-  [self setAuthenticationView:nil];
-  [self setTmpForUserID:nil];
-	if (loggedUser)
-  {
-		[loggedUser release];
-    loggedUser = nil;
-  }
+  [consumer release];
+  [db release];
+  [context release];
+  [authenticationView release];
+  [tmpForUserID release];
+  [loggedUser release];
 	[super dealloc];
 }
 

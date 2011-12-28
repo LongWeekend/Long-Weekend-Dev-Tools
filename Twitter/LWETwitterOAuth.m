@@ -27,7 +27,8 @@
 
 - (id)init
 {
-	if ([super init])
+  self = [super init];
+	if (self)
 	{
 		LWE_LOG(@"This LWETwitterOAuth object is instantiated without the designated initialiser");
 	}

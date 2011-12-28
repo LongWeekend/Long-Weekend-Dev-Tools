@@ -18,43 +18,27 @@
 @synthesize userAccessToken;
 @synthesize isAuthenticated;
 
-#pragma mark -
-#pragma mark Initialization phase
+#pragma mark - Constructors & Deconstructors
 
 - (id)init
 {
-	if ([super init])
+  self = [super init];
+	if (self)
 	{
 		/*place for future customazation*/
 	}
 	return self; 
 }
 
-- (id)initFromManagedObject:(NSManagedObject *)managedObject 
-				  keyforKey:(NSString *)aKeyKey 
-			   keyForSecret:(NSString *)aSecretKey
+- (id)initFromManagedObject:(NSManagedObject *)managedObject keyforKey:(NSString *)aKeyKey keyForSecret:(NSString *)aSecretKey
 {
-	NSString *aKey = [[NSString alloc] 
-					  initWithString:
-					  [managedObject valueForKey:aKeyKey]];
-	NSString *aSecret = [[NSString alloc] 
-						 initWithString:
-						 [managedObject valueForKey:aSecretKey]];
-	
-	//Initialization with the key and secret given from the managed object
-	if ([self initWithKey:aKey 
-				   secret:aSecret])
-	{
-		[aKey release];
-		[aSecret release];
-	}
-	return self; 
+  return [self initWithKey:[managedObject valueForKey:aKeyKey] secret:[managedObject valueForKey:aSecretKey]];
 }
 
-- (id)initWithKey:(NSString *)aKey 
-		   secret:(NSString *)aSecret
+- (id)initWithKey:(NSString *)aKey secret:(NSString *)aSecret
 {
-	if ([self init])
+  self = [self init];
+	if (self)
 	{
 		self.key = aKey;
 		self.secret = aSecret;
@@ -64,12 +48,10 @@
 	return self; 
 }
 
-- (id)initWithUserID:(NSString *)aUserID 
-				 key:(NSString *)aKey 
-			  secret:(NSString *)aSecret
+- (id)initWithUserID:(NSString *)aUserID key:(NSString *)aKey secret:(NSString *)aSecret
 {
-	if ([self initWithKey:aKey 
-				   secret:aSecret])
+  self = [self initWithKey:aKey secret:aSecret];
+	if (self)
 	{
 		self.userID = aUserID;
 	}
@@ -78,24 +60,11 @@
 
 + (LWETUser *)userWithID:(NSString *)aUserID
 {
-	LWETUser *user = [[LWETUser alloc] autorelease];
+	LWETUser *user = [[[LWETUser alloc] init] autorelease];
 	user.userID = aUserID;
 	user.isAuthenticated = NO;
 	return user;
 }
-
-#pragma mark -
-#pragma mark Core Method
-
-- (OAToken *)OAuthToken
-{
-	return [[[OAToken alloc] 
-			 initWithKey:self.key 
-			 secret:self.secret]autorelease];
-}
-
-#pragma mark -
-#pragma mark Memory Management
 
 - (void)dealloc
 {
@@ -103,6 +72,13 @@
 	[key release];
 	[secret release];
 	[super dealloc];
+}
+
+#pragma mark - Core Method
+
+- (OAToken *)OAuthToken
+{
+	return [[[OAToken alloc] initWithKey:self.key secret:self.secret] autorelease];
 }
 
 @end
