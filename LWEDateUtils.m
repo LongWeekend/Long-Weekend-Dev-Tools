@@ -19,8 +19,7 @@
 
 #import "LWEDateUtils.h"
 
-// TODO: MMA - shouldn't this just be a category on NSDateFormatter??!
-@implementation LWEDateUtils
+@implementation NSDateFormatter (LWEUtilities)
 
 /**
  * This method exists in NSDateFormatter in iOS4 but not before that,
@@ -48,7 +47,7 @@
  */
 + (NSString*) localizedStringFromDate:(NSDate*)inputDate dateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle
 {
-  return [LWEDateUtils localizedStringFromDate:inputDate dateStyle:dateStyle timeStyle:timeStyle useRelative:NO];
+  return [[self class] localizedStringFromDate:inputDate dateStyle:dateStyle timeStyle:timeStyle useRelative:NO];
 }
 
 @end
