@@ -395,7 +395,8 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 
 - (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey
 {
-	if (self = [super init])
+  self = [super init];
+	if (self)
 	{
 		self.db = [[LWETUserDB alloc] init];
 		self.context = self.db.managedObjectContext;
@@ -406,7 +407,8 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 
 - (id)initWithConsumerKey:(NSString *)consumerKey privateKey:(NSString *)privateKey authenticationView:(UIViewController *) controller
 {
-	if (self = [self initWithConsumerKey:consumerKey privateKey:privateKey])
+  self = [self initWithConsumerKey:consumerKey privateKey:privateKey];
+	if (self)
   {
 		self.authenticationView = controller;
 	}

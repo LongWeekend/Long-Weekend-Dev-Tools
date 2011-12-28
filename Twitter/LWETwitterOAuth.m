@@ -36,10 +36,10 @@
 }
 
 //! This is the designated initializer, and it passes in the delegate (what class this object report to), and consumer which holds all the information regarding API key, and its secret key.
-- (id)initWithConsumer:(OAConsumer *)aConsumer 
-			  delegate:(id <LWETAuthProccessDelegate>)aDelegate
+- (id)initWithConsumer:(OAConsumer *)aConsumer delegate:(id <LWETAuthProccessDelegate>)aDelegate
 {
-	if (self = [super init])
+  self = [super init];
+	if (self)
 	{
 		self.consumer = aConsumer;
 		self.delegate = aDelegate;

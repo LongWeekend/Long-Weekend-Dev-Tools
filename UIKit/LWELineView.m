@@ -64,7 +64,8 @@
 		newEndPoint = CGPointMake(0.0f, length);
 	}
 	
-	if (self = [super initWithFrame:newFrame])
+  self = [super initWithFrame:newFrame];
+	if (self)
 	{
 		self.backgroundColor = [UIColor clearColor];
 		self.thickness = aThickness;
