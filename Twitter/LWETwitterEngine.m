@@ -48,29 +48,30 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
   
   if ([arrayOfManagedObject count] <= 0)
 	{
-		if ([self authObj] == NO)
+		if (self.authObj == nil)
 		{
 			self.tmpForUserID = aUser.userID;
       authObj = [[LWETwitterOAuth alloc] initWithConsumer:self.consumer delegate:self];
 				
 			//XAUTH MODE
-			if ((authMode == LWET_AUTH_XAUTH) && (self.authenticationView) && ([self.authenticationView conformsToProtocol:@protocol(LWETXAuthViewProtocol)]))
+			if ((authMode == LWET_AUTH_XAUTH) &&
+          self.authenticationView &&
+          [self.authenticationView conformsToProtocol:@protocol(LWETXAuthViewProtocol)])
 			{
 				UIViewController<LWETXAuthViewProtocol> *viewController =
 				(UIViewController<LWETXAuthViewProtocol> *)	self.authenticationView;
 				
 				[viewController setAuthEngine:self.authObj];
 				UINavigationController *controller = [[UINavigationController alloc] initWithRootViewController:viewController];
-					
 				[self.parentForUserAuthenticationView presentModalViewController:controller animated:YES];
 				[controller release];
 			}
 			//OAUTH MODE
 			else if (authMode == LWET_AUTH_OAUTH)
 			{
-				if ((self.authenticationView) && ([self.authenticationView conformsToProtocol:@protocol(LWETAuthenticationViewProtocol)]))
+				if (self.authenticationView && [self.authenticationView conformsToProtocol:@protocol(LWETAuthenticationViewProtocol)])
 				{
-					self.authObj.authenticationView = self.authenticationView;
+					self.authObj.authenticationView = (UIViewController<LWETAuthenticationViewProtocol> *)self.authenticationView;
 				}
 				[self.authObj startAuthProccess];
 			}
