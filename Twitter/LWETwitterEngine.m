@@ -22,7 +22,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 @synthesize context;
 @synthesize tmpForUserID;
 @synthesize authenticationView;
-@synthesize loggedUser;
+@synthesize loggedUser = _loggedUser;
 
 #pragma mark - Setters for loggedUser
 
@@ -31,10 +31,10 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 {
 	LWETUser *user = nil;
 	
-	if (loggedUser != nil)
+	if (self.loggedUser)
 	{
-		[loggedUser release];
-		loggedUser = nil;
+		[_loggedUser release];
+		_loggedUser = nil;
 	}
 	
 	//check the user id from the database first
@@ -43,19 +43,15 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	request.entity = [NSEntityDescription entityForName:@"userProfile" inManagedObjectContext:self.context];
 	request.predicate = [NSPredicate predicateWithFormat:@"profileID=%@",aUser.userID];
 		
-	NSArray *arrayOfManagedObject = [[self context] executeFetchRequest:request 
-																	  error:&error];
-	if (arrayOfManagedObject == nil)
+	NSArray *arrayOfManagedObject = [self.context executeFetchRequest:request error:&error];
+  LWE_ASSERT_EXC(arrayOfManagedObject,@"Error cause by core data while trying to get the user from it : %@", [error userInfo]);
+  
+  if ([arrayOfManagedObject count] <= 0)
 	{
-		LWE_LOG(@"Error cause by core data while trying to get the user from it : %@", [error userInfo]);
-	}
-	else if([arrayOfManagedObject count] <= 0)
-	{
-		LWE_LOG(@"Authentication proccess with the LWETwitterOAuth");
-		if (![self authObj])
+		if ([self authObj] == NO)
 		{
-			tmpForUserID = [[NSString alloc] initWithString:aUser.userID];
-			authObj = [[LWETwitterOAuth alloc] initWithConsumer:self.consumer delegate:self];
+			self.tmpForUserID = aUser.userID;
+      authObj = [[LWETwitterOAuth alloc] initWithConsumer:self.consumer delegate:self];
 				
 			//XAUTH MODE
 			if ((authMode == LWET_AUTH_XAUTH) && (self.authenticationView) && ([self.authenticationView conformsToProtocol:@protocol(LWETXAuthViewProtocol)]))
@@ -74,7 +70,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 			{
 				if ((self.authenticationView) && ([self.authenticationView conformsToProtocol:@protocol(LWETAuthenticationViewProtocol)]))
 				{
-					authObj.authenticationView = self.authenticationView;
+					self.authObj.authenticationView = self.authenticationView;
 				}
 				[self.authObj startAuthProccess];
 			}
@@ -89,10 +85,9 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 		LWE_LOG(@"User data is taken from the database.");
 		NSManagedObject *object = [arrayOfManagedObject objectAtIndex:0];
 		NSManagedObject *relationship = [object valueForKey:@"userProfileToToken"];
-		user = [[LWETUser alloc] initFromManagedObject:relationship keyforKey:kTokenKey keyForSecret:kTokenSecret];
+		user = [[[LWETUser alloc] initFromManagedObject:relationship keyforKey:kTokenKey keyForSecret:kTokenSecret] autorelease];
 		user.userID = [object valueForKey:kUserProfileID];
-		loggedUser = [user retain];
-		[user release];
+		_loggedUser = [user retain];
 	}
 	[request release];
 }
@@ -104,41 +99,27 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 {
 	NSError *error = nil;
 	NSString *userID = self.loggedUser.userID;
-	NSEntityDescription *description = [NSEntityDescription entityForName:@"userProfile" inManagedObjectContext:self.context];
 	LWE_LOG(@"Logged the user %@ out", userID); 
 	
 	//try to pull all the data about the user id out from the core data
-	NSPredicate *predicate = [NSPredicate predicateWithFormat:@"profileID=%@", 
-							  userID];
 	NSFetchRequest *request = [[NSFetchRequest alloc] init];
-	[request setPredicate:predicate];
-	[request setEntity:description];
+  request.predicate = [NSPredicate predicateWithFormat:@"profileID=%@",userID];
+  request.entity = [NSEntityDescription entityForName:@"userProfile" inManagedObjectContext:self.context];
 	
-	NSArray *arrayOfManagedObject = [[self context] executeFetchRequest:request error:&error];
 	//delete the user profile
-	if ((arrayOfManagedObject != nil) && ([arrayOfManagedObject count] > 0))
+	NSArray *arrayOfManagedObject = [self.context executeFetchRequest:request error:&error];
+	if ([arrayOfManagedObject count] > 0)
 	{
-		[[self context] deleteObject:[arrayOfManagedObject objectAtIndex:0]];
-		if (error)
-		{
-			[error release];
-			error = nil;
+		[self.context deleteObject:[arrayOfManagedObject objectAtIndex:0]];
+		if ([self.context save:&error] == NO)
+    {
+			LWE_LOG_ERROR(@"Error: Trying to delete the object from the databae");
 		}
-		[[self context] save:&error];
-		if (error)
-		{
-			LWE_LOG(@"Error: Trying to delete the object from the databae");
-		}
-		else 
-		{
-			LWE_LOG(@"Success deleting the user from the database");
-		}
-
 	}
-	
 	[request release];
-	[loggedUser release];
-	loggedUser = nil;
+
+	[_loggedUser release];
+	_loggedUser = nil;
 }
 
 //! Tweet the word with the current user credential.
@@ -147,7 +128,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
   // This method is likely called in the background
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-	if (loggedUser != nil) 
+	if (self.loggedUser) 
 	{
 		LWE_LOG(@"Tweet Engine: Tweet this word %@", words);
     OADataFetcher *fetcher;
@@ -172,66 +153,51 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 //! Search people based on their screen name.
 - (void)search:(NSString *)people
 {
-	if (loggedUser != nil) 
+	if (self.loggedUser == nil) 
 	{
-		LWE_LOG(@"Tweet Engine: Looking for this people %@", people);
-        OADataFetcher *fetcher;
-		
-		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_USER_SEARCH
-															relatedID:nil
-														   returnType:kJSONreturnType];
-        [request setHTTPMethod:@"GET"];
-        
-        OARequestParameter *param1 = [[OARequestParameter alloc] 
-									  initWithName:@"q" value:people];
-        
-        NSArray *params = [NSArray arrayWithObject:param1];
-        [request setParameters:params];
-        
-        
-        fetcher = [[[OADataFetcher alloc] init] autorelease];
-        [fetcher fetchDataWithRequest:request
-                             delegate:self
-                    didFinishSelector:@selector(searchRequestTokenTicket:didFinishWithData:)
-                      didFailSelector:@selector(searchRequestTokenTicket:didFailWithError:)];
-        
-        [param1 release];
-    }
+    return;
+  }
+  
+  OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_USER_SEARCH relatedID:nil returnType:kJSONreturnType];
+  [request setHTTPMethod:@"GET"];
+  
+  OARequestParameter *param1 = [[OARequestParameter alloc] initWithName:@"q" value:people];
+  NSArray *params = [NSArray arrayWithObject:param1];
+  [request setParameters:params];
+  
+  OADataFetcher *fetcher = [[[OADataFetcher alloc] init] autorelease];
+  [fetcher fetchDataWithRequest:request delegate:self
+              didFinishSelector:@selector(searchRequestTokenTicket:didFinishWithData:)
+                didFailSelector:@selector(searchRequestTokenTicket:didFailWithError:)];
+  
+  [param1 release];
 }
 
 //! Follows a user.
 - (void)follow:(NSString *)people
 {
+	if (self.loggedUser == nil)
+	{
+    return;
+  }
+
 	// This method is likely called in the background
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	if (loggedUser != nil) 
-	{
-		LWE_LOG(@"Tweet Engine: Current user is following %@", people);
-        OADataFetcher *fetcher;
-		
-		OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_FRIENDSHIP_MAKE
-																												relatedID:people
-																											 returnType:kJSONreturnType];
-    [request setHTTPMethod:@"POST"];
-        
-    OARequestParameter *param1 = [[OARequestParameter alloc] 
-																	initWithName:@"follow" 
-																	value:@"true"];
-        
-		NSArray *params = [NSArray arrayWithObject:param1];
-    [request setParameters:params];
-        
-        
-    fetcher = [[[OADataFetcher alloc] init] autorelease];
-    [fetcher fetchDataWithRequest:request
-												 delegate:self
-								didFinishSelector:@selector(followRequestTokenTicket:didFinishWithData:)
-									didFailSelector:@selector(followRequestTokenTicket:didFailWithError:)];
-        
-    [param1 release];
-	}
-	
+  OAMutableURLRequest *request = [self prepareURLForRequestType:LWET_FRIENDSHIP_MAKE
+                                                      relatedID:people
+                                                     returnType:kJSONreturnType];
+  [request setHTTPMethod:@"POST"];
+      
+  OARequestParameter *param1 = [[OARequestParameter alloc] initWithName:@"follow" value:@"true"];
+  NSArray *params = [NSArray arrayWithObject:param1];
+  [request setParameters:params];
+      
+  OADataFetcher *fetcher = [[[OADataFetcher alloc] init] autorelease];
+  [fetcher fetchDataWithRequest:request delegate:self
+              didFinishSelector:@selector(followRequestTokenTicket:didFinishWithData:)
+                didFailSelector:@selector(followRequestTokenTicket:didFailWithError:)];
+      
+  [param1 release];
 	[pool release];
 }
 
@@ -422,7 +388,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
   [context release];
   [authenticationView release];
   [tmpForUserID release];
-  [loggedUser release];
+  [_loggedUser release];
 	[super dealloc];
 }
 
@@ -436,7 +402,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	NSManagedObject *newRow = [NSEntityDescription insertNewObjectForEntityForName:kUserProfileTable
 															inManagedObjectContext:self.context];
 	
-	[newRow setValue:tmpForUserID forKey:kUserProfileID];
+	[newRow setValue:self.tmpForUserID forKey:kUserProfileID];
 	
 	NSManagedObject *relationship = [NSEntityDescription insertNewObjectForEntityForName:kUserTokenTable 
 																  inManagedObjectContext:self.context];
@@ -445,24 +411,19 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	
 	[newRow setValue:relationship forKey:@"userProfileToToken"];
 	
-	if (![context save:&error])
+	if ([self.context save:&error] == NO)
 	{
-		LWE_LOG(@"Unresolved error saving it to database %@, %@", 
-				error, [error userInfo]);
+		LWE_LOG(@"Unresolved error saving it to database %@, %@", error, [error userInfo]);
 		return NO;
 	}
 	else
 	{
 		//set the current logged user
-		LWETUser *user = [[LWETUser alloc]
-						  initWithKey:userToken.key 
-						  secret:userToken.secret];
-		user.userID = tmpForUserID;
-		loggedUser = [user retain];
+		LWETUser *user = [[LWETUser alloc] initWithKey:userToken.key secret:userToken.secret];
+		user.userID = self.tmpForUserID;
+		_loggedUser = [user retain];
 		[user release];
 		
-		//memory management
-		[tmpForUserID release];
 		//[authObj release];
 		self.authObj = nil;
 		
@@ -485,7 +446,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
 	OAMutableURLRequest *request = [[[OAMutableURLRequest alloc]
 									 initWithURL:url
 									 consumer:self.consumer 
-									 token:loggedUser.userAccessToken
+									 token:self.loggedUser.userAccessToken
 									 realm:nil
 									 signatureProvider:nil]
 									autorelease];	

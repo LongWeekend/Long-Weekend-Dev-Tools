@@ -79,7 +79,7 @@ typedef enum
 @interface LWETwitterEngine : NSObject <LWETAuthProccessDelegate> 
 
 @property (nonatomic, retain) LWETwitterOAuth *authObj;
-@property (nonatomic, readonly) LWETUser *loggedUser;
+@property (nonatomic, retain, readonly) LWETUser *loggedUser;
 @property (nonatomic, retain) OAConsumer *consumer;
 @property (nonatomic, retain) LWETUserDB *db;
 @property (nonatomic, retain) NSManagedObjectContext *context;
