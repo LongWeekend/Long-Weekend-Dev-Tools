@@ -49,12 +49,6 @@
 + (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString;
 
 /**
- * start session, attempt to send saved sessions to server 
- * NOOP if not using Google Analytics
- */
-+ (void)startSession:(NSString *)apiKey;
-
-/**
  * wrapper for calling the stop tracker method
  * NOOP if not using Google Analytics
  */
