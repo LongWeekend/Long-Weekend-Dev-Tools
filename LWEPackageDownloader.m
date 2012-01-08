@@ -260,10 +260,10 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   }
   
   // Nothing more to do, call delegate
-  if (self.queue.operationCount == 0)
-  {
+  //  if (self.queue.operationCount == 0)
+  //{
     LWE_DELEGATE_CALL(@selector(packageDownloaderFinished:), self);
-  }
+  //}
 }
 
 #pragma mark - LWEDecompressorDelegate
@@ -277,10 +277,10 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   LWE_DELEGATE_CALL(@selector(unpackageFinished:),package);
   
   // Nothing more to do, call delegate
-  if (self.queue.operationCount == 0)
-  {
+  //if (self.queue.operationCount == 0)
+    // {
     LWE_DELEGATE_CALL(@selector(packageDownloaderFinished:), self);
-  }
+  //}
 }
 
 - (void) decompressFailed:(LWEDecompressor*)aDecompressor error:(NSError*)error
@@ -294,10 +294,10 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   }
 
   // Nothing more to do, call delegate
-  if (self.queue.operationCount == 0)
-  {
+  //  if (self.queue.operationCount == 0)
+  //{
     LWE_DELEGATE_CALL(@selector(packageDownloaderFinished:), self);
-  }
+  //}
 }
 
 @end
