@@ -1,4 +1,4 @@
-// LWEGoogleAnalyticsHelper.h
+// LWEAnalyticsHelper.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -58,5 +58,12 @@
  log events or errors after session has started
  */
 + (void)logEvent:(NSString *)eventName withAction:(NSString*)actionString withLabel:(NSString*)label andValue:(NSInteger)intValue;
+
+/*
+ return correct Flurry Class object for 2.x and 3.x API versions
+ */
+#if defined(LWE_USE_FLURRY)
++(id)versionSafeFlurryClass;
+#endif
 
 @end
