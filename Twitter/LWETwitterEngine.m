@@ -365,7 +365,7 @@ NSString * const LWETwitterErrorDomain = @"LWETwitterEngine";
   self = [super init];
 	if (self)
 	{
-		self.db = [[LWETUserDB alloc] init];
+		self.db = [[[LWETUserDB alloc] init] autorelease];
 		self.context = self.db.managedObjectContext;
 		self.consumer = [[[OAConsumer alloc] initWithKey:consumerKey secret:privateKey] autorelease];
 	}
