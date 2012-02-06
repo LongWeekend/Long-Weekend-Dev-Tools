@@ -39,8 +39,11 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 #endif
   
 #if defined(LWE_USE_FLURRY)
-  [[[self class] versionSafeFlurryClass] startSession:key];    // add analytics if this is live
-#elif defined(LWE_USE_GAN)
+  // start Flurry analytics if live
+  [[[self class] versionSafeFlurryClass] startSession:key];
+#endif 
+#if defined(LWE_USE_GAN)
+  // start Google analytics if live
   [[GANTracker sharedTracker] startTrackerWithAccountID:apiKey dispatchPeriod:kGANDispatchPeriodSec delegate:nil];
 #endif
 }
