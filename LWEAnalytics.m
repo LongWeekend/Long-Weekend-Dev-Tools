@@ -71,7 +71,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 
 #if defined(LWE_USE_FLURRY)
 //! Return correct Flurry Class object for 2.x and 3.x API versions
-+(id)versionSafeFlurryClass
++(Class)versionSafeFlurryClass
 {
   if(NSClassFromString(@"FlurryAPI"))
   {

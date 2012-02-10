@@ -63,7 +63,7 @@
  return correct Flurry Class object for 2.x and 3.x API versions
  */
 #if defined(LWE_USE_FLURRY)
-+(id)versionSafeFlurryClass;
++(Class)versionSafeFlurryClass;
 #endif
 
 @end
