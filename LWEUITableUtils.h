@@ -26,7 +26,6 @@
 @interface LWEUITableUtils : NSObject
 
 + (UITableViewCell*) reuseCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView usingStyle:(UITableViewCellStyle)style;
-+ (UITableViewCell*) reuseBlankLabelCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView;
 + (void)autosizeFrameForBlankLabel:(UILabel*)label forText:(NSString*)text;
 + (CGFloat) autosizeHeightForCellWithText:(NSString *)text;
 + (CGFloat) autosizeHeightForCellWithText:(NSString *)text fontSize:(NSInteger)fontSize;
