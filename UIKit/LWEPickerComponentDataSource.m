@@ -27,7 +27,7 @@
 {
   if (self = [super init])
   {
-    self.componentTitles = [[NSMutableArray alloc] init];
+    self.componentTitles = [NSMutableArray array];
   }
   return self;
 }

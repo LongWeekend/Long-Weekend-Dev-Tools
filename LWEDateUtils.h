@@ -19,7 +19,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LWEDateUtils : NSObject
+@interface NSDateFormatter (LWEUtilities)
 
 + (NSString*) localizedStringFromDate:(NSDate*)inputDate dateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle;
 + (NSString*) localizedStringFromDate:(NSDate*)inputDate dateStyle:(NSDateFormatterStyle)dateStyle timeStyle:(NSDateFormatterStyle)timeStyle useRelative:(BOOL)relative;

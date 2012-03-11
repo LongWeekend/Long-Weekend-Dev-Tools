@@ -17,41 +17,60 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "LWEScrollView.h"
+#import "UIScrollView+LWEUtilities.h"
 
-@implementation LWEScrollView
+@implementation UIScrollView (LWEUtilities)
+
+- (void) resizeScrollViewWithContentView:(UIView *)view
+{
+  // Sets the scroll view content size to be the same as the content view & reset view
+  self.contentSize = view.frame.size;
+  self.contentOffset = CGPointZero;
+
+  // Vertically align the view
+  if (view.frame.size.height < self.frame.size.height)
+  {
+    CGFloat yOffset = ((self.frame.size.height - view.frame.size.height) / 2);
+    view.frame = CGRectMake(view.frame.origin.x,
+                            yOffset,
+                            view.frame.size.width,
+                            view.frame.size.height);
+  }
+}
+
+
 
 /*!
  @method     
  @abstract   Sets up a scrollview to scoll horizontally through an array of views
  @discussion Assumes you have provided views that will fit within the scrollview provided.
  */
-+ (void)setupScrollView:(UIScrollView*)scrollView withDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding
+- (void)setupWithDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding;
 {
-  scrollView.delegate = theDelegate;
+  self.delegate = theDelegate;
   
-  [scrollView setCanCancelContentTouches:NO];
+  [self setCanCancelContentTouches:NO];
   
-  scrollView.clipsToBounds = YES;
-  scrollView.scrollEnabled = YES;
+  self.clipsToBounds = YES;
+  self.scrollEnabled = YES;
   
   CGFloat cx = 0.0f;
   
-  for (UIView* viewToAddToScrollView in views) 
+  for (UIView *viewToAddToScrollView in views) 
   {
     CGRect rect = viewToAddToScrollView.frame;
     cx += leftPadding;
     rect.origin.x = cx;
-    rect.origin.y = ((scrollView.frame.size.height - viewToAddToScrollView.frame.size.height) / 2);
+    rect.origin.y = ((self.frame.size.height - viewToAddToScrollView.frame.size.height) / 2);
    	viewToAddToScrollView.frame = rect;
     cx += rect.size.width;
     
     // add the new view as a subview for the scroll view to handle
-    [scrollView addSubview:viewToAddToScrollView];
+    [self addSubview:viewToAddToScrollView];
   }
   cx += rightPadding;
   
-  [scrollView setContentSize:CGSizeMake(cx, scrollView.bounds.size.height - topPadding - bottomPadding)];
+  [self setContentSize:CGSizeMake(cx, self.bounds.size.height - topPadding - bottomPadding)];
 }
 
 @end

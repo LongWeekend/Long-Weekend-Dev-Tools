@@ -1,4 +1,4 @@
-// LWEScrollView.h
+// LWEUILabelUtils.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -19,8 +19,17 @@
 
 #import <Foundation/Foundation.h>
 
-@interface LWEScrollView : NSObject
+#define READING_MIN_FONTSIZE  14.0
+#define READING_MAX_FONTSIZE  20.0
+#define READING_DEF_FONTSIZE  14.0
 
-+ (void)setupScrollView:(UIScrollView*)scrollView withDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding;
+#define HEADWORD_MIN_FONTSIZE 20.0
+#define HEADWORD_MAX_FONTSIZE 38.0
+#define HEADWORD_DEF_FONTSIZE 14.0
+
+@interface UILabel (LWEUtilities)
+
+- (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
+- (void) adjustFrameWithFontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin;
 
 @end

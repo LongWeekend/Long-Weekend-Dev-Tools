@@ -3,7 +3,7 @@
 //  TrialConsumerOAuthforIPhone
 //
 //  Created by Rendy Pranata on 16/07/10.
-//  Copyright 2010 CRUX. All rights reserved.
+//  Copyright 2010 Long Weekend LLC. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -38,11 +38,6 @@ typedef enum
 @interface LWETwitterOAuth : NSObject <LWETAuthenticationViewDelegate>
 {
 	BOOL isAuthenticated;
-	id<LWETAuthProccessDelegate> delegate;
-	UIViewController<LWETAuthenticationViewProtocol> *authentiactionView;
-	
-	OAConsumer *consumer;
-	OAToken *accessToken;
 }
 
 @property (nonatomic, assign) id<LWETAuthProccessDelegate> delegate;

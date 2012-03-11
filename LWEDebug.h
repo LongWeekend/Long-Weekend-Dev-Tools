@@ -18,8 +18,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#import "FlurryAPI.h"
-
 // Assertions - for app store do nothing, otherwise assert!
 #if defined(LWE_RELEASE_APP_STORE)
   #define LWE_ASSERT(STATEMENT) do { (void) sizeof(STATEMENT); } while(0)
@@ -30,7 +28,7 @@
 // Errors
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
   #define LWE_LOG_ERROR(MSG,...) do {\
-  [FlurryAPI logError:MSG message:[NSString stringWithFormat:MSG,## __VA_ARGS__] error:nil]; \
+  [NSException raise:NSGenericException format:MSG,## __VA_ARGS__];\
   } while (0)
 #else
   #define LWE_LOG_ERROR(MSG,...);

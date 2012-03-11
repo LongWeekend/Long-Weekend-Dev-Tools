@@ -1,4 +1,4 @@
-// LWEUILabelUtils.h
+// LWELongRunningTaskProtocol.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -19,20 +19,36 @@
 
 #import <Foundation/Foundation.h>
 
-#define READING_MIN_FONTSIZE  14.0
-#define READING_MAX_FONTSIZE  20.0
-#define READING_DEF_FONTSIZE  14.0
+/**
+ * Any class that implements this protocol can be used as a long running task.
+ */
+@protocol LWELongRunningTaskProtocol <NSObject>
+@required
+//! The task should cancel whatever it isi doing when receiving this message.
+- (void) cancel;
 
-#define HEADWORD_MIN_FONTSIZE 20.0
-#define HEADWORD_MAX_FONTSIZE 38.0
-#define HEADWORD_DEF_FONTSIZE 14.0
+//! The task should begin executing after receiving this message.
+- (void) start;
 
-@interface LWEUILabelUtils : NSObject
+//! Returns YES if the task is in a successful terminal state.
+- (BOOL) isSuccessState;
 
-+ (CGRect) makeFrameForText:(NSString*)text fontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin;
-+ (void)resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize forParentViewSize:(CGSize)parentViewSize;
-+ (void)resizeLabelWithConstraints: (UILabel *)theLabel minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-+ (void)autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText minFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize;
-+ (void)autosizeLabelText: (UILabel *)theLabel forScrollView:(UIScrollView *)scrollViewContainer withText:(NSString *)theText;
+//! Returns YES if the task is in a failed terminal state.
+- (BOOL) isFailureState;
 
+//! Brief description that can be displayed to the user of what the task is currently doing.
+- (NSString*) taskMessage;
+
+//! Brief 0-1 reference of how far along the task is to completion.
+- (CGFloat) progress;
+
+@optional
+//! If YES, the task is running
+- (BOOL) isActive;
+
+//! If YES, it is possible to call -cancel.  May change, and is not thread safe.
+- (BOOL) canCancelTask;
+
+//! If YES, it is possible to call -start.  May change, and is not thread safe.
+- (BOOL) canStartTask;
 @end

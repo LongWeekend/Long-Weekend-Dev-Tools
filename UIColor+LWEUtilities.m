@@ -31,11 +31,7 @@
  */
 - (id)initWithHex:(NSNumber *)hex
 {
-	if (self = [self initWithHex:hex alpha:1.0f])
-	{
-		//customization?
-	}
-	return self;
+  return [self initWithHex:hex alpha:1.0f];
 }
 
 /**

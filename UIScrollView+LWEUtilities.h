@@ -1,4 +1,4 @@
-// LWEGoogleAnalyticsHelper.h
+// LWEScrollView.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -17,28 +17,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-// TODO: MMA merge this with a Flurry helper to create a generalized reporting class
-
 #import <Foundation/Foundation.h>
 
-@interface LWEGoogleAnalyticsHelper : NSObject
-
-/*
- start session, attempt to send saved sessions to server 
- */
-+ (void)startSession:(NSString *)apiKey;
-
-/*
- log events or errors after session has started
- */
-+ (void)logEvent:(NSString *)eventName;
-+ (void)logEvent:(NSString *)eventName withAction:(NSString*)actionString withLabel:(NSString*)label andValue:(NSInteger)intValue;
-+ (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString;
-
-/* 
- wrapper for calling the stop tracker method
- */
-+ (void) stopTracker;
-
+@interface UIScrollView (LWEUtilities)
+- (void) resizeScrollViewWithContentView:(UIView *)view;
+- (void)setupWithDelegate:(id)theDelegate forViews:(NSArray *)views withTopPadding:(float)topPadding withBottomPadding:(float)bottomPadding withLeftPadding:(float)leftPadding withRightPadding:(float)rightPadding;
 @end

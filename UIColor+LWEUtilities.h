@@ -19,6 +19,11 @@
 
 #import <Foundation/Foundation.h>
 
+#pragma mark - UIColor
+
+// TODO: MMA - why isn't this a static class method?
+#define LWE_UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 @interface UIColor (LWEUtilities)
 
 //! This method will initialize a color object with the provided hexadecimal number. (Currently it only supports 24 bits color)

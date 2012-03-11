@@ -18,6 +18,9 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWECrashUtils.h"
+#import "LWEDebug.h"
+#import "LWEUniversalAppHelpers.h"
+#import "LWEAnalytics.h"
 
 #pragma mark - C Functions for FlurryAPI
 
@@ -52,9 +55,5 @@ void LWEUncaughtExceptionHandler(NSException *exception)
       }
     }
   }
-#if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
-  [NSClassFromString(@"FlurryAPI") logError:[exception name] message:debugInfoStr exception:exception];
-#else
-  LWE_LOG(@"Unhandled exception %@: stack trace (if available) follows\n%@",[exception name],debugInfoStr);
-#endif
+  [LWEAnalytics logError:exception.name message:debugInfoStr];
 }

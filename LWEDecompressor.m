@@ -7,7 +7,7 @@
 //
 
 #import "LWEDecompressor.h"
-#import "UA_ZipArchive.h"
+#import "ZipArchive.h"
 
 // Private method
 @interface LWEDecompressor ()
@@ -35,7 +35,7 @@
 {
   LWE_ASSERT_EXC(zipPath,@"You can't call this method if the request didn't download its contents to a file.");
   LWE_ASSERT_EXC(unzippedPath,@"Must provide an unzipped path!");
-  LWE_ASSERT_EXC(_isDecompressing == NO, @"You can't call this when you're actively decompressing something with the same object");
+  LWE_ASSERT_EXC(_isDecompressing == NO, @"You can't call this when you're actively decompressing something with the same instance");
 
   @synchronized(self)
   {
@@ -128,6 +128,13 @@
 
 */
 
+- (NSError*) _errorWithCode:(NSInteger)code message:(NSString*)message
+{
+  NSDictionary *errUserInfo = [NSDictionary dictionaryWithObject:message forKey:NSLocalizedDescriptionKey];
+  // TODO: get a proper error domain here
+  NSError *error = [NSError errorWithDomain:@"LWEDomain" code:code userInfo:errUserInfo];
+  return error;
+}
 
 /**
  * Private method, called in the background
@@ -135,16 +142,22 @@
 - (void) _decompressContentAtPath:(NSString*)contentPath
 {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  UA_ZipArchive *za = [[[UA_ZipArchive alloc] init] autorelease];
+  ZipArchive *za = [[[ZipArchive alloc] init] autorelease];
   
-  // 1. Make sure we can open the file (e.g the path exists & we have permission)
-  if ([za UnzipOpenFile:contentPath] == NO) 
+  // 1. Make sure we can open the file (e.g the path exists)
+  if ([LWEFile fileExists:contentPath] == NO)
   {
-    NSString *errorMsg = [NSString stringWithFormat:@"File not found/able to be opened: %@",contentPath];
-    NSDictionary *errUserInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMsg,NSLocalizedDescriptionKey,nil];
-    // TODO: get a proper error domain here
-    NSError *error = [NSError errorWithDomain:@"LWEDomain" code:1 userInfo:errUserInfo];
-    [self _failWithError:error];
+    NSString *errorMsg = [NSString stringWithFormat:@"File not found: %@",contentPath];
+    [self _failWithError:[self _errorWithCode:1 message:errorMsg]];
+    [pool release];
+    return;
+  }
+  
+  // 1. Make sure we can open the file (good ZIP file)
+  if ([za UnzipOpenFile:contentPath] == NO)
+  {
+    NSString *errorMsg = [NSString stringWithFormat:@"File not able to be opened: %@",contentPath];
+    [self _failWithError:[self _errorWithCode:2 message:errorMsg]];
     [pool release];
     return;
   }
@@ -154,11 +167,7 @@
   if (success == NO)
   {
     NSString *errorMsg = [NSString stringWithFormat:@"File not able to be unzipped: %@",contentPath];
-    NSDictionary *errUserInfo = [NSDictionary dictionaryWithObjectsAndKeys:errorMsg,NSLocalizedDescriptionKey,nil];
-
-    // TODO: get a proper error domain here
-    NSError *error = [NSError errorWithDomain:@"LWEDomain" code:2 userInfo:errUserInfo];
-    [self _failWithError:error];
+    [self _failWithError:[self _errorWithCode:3 message:errorMsg]];
     [pool release];
     return;
   }
@@ -180,9 +189,9 @@
   
   [pool release];
 
+  _isDecompressing = NO;
   // Get rid of the extra retain count on us now that we are done
   [self release];
-  _isDecompressing = NO;
 }
 
 
@@ -208,10 +217,10 @@
   {
     [self performSelectorOnMainThread:@selector(_failWithErrorOnMainThread:) withObject:error waitUntilDone:[NSThread isMainThread]];
   }
+  _isDecompressing = NO;
   
   // Get rid of the extra retain count on us now that we are done
   [self release];
-  _isDecompressing = NO;
 }
 
 /**

@@ -22,24 +22,25 @@
 //! Converts a string to an enumVal
 - (NSString*) stringWithEnum: (NSUInteger) enumVal;
 {
-  if([self objectAtIndex:enumVal]
+  NSString *retVal = nil;
+  if([self objectAtIndex:enumVal])
   {
-     return [self objectAtIndex:enumVal];
+     retVal = [self objectAtIndex:enumVal];
   }
   else
   {
     //[NSException raise:NSInternalInconsistencyException format:@"Enum value does not match index in array!"];
-
     // Decided this shouldn't fail noisily
-    return @"enumUnknown";
+    retVal = @"enumUnknown";
   }
+  return retVal;
 }
 
 //! Converts a string from an enumVal and supports passing in a default
 - (NSUInteger) enumFromString: (NSString*) strVal default: (NSUInteger) def;
 {
   NSUInteger n = [self indexOfObject:strVal];
-  if(n < 0)
+  if(n==NSNotFound)
   {
     n = def;
   }

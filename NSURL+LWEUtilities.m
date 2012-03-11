@@ -29,20 +29,21 @@
 	if ((q != nil)&&([q rangeOfString:@"="].location != NSNotFound))
 	{
 		NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-		BOOL more;
+		BOOL more = NO;
 		do
 		{
 			NSRange section = [q rangeOfString:@"&"];
-			more = !(section.location == NSNotFound);
-			NSString *sectionStr;
+			more = (section.location != NSNotFound);
+			NSString *sectionStr = nil;
 			if (more)
 			{
-				
 				sectionStr = [q substringToIndex:section.location];
 				q = [q substringFromIndex:section.location + 1];
 			}
-			else 
+			else
+      {
 				sectionStr = q;
+      }
 			
 			NSRange range = [sectionStr rangeOfString:@"="];
 			NSString *key = [[NSString alloc]

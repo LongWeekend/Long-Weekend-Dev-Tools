@@ -3,7 +3,7 @@
 //  TweetSimulationWithLWE
 //
 //  Created by Rendy Pranata on 18/07/10.
-//  Copyright 2010 CRUX. All rights reserved.
+//  Copyright 2010 Long Weekend LLC. All rights reserved.
 //
 
 #import "LWETUserDB.h"
@@ -16,7 +16,8 @@
  
 - (id)init
 {
-	if ([super init])
+  self = [super init];
+	if (self)
 	{
 		/*place for future customazation*/
 	}

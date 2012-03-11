@@ -31,9 +31,6 @@
  * to avoid hard-coding integers into your delegate methods for UIAlertView
  */
 @interface LWEUIAlertView : NSObject
-{
-
-}
 
 /**
  * \brief Shows standard no-network alert view 

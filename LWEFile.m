@@ -19,7 +19,7 @@
 
 #import "LWEFile.h"
 #import "LWEDebug.h"
-
+#include <sys/xattr.h>
 
 @implementation LWEFile
 
@@ -75,6 +75,20 @@
   return returnVal;
 }
 
+/**
+ * Takes a single filename and returns a full path pointing at that filename in the current app's library/Caches directory
+ */
++ (NSString*) createCachesPathWithFilename:(NSString*)filename
+{
+  NSString *returnVal = nil;
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+  if (paths && [paths count] > 0)
+  {
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    returnVal = [documentsDirectory stringByAppendingPathComponent:filename];
+  }
+  return returnVal;
+}
 
 /**
  * Creates a temporary path with a filename
@@ -275,6 +289,24 @@
     return NO;
   }
 
+}
+
+//! Method to make a given file not backed up (also prevents it's deletion)
+// See https://developer.apple.com/library/ios/#qa/qa1719/_index.html for more info
++ (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL
+{
+  return [LWEFile addSkipBackupAttributeToItemAtPath:[URL path]];
+}
+
+//! Sets the Skip Backup Extended Attribute for a file at a given path
++ (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)path
+{
+  const char* filePath = [path fileSystemRepresentation];
+  const char* attrName = "com.apple.MobileBackup";
+  u_int8_t attrValue = 1;
+  
+  int result = setxattr(filePath, attrName, &attrValue, sizeof(attrValue), 0, 0);
+  return result == 0;
 }
 
 

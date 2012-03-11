@@ -21,36 +21,28 @@
 #import "LWEDebug.h"
 #import "SynthesizeSingleton.h"
 
+NSString * const LWEDatabaseTempAttachName          = @"LWEDATABASETMP";
+
+@interface LWEDatabase()
+- (BOOL) _databaseIsOpen;
+@end
+
 @implementation LWEDatabase
 
-@synthesize dao;
+@synthesize dao = _dao;
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
 
-
-/**
- * Returns true if file was able to be copied from the bundle - overwrites
- * Intended to be run in the background
- */
-- (BOOL) copyDatabaseFromBundle:(NSString*)filename
+- (void) asynchCopyDatabaseFromBundle:(NSString *)filename completionBlock:(dispatch_block_t)completionBlock;
 {
-  BOOL returnVal = NO;
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  if ([LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES])
+  dispatch_queue_t queue = dispatch_queue_create("com.longweekendmobile.databasecopy",NULL);
+  dispatch_queue_t main = dispatch_get_main_queue();
+  dispatch_async(queue,^
   {
-    // Let everyone know that we are DONE
-    NSNotification *aNotification = [NSNotification notificationWithName:LWEDatabaseCopyDatabaseDidSucceed object:self];
-    [self performSelectorOnMainThread:@selector(_postNotification:) withObject:aNotification waitUntilDone:NO];
-    returnVal = YES;
-  }
-  else
-  {
-    LWE_LOG(@"Unable to copy database from bundle: %@",filename);
-  }
-  [pool release];
-  return returnVal;
+    [LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES];
+    dispatch_async(main,completionBlock);
+  });
 }
-
 
 /** 
  * Returns true if the database file specified by 'pathToDatabase' was successfully opened
@@ -62,7 +54,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   BOOL fileExists = [LWEFile fileExists:pathToDatabase];
   if (fileExists)
   {
-    self.dao = [FMDatabase databaseWithPath:pathToDatabase];
+    _dao = [[FMDatabase databaseWithPath:pathToDatabase] retain];
     
     // only allow error tracing in a non-release versions.  APP Store version should never have these on
     #if defined(LWE_RELEASE_AD_HOC) || defined(LWE_RELEASE_APP_STORE)
@@ -97,7 +89,9 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   // First check that the database is indeed open
   if ([self _databaseIsOpen])
   {
-    [[self dao] close];
+    [self.dao close];
+    [_dao release];
+    _dao = nil;
   }
   return YES;
 }
@@ -186,24 +180,22 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
  */
 - (FMResultSet*) executeQuery:(NSString*)sql
 {
-  return [[self dao] executeQuery:sql];
+  return [self.dao executeQuery:sql];
 }
-
 
 /**
  * Passthru for dao - executeUpdate
  */
 - (BOOL) executeUpdate:(NSString*)sql
 {
-  return [[self dao] executeUpdate:sql];
+  return [self.dao executeUpdate:sql];
 }
-
 
 /**
  * Checks for the existence of a table name in the sqlite_master table
  * If database is not open, throws an exception
  */
-- (BOOL) tableExists:(NSString *) tableName
+- (BOOL) tableExists:(NSString *)tableName
 {
   BOOL returnVal = NO;
   if ([self _databaseIsOpen])
@@ -242,14 +234,5 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   }
 }
 
-
-//! Helper method for threading - posts a notification
-- (void) _postNotification:(NSNotification *)aNotification
-{
-  [[NSNotificationCenter defaultCenter] postNotification:aNotification];
-}
-
 @end
 
-NSString * const LWEDatabaseCopyDatabaseDidSucceed  = @"LWEDatabaseCopyDatabaseDidSucceed";
-NSString * const LWEDatabaseTempAttachName          = @"LWEDATABASETMP";
