@@ -50,9 +50,11 @@ typedef enum
   kLWEDeviceTypeIPhone4    = (3 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
   kLWEDeviceTypeIPodTouch4 = (3 << kLWEDeviceClassCount) | kLWEDeviceClassIPodTouch,
   kLWEDeviceTypeIPad       = (4 << kLWEDeviceClassCount) | kLWEDeviceClassIPad,
-  kLWEDeviceTypeIPhone5    = (5 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
   kLWEDeviceTypeIPad2      = (5 << kLWEDeviceClassCount) | kLWEDeviceClassIPad,
-  kLWEDeviceTypeSimulator  = (6 << kLWEDeviceClassCount) | kLWEDeviceClassSimulator,
+  kLWEDeviceTypeIPhone4S   = (5 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeIPad3      = (6 << kLWEDeviceClassCount) | kLWEDeviceClassIPad,
+  kLWEDeviceTypeIPhone5    = (7 << kLWEDeviceClassCount) | kLWEDeviceClassIPhone,
+  kLWEDeviceTypeSimulator  = (7 << kLWEDeviceClassCount) | kLWEDeviceClassSimulator,
 } kLWEDeviceType;
 
 /**
