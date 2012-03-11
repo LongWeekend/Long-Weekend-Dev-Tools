@@ -1,6 +1,6 @@
 // UIColor+LWEUtilities.m
 //
-// Copyright (c) 2010 Long Weekend LLC
+// Copyright (c) 2010-2 Long Weekend LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,12 +17,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #pragma mark - UIColor
-
-// TODO: MMA - why isn't this a static class method?
-#define LWE_UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 @interface UIColor (LWEUtilities)
 
