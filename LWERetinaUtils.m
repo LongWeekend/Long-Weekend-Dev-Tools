@@ -22,7 +22,6 @@
 
 @implementation LWERetinaUtils
 
-// TODO: This needs to be redone? - an iPad may someday be Retina.  Sigh this is hard...
 + (BOOL) isRetinaDisplay
 {
   BOOL returnVal = NO;
@@ -30,8 +29,8 @@
   // 2. Is the scale 2?
   // 3. Is it not an iPad-type device (i.e. it could be scale = 2 because of iPhone app scaling)
   if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] &&
-      [[UIScreen mainScreen] scale] == 2 &&
-      ([LWEUniversalAppHelpers deviceType] & kLWEDeviceClassIPad) == 0)
+      [[UIScreen mainScreen] scale] == 2)
+    //      ([LWEUniversalAppHelpers deviceType] & kLWEDeviceClassIPad) == 0)
   {
     returnVal = YES;
   }
