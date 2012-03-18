@@ -26,30 +26,28 @@
 - (id) init
 {
   [NSException raise:@"Invalid Initializer" format:@"Use initWithDataPages instead"];
-  
-  return self;
+  return nil;
 }
 
 - (id) initWithDataPages:(NSArray*)data
 {
-  if((self == [super init]))
+  if ((self = [super init]))
   {
     self.dataPages = data;
   }
-  
   return self;
 }
 
 //! returns the number of pages in the datasource
 - (NSInteger)numDataPages
 {
-	return [dataPages count];
+	return [self.dataPages count];
 }
 
 //! Returns the dictionary of data for a given page
 - (NSDictionary *)dataForPage:(NSInteger)pageIndex
 {
-	return [dataPages objectAtIndex:pageIndex];
+	return [self.dataPages objectAtIndex:pageIndex];
 }
 
 @end

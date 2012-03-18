@@ -1,4 +1,4 @@
-// LWEGoogleAnalyticsHelper.m
+// LWEAnalyticsHelper.m
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -41,8 +41,11 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 #endif
   
 #if defined(LWE_USE_FLURRY)
-  [FlurryAnalytics startSession:key];    // add analytics if this is live
-#elif defined(LWE_USE_GAN)
+  // start Flurry analytics if live
+  [[[self class] versionSafeFlurryClass] startSession:key];
+#endif 
+#if defined(LWE_USE_GAN)
+  // start Google analytics if live
   [[GANTracker sharedTracker] startTrackerWithAccountID:apiKey dispatchPeriod:kGANDispatchPeriodSec delegate:nil];
 #endif
 }
@@ -56,7 +59,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 {
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
   #if defined(LWE_USE_FLURRY)
-  [FlurryAnalytics logEvent:eventName withParameters:userInfo];
+  [[[self class] versionSafeFlurryClass] logEvent:eventName withParameters:userInfo];
   #elif defined(LWE_USE_GAN)
   NSError *error = nil;
   [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", eventName] withError:&error];
@@ -68,12 +71,28 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 #endif
 }
 
+#if defined(LWE_USE_FLURRY)
+//! Return correct Flurry Class object for 2.x and 3.x API versions
++(Class)versionSafeFlurryClass
+{
+  if(NSClassFromString(@"FlurryAPI"))
+  {
+    // Flurry 2.x class type
+    return NSClassFromString(@"FlurryAPI");
+  }
+  else
+  {
+    // Flurry 3.x class type
+    return NSClassFromString(@"FlurryAnalytics");
+  }
+}
+#endif
 
 + (void) logError:(NSString *)errorName message:(NSString *)errorMsg
 {
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
 #if defined(LWE_USE_FLURRY)
-  [FlurryAnalytics logError:errorName message:errorMsg exception:nil];
+  [[[self class] versionSafeFlurryClass] logError:errorName message:errorMsg exception:nil];
 #elif defined(LWE_USE_GAN)
   [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", errorName] withError:NULL];
 #endif

@@ -20,6 +20,7 @@
 #import "LWECrashUtils.h"
 #import "LWEDebug.h"
 #import "LWEUniversalAppHelpers.h"
+#import "LWEAnalytics.h"
 
 #pragma mark - C Functions for FlurryAPI
 

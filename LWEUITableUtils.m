@@ -33,28 +33,6 @@
   return cell;
 }
 
-//! Returns a new UITableViewCell with a blank tagged label - automatically determines whether new or off the queue
-+ (UITableViewCell*) reuseBlankLabelCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView
-{
-  UITableViewCell *cell;
-  UILabel *label = nil;
-  
-  cell = [lclTableView dequeueReusableCellWithIdentifier:identifier];
-  if (cell == nil)
-  {
-    cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:@"Cell"] autorelease];
-    
-    label = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-    [label setLineBreakMode:UILineBreakModeWordWrap];
-    [label setMinimumFontSize:LWE_UITABLE_CELL_FONT_SIZE];
-    [label setNumberOfLines:0];
-    [label setFont:[UIFont systemFontOfSize:LWE_UITABLE_CELL_FONT_SIZE]];
-    [label setTag:1];
-    
-    [[cell contentView] addSubview:label];
-  }
-  return cell;
-}
 
 //! Sets the frame to the hieght needed for a given text size. Used in conjunction with reuseBlankLabelCellForIdentifier
 + (void)autosizeFrameForBlankLabel:(UILabel*)label forText:(NSString*)text

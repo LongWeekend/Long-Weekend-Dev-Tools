@@ -24,6 +24,7 @@
 #import "LWEUniversalAppHelpers.h"
 #import "LWERetinaUtils.h"
 #import "LWEFile.h"
+#import <UIKit/UIKit.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
@@ -47,7 +48,7 @@
 // TODO: this is a bit of a naive implementation
 + (BOOL)isAnIPhone
 {
-  return ![LWEUniversalAppHelpers isAnIPad];
+  return ([LWEUniversalAppHelpers isAnIPad] == NO);
 }
 
 + (kLWEDeviceType) deviceType
@@ -89,8 +90,11 @@
     {
       switch (majorRevision)
       {
-        case 4:
+        case 5:
           device = kLWEDeviceTypeIPhone5;
+          break;
+        case 4:
+          device = kLWEDeviceTypeIPhone4S;
           break;
         case 3:
           device = kLWEDeviceTypeIPhone4;
@@ -132,6 +136,10 @@
     {
       switch (majorRevision)
       {
+        case 3:
+          // We are not yet 100% sure that this is major revision 3, but 95% sure :)
+          device = kLWEDeviceTypeIPad3;
+          break;
         case 2:
           device = kLWEDeviceTypeIPad2;
           break;
