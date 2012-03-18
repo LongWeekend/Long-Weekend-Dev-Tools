@@ -267,15 +267,10 @@
   
   // Now do the actual copy
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  
-  // TODO: MMA - why does this exist??!
   NSArray *explodedString = [filename componentsSeparatedByString:@"."];
-  LWE_LOG(@"Exploded string reconstituted: '%@.%@'",[explodedString objectAtIndex:0],[explodedString objectAtIndex:1]);
-#pragma unused(explodedString)
-  
   NSString *bundlePath = [[NSBundle mainBundle] pathForResource:[explodedString objectAtIndex:0] ofType:[explodedString objectAtIndex:1]];
 //  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
-//  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"Phone" ofType:@"sqlite"];
+
   LWE_LOG(@"Copying file from :%@",bundlePath);
   NSError *error = nil;
 	BOOL result = [fileManager copyItemAtPath:bundlePath toPath:destPath error:&error];
