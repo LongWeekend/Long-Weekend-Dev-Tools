@@ -20,11 +20,13 @@
 
 #import "LWEAnalytics.h"
 #import "LWEDebug.h"
+
 #if defined(LWE_USE_FLURRY)
-  #import "FlurryAPI.h"
+#import "FlurryAnalytics.h"
 #endif 
+
 #if defined(LWE_USE_GAN)
-  #import "GANTracker.h"
+#import "GANTracker.h"
 #endif
 
 static const NSInteger kGANDispatchPeriodSec = 10;
@@ -39,7 +41,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 #endif
   
 #if defined(LWE_USE_FLURRY)
-  [FlurryAPI startSession:key];    // add analytics if this is live
+  [FlurryAnalytics startSession:key];    // add analytics if this is live
 #elif defined(LWE_USE_GAN)
   [[GANTracker sharedTracker] startTrackerWithAccountID:apiKey dispatchPeriod:kGANDispatchPeriodSec delegate:nil];
 #endif
@@ -54,7 +56,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 {
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
   #if defined(LWE_USE_FLURRY)
-  [FlurryAPI logEvent:eventName withParameters:userInfo];
+  [FlurryAnalytics logEvent:eventName withParameters:userInfo];
   #elif defined(LWE_USE_GAN)
   NSError *error = nil;
   [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", eventName] withError:&error];
@@ -71,7 +73,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 {
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
 #if defined(LWE_USE_FLURRY)
-  [FlurryAPI logError:errorName message:errorMsg exception:nil];
+  [FlurryAnalytics logError:errorName message:errorMsg exception:nil];
 #elif defined(LWE_USE_GAN)
   [[GANTracker sharedTracker] trackPageview:[NSString stringWithFormat:@"\%@", errorName] withError:NULL];
 #endif
