@@ -19,7 +19,7 @@
 
 
 // Uncomment the following lines to enable various analytics trackers
-#define LWE_USE_FLURRY 1
+//#define LWE_USE_FLURRY 1
 //#define LWE_USE_GAN 1
 
 #import <Foundation/Foundation.h>
