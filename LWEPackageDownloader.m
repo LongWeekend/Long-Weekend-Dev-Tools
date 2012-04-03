@@ -179,6 +179,9 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
   request.userInfo = [NSDictionary dictionaryWithObject:package forKey:kLWEPackageUserInfoKey];
   request.downloadDestinationPath = package.destinationFilepath;      // The full file will be moved here if and when the request completes successfully
   NSString *downloadFilePath = [LWEFile createLibraryPathWithFilename:[NSString stringWithFormat:@"%@/%@",kLWEPackageDownloaderTempDirectory,[package packageFilename]]];
+
+  // Create the directory path to the destination if it doesn't already exist
+  [LWEFile createDirectoryIfNotExisting:[package.destinationFilepath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
   
   // NB: MMA found that if the app crashes/is killed before the download is complete (not backgrounded), 
   // it will fail with the strange "connection failure occurred" message when we try again.  Somehow, deleting the
