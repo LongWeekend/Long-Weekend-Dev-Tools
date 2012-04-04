@@ -1,24 +1,47 @@
-//  PagingScrollViewController.m
-//  PagingScrollView
+// LWEPagingScrollViewController.m
 //
-//  Created by Matt Gallagher on 24/01/09.
-//  Copyright 2009 Matt Gallagher. All rights reserved.
+// Based on Original Version
+// Created by Matt Gallagher on 24/01/09.
+// Copyright 2009 Matt Gallagher. All rights reserved.
 //
-//  Permission is given to use this source code file, free of charge, in any
-//  project, commercial or otherwise, entirely at your risk, with the condition
-//  that any redistribution (in part or whole) of source code must retain
-//  this copyright and permission notice. Attribution in compiled projects is
-//  appreciated but not required.
+// Original License Terms:
+// Permission is given to use this source code file, free of charge, in any
+// project, commercial or otherwise, entirely at your risk, with the condition
+// that any redistribution (in part or whole) of source code must retain
+// this copyright and permission notice. Attribution in compiled projects is
+// appreciated but not required.
+// 
+// Updates & Additions
+// Copyright (c) 2010, 2011, 2012 Long Weekend LLC
 //
-//  Modified By Ross Sharrott, Long Weekend LLC.
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+// associated documentation files (the "Software"), to deal in the Software without restriction,
+// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial
+// portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+// NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "LWEPagingScrollViewController.h"
 
+@interface LWEPagingScrollViewController ()
+//! These methods call out to the delegate if set, otherwise they have default implementation
+- (id<LWEPageViewControllerProtocol>) setupCurrentPage;
+- (id<LWEPageViewControllerProtocol>) setupNextPage;
+@end
+
 @implementation LWEPagingScrollViewController
 
-@synthesize datasource, delegate, currentPage, nextPage, scrollView;
+@synthesize datasource, delegate, currentPage, nextPage, scrollView, pageControl;
 
-- (void)applyNewIndex:(NSInteger)newIndex pageController:(LWEPageViewController *)pageController
+- (void)applyNewIndex:(NSInteger)newIndex pageController:(id<LWEPageViewControllerProtocol>)pageController
 {
 	NSInteger pageCount = [self.datasource numDataPages];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
@@ -27,13 +50,13 @@
 	{
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = 0;
-		pageFrame.origin.x = scrollView.frame.size.width * newIndex;
+		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
 		pageController.view.frame = pageFrame;
 	}
 	else
 	{
 		CGRect pageFrame = pageController.view.frame;
-		pageFrame.origin.y = scrollView.frame.size.height;
+		pageFrame.origin.y = self.scrollView.frame.size.height;
 		pageController.view.frame = pageFrame;
 	}
 
@@ -42,12 +65,14 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
+  
 	self.currentPage = [self setupCurrentPage];
 	self.nextPage = [self setupNextPage];
   
 	[self.scrollView addSubview:self.currentPage.view];
 	[self.scrollView addSubview:self.nextPage.view];
-  [self.scrollView bringSubviewToFront:pageControl];
+  [self.scrollView bringSubviewToFront:self.pageControl];
 
 	NSInteger widthCount = [self.datasource numDataPages];
 	if (widthCount == 0)
@@ -57,8 +82,7 @@
 	
   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
 	self.scrollView.contentOffset = CGPointMake(0, 0);
-
-	pageControl.numberOfPages = [self.datasource numDataPages];
+	self.pageControl.numberOfPages = [self.datasource numDataPages];
   
   LWE_LOG(@"The current page index is: %i", pageControl.currentPage);
 	
@@ -68,39 +92,37 @@
   [self changePageAnimated:NO]; // go to the current page
 }
 
-#pragma mark -
-#pragma mark Delegate Implementation
+#pragma mark - Delegate Implementation
 
-- (LWEPageViewController*) setupCurrentPage
+- (id<LWEPageViewControllerProtocol>) setupCurrentPage
 {
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupCurrentPage:)]))
   {
-    LWEPageViewController* tmpVC = [self.delegate setupCurrentPage:self];
-    tmpVC.datasource = self;
+    id<LWEPageViewControllerProtocol> tmpVC = [self.delegate setupCurrentPage:self];
+    tmpVC.dataSource = self;
     return tmpVC;
   }
-  else // just return a blank page
+  else
   {
-    return [[[LWEPageViewController alloc] init] autorelease];
+    return nil;
   }
 }
 
-- (LWEPageViewController*) setupNextPage
+- (id<LWEPageViewControllerProtocol>) setupNextPage
 {
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupNextPage:)]))
   {
-    LWEPageViewController* tmpVC = [self.delegate setupNextPage:self];
-    tmpVC.datasource = self;
+    id<LWEPageViewControllerProtocol> tmpVC = [self.delegate setupNextPage:self];
+    tmpVC.dataSource = self;
     return tmpVC;
   }
-  else // just return a blank page
+  else
   {
-    return [[[LWEPageViewController alloc] init] autorelease];
+    return nil;
   }
 }
 
-#pragma mark -
-#pragma mark LWEPageViewControllerDatasource Implementation
+#pragma mark - LWEPageViewControllerDatasource Implementation
 
 //! A page will ask for it's data, and this is the default implementation. Override to do something different
 - (id) dataForPage:(NSInteger)pageIndex
@@ -115,13 +137,12 @@
   }
 }
 
-#pragma mark -
-#pragma mark UIScrollViewDelegate Support
+#pragma mark - UIScrollViewDelegate Support
 
 - (void)scrollViewDidScroll:(UIScrollView *)sender
 {
-  CGFloat pageWidth = scrollView.frame.size.width;
-  float fractionalPage = scrollView.contentOffset.x / pageWidth;
+  CGFloat pageWidth = self.scrollView.frame.size.width;
+  CGFloat fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
 	NSInteger upperNumber = lowerNumber + 1;
@@ -169,7 +190,7 @@
 
 	if (self.currentPage.pageIndex != nearestNumber)
 	{
-		LWEPageViewController *swapController = [self.currentPage retain];
+		id<LWEPageViewControllerProtocol> swapController = [self.currentPage retain];
 		self.currentPage = self.nextPage;
 		self.nextPage = swapController;
     [swapController release];
@@ -182,18 +203,18 @@
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
 {
 	[self scrollViewDidEndScrollingAnimation:newScrollView];
-	pageControl.currentPage = self.currentPage.pageIndex;
+	self.pageControl.currentPage = self.currentPage.pageIndex;
 }
 
 - (void)changePageAnimated:(BOOL)animated
 {
-  NSInteger pageIndex = pageControl.currentPage;
+  NSInteger pageIndex = self.pageControl.currentPage;
 
 	// update the scroll view to the appropriate page
   CGRect frame = self.scrollView.frame;
   frame.origin.x = frame.size.width * pageIndex;
   frame.origin.y = 0;
-  [scrollView scrollRectToVisible:frame animated:animated];
+  [self.scrollView scrollRectToVisible:frame animated:animated];
 }
 
 - (IBAction)changePage:(id)sender
@@ -203,11 +224,11 @@
 
 - (void) viewDidUnload
 {
-  // we don't get rid of the 
  	self.currentPage = nil;
 	self.nextPage = nil;
   self.scrollView = nil;
- 
+  self.pageControl = nil;
+  
   [super viewDidUnload];
 }
 
@@ -217,6 +238,7 @@
 	self.currentPage = nil;
 	self.nextPage = nil;
   self.scrollView = nil;
+  self.pageControl = nil;
 	
 	[super dealloc];
 }
