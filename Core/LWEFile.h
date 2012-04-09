@@ -42,7 +42,10 @@ typedef enum
 + (BOOL) copyFromBundleWithFilename:(NSString *)source toDocumentsWithFilename:(NSString *)dest shouldOverwrite:(BOOL)overwrite;
 + (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite;
 + (NSInteger) getTotalDiskSpaceInBytes;
-+ (void) printFilesInDirectory:(NSString*)dir;
 + (BOOL)addSkipBackupAttributeToItemAtURL:(NSURL *)URL;
 + (BOOL)addSkipBackupAttributeToItemAtPath:(NSString *)path;
+
+#if defined (LWE_DEBUG)
++ (void) printFilesInDirectory:(NSString*)dir;
+#endif
 @end
