@@ -23,17 +23,25 @@
 
 @synthesize packageUrl, destinationFilepath, unpackagePath, isUnwrapped, userInfo;
 
+//! Instance method initialiser
+- (id) initWithUrl:(NSURL*)url destinationFilepath:(NSString*)filepath
+{
+  self = [super init];
+  {
+    self.destinationFilepath = filepath;
+    self.packageUrl = url;
+    self.isUnwrapped = NO;
+    
+    // This sets the unpackaging to happen as the same dir as the destination file, default behavior
+    self.unpackagePath = [filepath stringByDeletingLastPathComponent];
+  }
+  return self;
+}
+
 //! Initializer, conveninence method autoreleased
 + (id) packageWithUrl:(NSURL*)url destinationFilepath:(NSString*)filepath
 {
-  LWEPackage *package = [[[LWEPackage alloc] init] autorelease];
-  package.destinationFilepath = filepath;
-  package.packageUrl = url;
-  package.isUnwrapped = NO;
-  
-  // This sets the unpackaging to happen as the same dir as the destination file, default behavior
-  package.unpackagePath = [filepath stringByDeletingLastPathComponent];
-  return package;
+  return [[[self alloc] initWithUrl:url destinationFilepath:filepath] autorelease];
 }
 
 //! Trims out everything but the filename of the URL to be unwrapped
