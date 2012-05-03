@@ -20,7 +20,7 @@
 @implementation NSArray (LWEEnumExtensions)
 
 //! Converts a string to an enumVal
-- (NSString*) stringWithEnum: (NSUInteger) enumVal;
+- (NSString*) stringWithEnum:(NSInteger)enumVal
 {
   NSString *retVal = nil;
   if([self objectAtIndex:enumVal])
@@ -31,15 +31,14 @@
   {
     //[NSException raise:NSInternalInconsistencyException format:@"Enum value does not match index in array!"];
     // Decided this shouldn't fail noisily
-    retVal = @"enumUnknown";
   }
   return retVal;
 }
 
 //! Converts a string from an enumVal and supports passing in a default
-- (NSUInteger) enumFromString: (NSString*) strVal default: (NSUInteger) def;
+- (NSInteger) enumFromString:(NSString*)strVal default:(NSInteger)def
 {
-  NSUInteger n = [self indexOfObject:strVal];
+  NSInteger n = [self indexOfObject:strVal];
   if(n==NSNotFound)
   {
     n = def;
@@ -48,7 +47,7 @@
 }
 
 //! Converts a string from an enumVal
-- (NSUInteger) enumFromString: (NSString*) strVal;
+- (NSInteger) enumFromString:(NSString*)strVal
 {
   return [self enumFromString:strVal default:0];
 }
