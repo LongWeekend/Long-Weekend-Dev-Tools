@@ -7,6 +7,18 @@
 
 @implementation NSString (LWEExtensions)
 
+- (BOOL) isNotBlank
+{
+  if ([[self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] isEqualToString:@""])
+  {
+    return NO;
+  }
+  else
+  {
+    return YES;
+  }
+}
+
 /**
  * This code first found on: 
  * http://iphonedevelopertips.com/core-services/create-md5-hash-from-nsstring-nsdata-or-file.html

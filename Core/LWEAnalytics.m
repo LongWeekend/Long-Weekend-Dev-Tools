@@ -20,11 +20,13 @@
 
 #import "LWEAnalytics.h"
 #import "LWEDebug.h"
+
 #if defined(LWE_USE_FLURRY)
-  #import "FlurryAPI.h"
+#import "FlurryAnalytics.h"
 #endif 
+
 #if defined(LWE_USE_GAN)
-  #import "GANTracker.h"
+#import "GANTracker.h"
 #endif
 
 static const NSInteger kGANDispatchPeriodSec = 10;

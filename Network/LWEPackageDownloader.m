@@ -175,10 +175,29 @@ NSString * const kLWEPackageUserInfoKey = @"LWEPackage";
 
 - (ASIHTTPRequest*) _requestForPackage:(LWEPackage*)package
 {
-  ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:package.packageUrl];
+  ASIHTTPRequest *request = nil;
+  if ([package isMemberOfClass:[LWEPackage class]])
+  {
+    request = [ASIHTTPRequest requestWithURL:package.packageUrl];
+  }
+  else if ([package isMemberOfClass:[LWES3Package class]])
+  {
+    LWES3Package *s3Package = (LWES3Package *)package;
+    ASIS3ObjectRequest *r = [ASIS3ObjectRequest requestWithBucket:s3Package.bucket key:s3Package.pathToObject];
+    [r setSecretAccessKey:s3Package.secretKey];
+    [r setAccessKey:s3Package.accessKey];
+    
+    //Assign the pointer for request to the r. As its a child instance of ASIHTTPRequestObject anyway,
+    //so it should be fine.
+    request = r;
+  }
+  
   request.userInfo = [NSDictionary dictionaryWithObject:package forKey:kLWEPackageUserInfoKey];
   request.downloadDestinationPath = package.destinationFilepath;      // The full file will be moved here if and when the request completes successfully
   NSString *downloadFilePath = [LWEFile createLibraryPathWithFilename:[NSString stringWithFormat:@"%@/%@",kLWEPackageDownloaderTempDirectory,[package packageFilename]]];
+
+  // Create the directory path to the destination if it doesn't already exist
+  [LWEFile createDirectoryIfNotExisting:[package.destinationFilepath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
   
   // NB: MMA found that if the app crashes/is killed before the download is complete (not backgrounded), 
   // it will fail with the strange "connection failure occurred" message when we try again.  Somehow, deleting the

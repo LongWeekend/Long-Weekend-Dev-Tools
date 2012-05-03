@@ -1,4 +1,4 @@
-// LWEPackage.h
+// LWEAnalyticsHelper.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -17,36 +17,53 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+// Uncomment the following lines to enable various analytics trackers
+//#define LWE_USE_FLURRY 1
+//#define LWE_USE_GAN 1
+
 #import <Foundation/Foundation.h>
 
-@interface LWEPackage : NSObject
+@interface LWEAnalytics : NSObject
+
++ (void) startSessionWithKey:(NSString *)key;
 
 /**
- * Designated initializer.  Pass it a URL and a local filename.
- * This method will automatically infer a value for unpackagePath,
- * the same directory as the local filepath.
+ * Logs a non-timed event
  */
-+ (id) packageWithUrl:(NSURL*)url destinationFilepath:(NSString*)filepath;
++ (void) logEvent:(NSString *)eventName;
 
-//! The filename of the package, no path.  This is the final part of the URL.
-- (NSString *) packageFilename;
+/**
+ * Logs a non-timed event with parameters
+ */
++ (void) logEvent:(NSString*)eventName parameters:(NSDictionary*)userInfo;
 
-//! The name of the package.  This is the final part of the URL, stripping the extension.
-- (NSString *) packageName;
+/**
+ * Logs an error
+ */
++ (void) logError:(NSString *)errorName message:(NSString *)errorMsg;
 
-//! LWEPackageDownloader sets this to YES if this package has already been unwrapped (downloaded & decompressed).
-@property BOOL isUnwrapped;
+/**
+ * TODO: DOCME
+ */
++ (void)setVariableAtIndex:(NSInteger)index withName:(NSString*)name andValue:(NSString*)valueString;
 
-//! The URL of the content before downloading
-@property (retain) NSURL *packageUrl;
+/**
+ * wrapper for calling the stop tracker method
+ * NOOP if not using Google Analytics
+ */
++ (void) stopTracker;
 
-//! The local filepath where the content will be downloaded to (e.g. this is a local .zip file)
-@property (retain) NSString *destinationFilepath;
+/*
+ log events or errors after session has started
+ */
++ (void)logEvent:(NSString *)eventName withAction:(NSString*)actionString withLabel:(NSString*)label andValue:(NSInteger)intValue;
 
-//! The local path where the content will be decompressed to (e.g. this is a folder)
-@property (retain) NSString *unpackagePath;
-
-//! A userinfo dictionary, put anything you want in here.
-@property (retain) NSDictionary *userInfo;
+/*
+ return correct Flurry Class object for 2.x and 3.x API versions
+ */
+#if defined(LWE_USE_FLURRY)
++(Class)versionSafeFlurryClass;
+#endif
 
 @end

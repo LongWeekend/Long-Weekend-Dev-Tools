@@ -149,22 +149,14 @@
  */
 + (BOOL) fileExists:(NSString*)filename
 {
-  // Sanity checks
+  // Sanity check
   if (filename == nil)
   {
     return NO;
   }
 
   NSFileManager *fm = [NSFileManager defaultManager];
-  if ([fm fileExistsAtPath:filename])
-  {
-    return YES;
-  }
-  else
-  {
-    LWE_LOG(@"File not found at specified location: %@",filename);
-    return NO;
-  }
+  return [fm fileExistsAtPath:filename];
 }
 
 /**
@@ -183,6 +175,7 @@
 /**
  * Prints the Files in the a Directory for Debugging Purposes
  */
+#if defined (LWE_DEBUG)
 + (void) printFilesInDirectory:(NSString*)dir
 {
   NSError *error = nil;
@@ -199,6 +192,7 @@
     LWE_LOG(@"error printing files in directory %@ -- error: %@",dir,error);
   }
 }
+#endif
 
 /**
  *  \brief    Copy a file from a certain path to another path. 
@@ -267,15 +261,10 @@
   
   // Now do the actual copy
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  
-  // TODO: MMA - why does this exist??!
   NSArray *explodedString = [filename componentsSeparatedByString:@"."];
-  LWE_LOG(@"Exploded string reconstituted: '%@.%@'",[explodedString objectAtIndex:0],[explodedString objectAtIndex:1]);
-#pragma unused(explodedString)
-  
   NSString *bundlePath = [[NSBundle mainBundle] pathForResource:[explodedString objectAtIndex:0] ofType:[explodedString objectAtIndex:1]];
 //  NSString *bundlePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:filename];
-//  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"Phone" ofType:@"sqlite"];
+
   LWE_LOG(@"Copying file from :%@",bundlePath);
   NSError *error = nil;
 	BOOL result = [fileManager copyItemAtPath:bundlePath toPath:destPath error:&error];
