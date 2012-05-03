@@ -25,13 +25,13 @@
   #define LWE_ASSERT(STATEMENT) do { assert(STATEMENT); } while(0)
 #endif
 
-// Errors
+// Errors - do nothing in production, crash otherwise
 #if defined(LWE_RELEASE_APP_STORE) || defined(LWE_RELEASE_ADHOC)
+  #define LWE_LOG_ERROR(MSG,...);
+#else
   #define LWE_LOG_ERROR(MSG,...) do {\
   [NSException raise:NSGenericException format:MSG,## __VA_ARGS__];\
   } while (0)
-#else
-  #define LWE_LOG_ERROR(MSG,...);
 #endif
 
 // Exceptions - for app store, do nothing, otherwise throw!
