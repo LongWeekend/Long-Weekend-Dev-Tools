@@ -61,6 +61,12 @@
 	}
 
 	pageController.pageIndex = newIndex;
+  
+  // Tell the page controller it needs an update now
+  if ([pageController respondsToSelector:@selector(setNeedsUpdate)])
+  {
+    [pageController setNeedsUpdate];
+  }
 }
 
 - (void)viewDidLoad
