@@ -41,6 +41,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
   {
     [LWEFile copyFromMainBundleToDocuments:filename shouldOverwrite:YES];
     dispatch_async(main,completionBlock);
+    dispatch_release(queue);
   });
 }
 
@@ -62,7 +63,9 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(LWEDatabase);
       self.dao.traceExecution = NO;
     #else
       self.dao.logsErrors = YES;
-      self.dao.traceExecution = YES;
+    // This is just too much debug output.  Enable if you need it!
+      self.dao.traceExecution = NO;
+    //      self.dao.traceExecution = YES;
     #endif
     
     if ([self.dao open])
