@@ -38,6 +38,12 @@
   return self;
 }
 
+- (void) dealloc
+{
+  [dataPages release];
+  [super dealloc];
+}
+
 //! returns the number of pages in the datasource
 - (NSInteger)numDataPages
 {

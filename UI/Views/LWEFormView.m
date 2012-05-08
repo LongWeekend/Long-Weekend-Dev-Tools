@@ -350,8 +350,17 @@
 // Notify the delegate if we're going to start editing a form
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
 {
-  [self _handleEnteringFocus:textField];
-  return YES;
+  BOOL shouldEdit = YES;
+  if (self.delegate && [self.delegate respondsToSelector:@selector(formShouldBeginEditing:)])
+  {
+    shouldEdit = [self.delegate formShouldBeginEditing:self];
+  }
+
+  if (shouldEdit)
+  {
+    [self _handleEnteringFocus:textField];
+  }
+  return shouldEdit;
 }
 
 /**
@@ -418,8 +427,17 @@
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-  [self _handleEnteringFocus:textView];
-  return YES;
+  BOOL shouldEdit = YES;
+  if (self.delegate && [self.delegate respondsToSelector:@selector(formShouldBeginEditing:)])
+  {
+    shouldEdit = [self.delegate formShouldBeginEditing:self];
+  }
+  
+  if (shouldEdit)
+  {
+    [self _handleEnteringFocus:textView];
+  }
+  return shouldEdit;
 }
 
 /**
