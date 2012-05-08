@@ -32,6 +32,7 @@
 @protocol LWEFormViewDelegate <NSObject>
 @optional
 - (UIView*) scrollingViewForFormView:(LWEFormView*)formView;
+- (BOOL) formShouldBeginEditing:(LWEFormView *)formView;
 - (void) formWillBeginEditing:(LWEFormView*)formView;
 - (void) formDidFinishEditing:(LWEFormView*)formView;
 - (void) formDidChangeFirstResponder:(LWEFormView*)formView;
