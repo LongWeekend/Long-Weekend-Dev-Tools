@@ -20,7 +20,9 @@
 #import <Foundation/Foundation.h>
 #import "ASINetworkQueue.h"
 #import "ASIHTTPRequest.h"
+#import "ASIS3ObjectRequest.h"
 #import "LWEPackage.h"
+#import "LWES3Package.h"
 #import "LWEDecompressor.h"
 #import "LWELongRunningTaskProtocol.h"
 

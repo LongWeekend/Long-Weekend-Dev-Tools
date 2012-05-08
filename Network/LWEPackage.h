@@ -22,7 +22,14 @@
 @interface LWEPackage : NSObject
 
 /**
- * Designated initializer.  Pass it a URL and a local filename.
+ * Designated instance initializer.  Pass it a URL and a local filename.
+ * This method will automatically infer a value for unpackagePath,
+ * the same directory as the local filepath.
+ */
+- (id) initWithUrl:(NSURL*)url destinationFilepath:(NSString*)filepath;
+
+/**
+ * Designated class initializer.  Pass it a URL and a local filename.
  * This method will automatically infer a value for unpackagePath,
  * the same directory as the local filepath.
  */

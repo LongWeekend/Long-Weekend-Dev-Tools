@@ -1,6 +1,6 @@
-// NSArray+LWEEnums.m
+// UIWebView+LWENoBounces.m
 //
-// Copyright (c) 2011 Long Weekend LLC
+// Copyright (c) 2010 Long Weekend LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,39 +17,30 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-@implementation NSArray (LWEEnumExtensions)
 
-//! Converts a string to an enumVal
-- (NSString*) stringWithEnum:(NSInteger)enumVal
-{
-  NSString *retVal = nil;
-  if([self objectAtIndex:enumVal])
-  {
-     retVal = [self objectAtIndex:enumVal];
-  }
-  else
-  {
-    //[NSException raise:NSInternalInconsistencyException format:@"Enum value does not match index in array!"];
-    // Decided this shouldn't fail noisily
-  }
-  return retVal;
-}
+#import "UIWebView+LWENoBounces.h"
 
-//! Converts a string from an enumVal and supports passing in a default
-- (NSInteger) enumFromString:(NSString*)strVal default:(NSInteger)def
-{
-  NSInteger n = [self indexOfObject:strVal];
-  if(n==NSNotFound)
-  {
-    n = def;
-  }
-  return n;
-}
 
-//! Converts a string from an enumVal
-- (NSInteger) enumFromString:(NSString*)strVal
+@implementation UIWebView (LWENoBounces)
+
+/*!
+    @method     
+    @abstract   Turns off bouncing on UIWebViews
+*/
+
+-(void)shutOffBouncing
 {
-  return [self enumFromString:strVal default:0];
+  UIScrollView *scrollView = [self.subviews objectAtIndex:0];
+
+  SEL aSelector = NSSelectorFromString(@"setAllowsRubberBanding:");
+  if([scrollView respondsToSelector:aSelector])
+  {
+    [scrollView performSelector:aSelector withObject:NO];
+  }
+  else if ([scrollView respondsToSelector:@selector(setBounces:)])
+  {
+    [scrollView setBounces:NO];
+  }
 }
 
 @end

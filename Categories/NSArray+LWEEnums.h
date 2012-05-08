@@ -48,12 +48,12 @@
 @interface NSArray (LWEEnumExtensions)
 
 //! Converts a string to an enumVal
-- (NSString*) stringWithEnum: (NSUInteger) enumVal;
+- (NSString*) stringWithEnum:(NSInteger)enumVal;
 
 //! Converts a string from an enumVal and supports passing in a default
-- (NSUInteger) enumFromString: (NSString*) strVal default: (NSUInteger) def;
+- (NSInteger) enumFromString:(NSString*)strVal default: (NSInteger) def;
 
 //! Converts a string from an enumVal
-- (NSUInteger) enumFromString: (NSString*) strVal;
+- (NSInteger) enumFromString:(NSString*)strVal;
 
 @end
