@@ -211,6 +211,7 @@ NSString * const LWECoreDataObjectId = @"LWECoreDataObjectId";
 {
   NSFetchRequest *fetchRequest = [[[NSFetchRequest alloc] init] autorelease];
   NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:managedObjectContext];
+  LWE_ASSERT_EXC(entity, @"No NSEntityDescription could be found for entityName: %@",entityName);
   [fetchRequest setEntity:entity];
   
   if(limitOrNil > 0)
