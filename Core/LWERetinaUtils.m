@@ -19,6 +19,7 @@
 
 #import "LWERetinaUtils.h"
 #import "LWEUniversalAppHelpers.h"
+#import "NSString+LWEResolutionHelpers.h"
 
 @implementation LWERetinaUtils
 
@@ -37,21 +38,9 @@
   return returnVal;
 }
 
-// This method changes the name no matter what
-+ (NSString*) retinaFilenameForName:(NSString *)name
++ (NSString*) retinaFilenameForName: (NSString *) name
 {
-  NSString *retinaName = nil;
-  NSRange lastPeriod = [name rangeOfString:@"." options:NSBackwardsSearch];
-  if (lastPeriod.location == NSNotFound)
-  {
-    // Append only - there is no extension (ticket #568)
-    retinaName = [name stringByAppendingString:@"@2x"];
-  }
-  else
-  {
-    retinaName = [name stringByReplacingCharactersInRange:lastPeriod withString:@"@2x."];
-  }
-  return retinaName;
+  return [name stringByAddingRetinaSpecifier];
 }
 
 // This method tests for Retina before changing the name
@@ -61,7 +50,7 @@
 {
   if ([LWERetinaUtils isRetinaDisplay])
   {
-    return [[self class] retinaFilenameForName:name];
+    return [name stringByAddingRetinaSpecifier];
   }
   else
   {

@@ -34,10 +34,13 @@
 + (BOOL) isRetinaDisplay;
 
 /**
- * \brief Returns a retina filename for any file name provided.
+ * \brief Returns a retina filename for any file name provided 
+ 
+ -- DEPRECATED -- use NSString+LWEResolutionHelpers category method `-stringByAddingRetinaSpecifier` instead.
+ 
  * \details Note this method does NO checking for files or retina devices, it is a string processing method ONLY.
- * \name Filename to retina-icize
- * \return Filename in retina terms -- e.g. image.png => image@2x.png
+ * @param name Filename to retina-icize
+ * @return Filename in retina terms -- e.g. image.png => image@2x.png
  */
 + (NSString*) retinaFilenameForName: (NSString *) name;
 
