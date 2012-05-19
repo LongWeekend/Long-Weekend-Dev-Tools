@@ -42,7 +42,7 @@
  * @param name Filename to retina-icize
  * @return Filename in retina terms -- e.g. image.png => image@2x.png
  */
-+ (NSString*) retinaFilenameForName: (NSString *) name;
++ (NSString*) retinaFilenameForName:(NSString *)name __attribute__ ((deprecated));
 
 /**
  * \brief   Returns a filename with the retina naming convention if we have iPhone 4
