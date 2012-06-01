@@ -85,6 +85,14 @@
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIPageControl *pageControl;
 
+/**
+ If `YES`, this class expects `pageControl` to be a valid `UIPageControl` or subclass.  It will
+ set the page of the `UIPageControl` as the view is scrolled.
+ 
+ The default value is `YES`.
+ */
+@property (nonatomic) BOOL usesPageControl;
+
 - (void)changePageAnimated:(BOOL)animated;
 - (IBAction)changePage:(id)sender;
 - (id)dataForPage:(NSInteger)pageIndex;

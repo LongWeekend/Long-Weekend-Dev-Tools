@@ -39,7 +39,8 @@
 
 @implementation LWEPagingScrollViewController
 
-@synthesize datasource, delegate, currentPage, nextPage, scrollView, pageControl;
+@synthesize datasource, delegate, currentPage, nextPage, scrollView;
+@synthesize usesPageControl, pageControl;
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(id<LWEPageViewControllerProtocol>)pageController
 {
@@ -78,7 +79,10 @@
   
 	[self.scrollView addSubview:self.currentPage.view];
 	[self.scrollView addSubview:self.nextPage.view];
-  [self.scrollView bringSubviewToFront:self.pageControl];
+  if (self.usesPageControl)
+  {
+    [self.scrollView bringSubviewToFront:self.pageControl];
+  }
 
 	NSInteger widthCount = [self.datasource numDataPages];
 	if (widthCount == 0)
@@ -236,6 +240,34 @@
   self.pageControl = nil;
   
   [super viewDidUnload];
+}
+
+#pragma mark - Class Plumbing
+
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self)
+  {
+    [self _commonInit];
+  }
+  return self;
+}
+
+- (id) init
+{
+  self = [super init];
+  if (self)
+  {
+    [self _commonInit];
+  }
+  return self;
+}
+
+- (void)_commonInit
+{
+  // Turn on the page control by default.
+  self.usesPageControl = YES;
 }
 
 - (void)dealloc
