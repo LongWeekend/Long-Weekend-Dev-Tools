@@ -52,12 +52,6 @@
 //! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
 - (id)initWithHex:(NSInteger)hex alpha:(CGFloat)alpha
 {
-	//This things just to avoid the wrong parameter, and the caller does not give 24 bits color. 
-	//It will gets messy with the bits shifting, and operator if it is not 6 digits hexa.
-	NSString *hexString = [[NSString alloc] initWithFormat:@"%x", hex];
-	NSAssert(([hexString length] == 6), @"Only 24 bits color supported here at the moment");
-	[hexString release];
-	
 	//What it does here is, whatever (and) F should return itself, and whatever (and) 0 should return 0. So first it tries to 
 	//do and (&) operator to take the first two digit for red. second two digit for green, and the rest is for blue. after that, cause 2 digits hexa is 
 	//8 digits binary, we only want the value for those red, green or blue component. so for red, we shift the binary by 16 digits, green by 8 digit, and the
