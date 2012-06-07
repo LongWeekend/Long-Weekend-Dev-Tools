@@ -35,27 +35,23 @@
   [referralConnection release];
 }
 
-#pragma mark -
-#pragma mark NSURLRequest Delegate Methods
+#pragma mark - NSURLRequest Delegate Methods
 
 // DO not call these directly
 // Save the most recent URL in case multiple redirects occur
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response 
 {
   self.iTunesURL = [response URL];
-  LWE_LOG(@"connection %@", [self.iTunesURL absoluteString]);
   return request;
 }
 
 // No more redirects; use the last URL saved
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection 
 {
-  LWE_LOG(@"connectionDidFinishLoading");
   [[UIApplication sharedApplication] openURL:self.iTunesURL];
 }
 
-#pragma mark -
-#pragma mark Class Methods
+#pragma mark - Class Methods
 
 // From: http://www.cocoadev.com/index.pl?BaseSixtyFour
 + (NSString*) base64forData:(NSData*)theData
