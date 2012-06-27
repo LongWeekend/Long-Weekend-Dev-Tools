@@ -78,7 +78,7 @@
 
 @interface LWEPagingScrollViewController : UIViewController <LWEPageViewControllerDataSource>
 
-@property (nonatomic, retain) LWEPagingScrollViewDatasource *datasource;
+@property (nonatomic, retain) LWEPagingScrollViewDatasource *dataSource;
 @property (assign) id delegate;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> currentPage;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> nextPage;

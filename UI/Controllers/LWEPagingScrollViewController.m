@@ -39,12 +39,12 @@
 
 @implementation LWEPagingScrollViewController
 
-@synthesize datasource, delegate, currentPage, nextPage, scrollView;
+@synthesize dataSource, delegate, currentPage, nextPage, scrollView;
 @synthesize usesPageControl, pageControl;
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(id<LWEPageViewControllerProtocol>)pageController
 {
-	NSInteger pageCount = [self.datasource numDataPages];
+	NSInteger pageCount = [self.dataSource numDataPages];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
 
 	if (!outOfBounds)
@@ -79,12 +79,14 @@
   
 	[self.scrollView addSubview:self.currentPage.view];
 	[self.scrollView addSubview:self.nextPage.view];
+  
   if (self.usesPageControl)
   {
     [self.scrollView bringSubviewToFront:self.pageControl];
+    self.pageControl.numberOfPages = [self.dataSource numDataPages];
   }
 
-	NSInteger widthCount = [self.datasource numDataPages];
+	NSInteger widthCount = [self.dataSource numDataPages];
 	if (widthCount == 0)
 	{
 		widthCount = 1;
@@ -92,9 +94,6 @@
 	
   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
 	self.scrollView.contentOffset = CGPointMake(0, 0);
-	self.pageControl.numberOfPages = [self.datasource numDataPages];
-  
-  LWE_LOG(@"The current page index is: %i", pageControl.currentPage);
 	
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
@@ -137,13 +136,13 @@
 //! A page will ask for it's data, and this is the default implementation. Override to do something different
 - (id) dataForPage:(NSInteger)pageIndex
 {
-  if (pageIndex > [[self datasource] numDataPages] - 1 || pageIndex < 0) // ignore out of range requests. The pages are dumb
+  if (pageIndex > [self.dataSource numDataPages] - 1 || pageIndex < 0) // ignore out of range requests. The pages are dumb
   {
     return nil;
   }
   else
   {
-    return [[[self datasource] dataPages] objectAtIndex:pageIndex];
+    return [[self.dataSource dataPages] objectAtIndex:pageIndex];
   }
 }
 
@@ -218,7 +217,15 @@
 
 - (void)changePageAnimated:(BOOL)animated
 {
-  NSInteger pageIndex = self.pageControl.currentPage;
+  NSInteger pageIndex = 0;
+  if (self.usesPageControl)
+  {
+    pageIndex = self.pageControl.currentPage;
+  }
+  else
+  {
+    pageIndex = self.currentPage.pageIndex;
+  }
 
 	// update the scroll view to the appropriate page
   CGRect frame = self.scrollView.frame;
@@ -272,7 +279,7 @@
 
 - (void)dealloc
 {
-  self.datasource = nil;
+  self.dataSource = nil;
 	self.currentPage = nil;
 	self.nextPage = nil;
   self.scrollView = nil;
