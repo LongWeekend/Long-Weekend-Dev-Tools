@@ -44,6 +44,8 @@
   self = [super initWithCoder:aDecoder];
   if (self)
   {
+    // default topPadding
+    self.topPadding = 20.0f;
   }
   return self;
 }
@@ -74,8 +76,7 @@
   {
     self.userInteractionEnabled = YES;
     self.formOrder = [NSArray array];
-    self.animationInterval = 0.5;
-    self.topPadding = 20.0f;
+    self.animationInterval = 0.5;    
   }
   
   // TODO: MMA this is starting to get hacky.  Time for a better solution?
@@ -329,7 +330,15 @@
  */
 - (void) _scrollToPoint:(CGPoint)relPoint
 {
-  [LWEViewAnimationUtils translateView:[self _viewToScroll] byPoint:relPoint withInterval:self.animationInterval];
+  UIView *viewToScroll = [self _viewToScroll];
+  if ([viewToScroll isKindOfClass:[UIScrollView class]])
+  {
+    [(UIScrollView *)viewToScroll setContentOffset: relPoint];
+  }
+  else 
+  {
+    [LWEViewAnimationUtils translateView:[self _viewToScroll] byPoint:relPoint withInterval:self.animationInterval];
+  }  
 }
 
 /**
@@ -338,9 +347,18 @@
  */
 - (void) _scrollToView:(UIView*)control
 {
-  // topPadding is a buffer so we don't scroll the title off the top of the screen
-  CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
-  [self _scrollToPoint:CGPointMake(0,yDiff)];
+  UIView *viewToScroll = [self _viewToScroll];
+  if ([viewToScroll isKindOfClass:[UIScrollView class]])
+  {
+    CGFloat yDiff = (control.frame.origin.y) - self.topPadding;
+    [self _scrollToPoint:CGPointMake(0,yDiff)];
+  }
+  else 
+  {
+    // topPadding is a buffer so we don't scroll the title off the top of the screen
+    CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
+    [self _scrollToPoint:CGPointMake(0,yDiff)];
+  }  
 }
 
 
@@ -358,6 +376,15 @@
 
   if (shouldEdit)
   {
+    // set the next or done return key depending on field order
+    if ([self _isLastField:textField])
+    {
+      textField.returnKeyType = UIReturnKeyDone;
+    }
+    else 
+    {
+      textField.returnKeyType = UIReturnKeyNext;
+    }
     [self _handleEnteringFocus:textField];
   }
   return shouldEdit;
