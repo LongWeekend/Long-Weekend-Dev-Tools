@@ -35,7 +35,7 @@
 @implementation LWEFormView
 
 @synthesize delegate;
-@synthesize formOrder, formIsDirty = _formIsDirty, animationInterval, topPadding;
+@synthesize fieldsSortedByTag, formIsDirty = _formIsDirty, animationInterval, topPadding;
 
 #pragma mark - Class Plumbing (init/dealloc)
 
@@ -44,6 +44,11 @@
   self = [super initWithCoder:aDecoder];
   if (self)
   {
+    // default topPadding
+    self.topPadding = 20.0f;
+    self.userInteractionEnabled = YES;
+    self.fieldsSortedByTag = [NSArray array];
+    self.animationInterval = 0.5;    
   }
   return self;
 }
@@ -62,7 +67,7 @@
 {
   // Need to set this to nil; if we don't, the willRemoveSubview: call in the superclass
   // will call us again in the [super dealloc] call and make us crash!
-  self.formOrder = nil;
+  self.fieldsSortedByTag = nil;
   [super dealloc];
 }
 
@@ -70,14 +75,6 @@
 
 - (void) didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
-  if (self.formOrder == nil)
-  {
-    self.userInteractionEnabled = YES;
-    self.formOrder = [NSArray array];
-    self.animationInterval = 0.5;
-    self.topPadding = 20.0f;
-  }
-  
   // TODO: MMA this is starting to get hacky.  Time for a better solution?
   BOOL isTextField = [theSubview isKindOfClass:[UITextField class]];
   BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
@@ -90,7 +87,7 @@
 - (void) willRemoveSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
   // Only respond to this if it's an object we care about!
-  if ([self.formOrder containsObject:theSubview])
+  if ([self.fieldsSortedByTag containsObject:theSubview])
   {
     [self _removeFormObject:theSubview];
   }
@@ -142,21 +139,21 @@
 
 - (void) _removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject
 {
-  NSMutableArray *newArray = [self.formOrder mutableCopy];
+  NSMutableArray *newArray = [self.fieldsSortedByTag mutableCopy];
   [newArray removeObject:controlObject];
-  self.formOrder = (NSArray*)[newArray autorelease];
+  self.fieldsSortedByTag = (NSArray*)[newArray autorelease];
   
   [controlObject setDelegate:nil];
 }
 
 - (void) _addFormObject:(id<LWEFormViewFieldProtocol>)controlObject
 {
-  NSMutableArray *newArray = [[self.formOrder mutableCopy] autorelease];
+  NSMutableArray *newArray = [[self.fieldsSortedByTag mutableCopy] autorelease];
   [newArray addObject:controlObject];
   
   // Now sort it by the tag value
   NSSortDescriptor *sorter = [NSSortDescriptor sortDescriptorWithKey:@"tag" ascending:YES];
-  self.formOrder = [newArray sortedArrayUsingDescriptors:[NSArray arrayWithObject:sorter]];
+  self.fieldsSortedByTag = [newArray sortedArrayUsingDescriptors:[NSArray arrayWithObject:sorter]];
   
   [controlObject setDelegate:self];
   
@@ -179,14 +176,14 @@
  */
 - (UIResponder*) _nextFieldAfterField:(UIResponder*)field
 {
-  NSInteger currIndex = [self.formOrder indexOfObject:field];
-  NSInteger maxIndex = ([self.formOrder count] - 1);
+  NSInteger currIndex = [self.fieldsSortedByTag indexOfObject:field];
+  NSInteger maxIndex = ([self.fieldsSortedByTag count] - 1);
   NSInteger nextIndex = 0;
   if (currIndex < maxIndex)
   {
     nextIndex = currIndex + 1;
   }
-  UIResponder *nextField = [self.formOrder objectAtIndex:nextIndex];
+  UIResponder *nextField = [self.fieldsSortedByTag objectAtIndex:nextIndex];
   return nextField;
 }
 
@@ -195,8 +192,8 @@
  */
 - (BOOL) _isLastField:(UIResponder*)field
 {
-  NSInteger currIndex = [self.formOrder indexOfObject:field];
-  return (currIndex == ([self.formOrder count] - 1));
+  NSInteger currIndex = [self.fieldsSortedByTag indexOfObject:field];
+  return (currIndex == ([self.fieldsSortedByTag count] - 1));
 }
 
 
@@ -206,7 +203,7 @@
 - (UIResponder*) _currentResponder
 {
   UIResponder *currentResponder = nil;
-  for (UIResponder *responder in self.formOrder)
+  for (UIResponder *responder in self.fieldsSortedByTag)
   {
     if ([responder isFirstResponder])
     {
@@ -329,7 +326,15 @@
  */
 - (void) _scrollToPoint:(CGPoint)relPoint
 {
-  [LWEViewAnimationUtils translateView:[self _viewToScroll] byPoint:relPoint withInterval:self.animationInterval];
+  UIView *viewToScroll = [self _viewToScroll];
+  if ([viewToScroll isKindOfClass:[UIScrollView class]])
+  {
+    [(UIScrollView *)viewToScroll setContentOffset: relPoint animated:YES];
+  }
+  else 
+  {
+    [LWEViewAnimationUtils translateView:[self _viewToScroll] byPoint:relPoint withInterval:self.animationInterval];
+  }  
 }
 
 /**
@@ -338,9 +343,18 @@
  */
 - (void) _scrollToView:(UIView*)control
 {
-  // topPadding is a buffer so we don't scroll the title off the top of the screen
-  CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
-  [self _scrollToPoint:CGPointMake(0,yDiff)];
+  UIView *viewToScroll = [self _viewToScroll];
+  if ([viewToScroll isKindOfClass:[UIScrollView class]])
+  {
+    CGFloat yDiff = (control.frame.origin.y) - self.topPadding;
+    [self _scrollToPoint:CGPointMake(0,yDiff)];
+  }
+  else 
+  {
+    // topPadding is a buffer so we don't scroll the title off the top of the screen
+    CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
+    [self _scrollToPoint:CGPointMake(0,yDiff)];
+  }  
 }
 
 
@@ -358,6 +372,15 @@
 
   if (shouldEdit)
   {
+    // set the next or done return key depending on field order
+    if ([self _isLastField:textField])
+    {
+      textField.returnKeyType = UIReturnKeyGo;
+    }
+    else 
+    {
+      textField.returnKeyType = UIReturnKeyNext;
+    }
     [self _handleEnteringFocus:textField];
   }
   return shouldEdit;
