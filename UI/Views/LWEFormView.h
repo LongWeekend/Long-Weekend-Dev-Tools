@@ -68,7 +68,7 @@
 @property (readonly) BOOL formIsDirty;
 
 //! Order of the form elements, sorted by tag and/or the order the subview was added.
-@property (retain) NSArray *formOrder;
+@property (retain) NSArray *fieldsSortedByTag;
 
 //! How long the animation should last.  The default is 0.5 seconds.
 @property CGFloat animationInterval;
