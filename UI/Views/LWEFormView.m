@@ -50,9 +50,14 @@
   return self;
 }
 
-- (id) initWithFrame:(CGRect)frame
+- (id) initWithFrame:(CGRect)aFrame
 {
-  return [self initWithCoder:nil];
+  self = [self initWithCoder:nil];
+  if (self)
+  {
+    self.frame = aFrame;
+  }
+  return self;
 }
 
 - (id) init
