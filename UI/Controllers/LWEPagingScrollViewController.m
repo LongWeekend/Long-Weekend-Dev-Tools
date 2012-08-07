@@ -131,7 +131,7 @@
   }
 }
 
-#pragma mark - LWEPageViewControllerDatasource Implementation
+#pragma mark - LWEPageViewControllerDataSource Implementation
 
 //! A page will ask for it's data, and this is the default implementation. Override to do something different
 - (id) dataForPage:(NSInteger)pageIndex

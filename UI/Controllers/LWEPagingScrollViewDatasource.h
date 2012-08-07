@@ -1,4 +1,4 @@
-// LWEPagingScrollViewDatasource.h
+// LWEPagingScrollViewDataSource.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -20,7 +20,7 @@
 #import <Foundation/Foundation.h>
 
 //! This is basically an interface. You must subclass this to use LWEPagingScrollView
-@interface LWEPagingScrollViewDatasource : NSObject 
+@interface LWEPagingScrollViewDataSource : NSObject 
 {
   NSArray* dataPages;
 }
