@@ -138,7 +138,23 @@
   CGFloat fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
+  if (lowerNumber < 0)
+  {
+    // If the view scrolls beyond the left edge of the 0-index (e.g. leftmost) page
+    lowerNumber = 0;
+  }
 	NSInteger upperNumber = lowerNumber + 1;
+  if (upperNumber >= [self.dataSource numDataPages])
+  {
+    upperNumber = [self.dataSource numDataPages] - 1;
+    if (upperNumber > 1)
+    {
+      // If the view scrolls beyond the right edge of the last page (e.g. rightmost),
+      // we need to manually set the lower number.  However, if there is only one page,
+      // don't do this, as the numbers would be the same.
+      lowerNumber = upperNumber - 1;
+    }
+  }
 	
 	if (lowerNumber == self.currentPage.pageIndex)
 	{
