@@ -29,7 +29,7 @@
  *
  * If the client does not implement this protocol, the LWEFormView itself is scrolled.
  */
-@protocol LWEFormViewDelegate <NSObject>
+@protocol LWEFormViewDelegate <UIScrollViewDelegate>
 @optional
 - (UIView*) scrollingViewForFormView:(LWEFormView*)formView;
 - (BOOL) formShouldBeginEditing:(LWEFormView *)formView;
