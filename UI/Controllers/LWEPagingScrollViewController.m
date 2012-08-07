@@ -215,16 +215,18 @@
 	self.pageControl.currentPage = self.currentPage.pageIndex;
 }
 
-- (void)changePageAnimated:(BOOL)animated
+- (void)changePageToIndex:(NSInteger)index animated:(BOOL)animated;
 {
+  LWE_ASSERT_EXC((index >= 0 && index < [self.dataSource numDataPages]), @"Out of bounds index: %d (num pages: %d)",index,[self.dataSource numDataPages]);
+  
   NSInteger pageIndex = 0;
-  if (self.usesPageControl)
+  pageIndex = index;
+  
+  // If this method was called manually (e.g. not by the page control),
+  // update the page control so it stays in tune
+  if (self.usesPageControl && self.pageControl.currentPage != index)
   {
-    pageIndex = self.pageControl.currentPage;
-  }
-  else
-  {
-    pageIndex = self.currentPage.pageIndex;
+    self.pageControl.currentPage = index;
   }
 
 	// update the scroll view to the appropriate page
@@ -236,7 +238,10 @@
 
 - (IBAction)changePage:(id)sender
 {
-	[self changePageAnimated:YES];
+  if (self.usesPageControl)
+  {
+    [self changePageToIndex:self.pageControl.currentPage animated:YES];
+  }
 }
 
 - (void) viewDidUnload

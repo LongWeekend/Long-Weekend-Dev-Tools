@@ -30,7 +30,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
-#import "LWEPagingScrollViewDataSource.h"
 
 /**
  * This protocol allows a delegate of the LWEAudioRecorder to update
@@ -52,6 +51,11 @@
  * class should return to allow the child page VC display its data.
  */
 -(id) dataForPage:(NSInteger)pageIndex;
+
+/**
+ * Returns the number of data pages.
+ */
+- (NSInteger)numDataPages;
 @end
 
 /**
@@ -125,23 +129,35 @@
 
 @interface LWEPagingScrollViewController : UIViewController <LWEPageViewControllerDataSource>
 
-@property (nonatomic, retain) LWEPagingScrollViewDataSource *dataSource;
-@property (assign) id delegate;
+@property (nonatomic, retain) id<LWEPageViewControllerDataSource> dataSource;
+@property (assign) id <LWEPagingScrollViewControllerDelegate> delegate;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> currentPage;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> nextPage;
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIPageControl *pageControl;
 
 /**
- If `YES`, this class expects `pageControl` to be a valid `UIPageControl` or subclass.  It will
- set the page of the `UIPageControl` as the view is scrolled.
- 
- The default value is `YES`.
+ * If `YES`, this class expects the `pageControl` property to be a valid `UIPageControl` or subclass.
+ *
+ * The default value is `YES` -- you need to specify a pageControl.
  */
 @property (nonatomic) BOOL usesPageControl;
 
-- (void)changePageAnimated:(BOOL)animated;
+/**
+ * Use this method to manually change the page index.
+ * @param index The index to scroll to.  This will raise an exception if it is out of bounds.
+ * @param animated If `YES`, the scroll view will animate to the new position.
+ */
+- (void)changePageToIndex:(NSInteger)index animated:(BOOL)animated;
+
+/**
+ * This is the IBAction that a UIPageControl should call on `valueDidChange`.
+ *
+ * Note that this will have no effect if the same UIPageControl is not hooked up to
+ * the `pageControl` property.
+ */
 - (IBAction)changePage:(id)sender;
+
 - (id)dataForPage:(NSInteger)pageIndex;
 
 @end
