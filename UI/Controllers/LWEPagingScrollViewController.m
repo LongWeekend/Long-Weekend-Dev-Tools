@@ -187,8 +187,8 @@
 		}
 	}
 	
-  [self.currentPage updateViews:NO];
-	[self.nextPage updateViews:NO];
+  [self.currentPage updateViews];
+	[self.nextPage updateViews];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
@@ -206,7 +206,7 @@
 	}
 
   // defeats the race condition where the user can "beat" you to an un updated view
-	[self.currentPage updateViews:NO];
+	[self.currentPage updateViews];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView

@@ -29,7 +29,7 @@
   return nil;
 }
 
-- (id) initWithDataPages:(NSArray*)data
+- (id) initWithDataPages:(NSArray *)data
 {
   if ((self = [super init]))
   {
@@ -44,13 +44,11 @@
   [super dealloc];
 }
 
-//! returns the number of pages in the datasource
 - (NSInteger)numDataPages
 {
 	return [self.dataPages count];
 }
 
-//! Returns the dictionary of data for a given page
 - (NSDictionary *)dataForPage:(NSInteger)pageIndex
 {
 	return [self.dataPages objectAtIndex:pageIndex];

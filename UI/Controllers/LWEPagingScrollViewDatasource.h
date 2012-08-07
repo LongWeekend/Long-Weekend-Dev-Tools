@@ -18,17 +18,32 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#import "LWEPagingScrollViewController.h"
 
-//! This is basically an interface. You must subclass this to use LWEPagingScrollView
-@interface LWEPagingScrollViewDatasource : NSObject 
-{
-  NSArray* dataPages;
-}
+/**
+ * This class is a default implementation of the LWEPageViewControllerDataSource 
+ * protocol.
+ *
+ * Your needs may vary based on the implementation, but if you need to supply a 
+ * dictionary of data for a given page, it could work well.
+ */
+@interface LWEPagingScrollViewDataSource : NSObject <LWEPageViewControllerDataSource>
 
-@property (nonatomic, retain)	NSArray* dataPages;
+@property (nonatomic, retain)	NSArray *dataPages;
 
+/**
+ * Designated initializer.
+ */
 - (id) initWithDataPages:(NSArray*)data;
+
+/**
+ * Returns the number of pages in the datasource.
+ */
 - (NSInteger)numDataPages;
+
+/**
+ * Returns the dictionary of data for a given page
+ */
 - (NSDictionary *)dataForPage:(NSInteger)pageIndex;
 
 @end
