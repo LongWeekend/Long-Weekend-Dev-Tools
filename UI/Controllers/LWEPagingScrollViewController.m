@@ -98,7 +98,8 @@
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
   
-  [self changePageAnimated:NO]; // go to the current page
+  // Start on page 0
+  [self changePageToIndex:0 animated:NO];
 }
 
 #pragma mark - Delegate Implementation
@@ -108,7 +109,6 @@
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupCurrentPage:)]))
   {
     id<LWEPageViewControllerProtocol> tmpVC = [self.delegate setupCurrentPage:self];
-    tmpVC.dataSource = self;
     return tmpVC;
   }
   else
@@ -122,27 +122,11 @@
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupNextPage:)]))
   {
     id<LWEPageViewControllerProtocol> tmpVC = [self.delegate setupNextPage:self];
-    tmpVC.dataSource = self;
     return tmpVC;
   }
   else
   {
     return nil;
-  }
-}
-
-#pragma mark - LWEPageViewControllerDataSource Implementation
-
-//! A page will ask for it's data, and this is the default implementation. Override to do something different
-- (id) dataForPage:(NSInteger)pageIndex
-{
-  if (pageIndex > [self.dataSource numDataPages] - 1 || pageIndex < 0) // ignore out of range requests. The pages are dumb
-  {
-    return nil;
-  }
-  else
-  {
-    return [[self.dataSource dataPages] objectAtIndex:pageIndex];
   }
 }
 
@@ -259,6 +243,28 @@
 - (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self)
+  {
+    [self _commonInit];
+  }
+  return self;
+}
+
+-(id)initWithDataSource:(id<LWEPageViewControllerDataSource>)aDataSource
+{
+  self = [super initWithNibName:NSStringFromClass([self class]) bundle:nil];
+  if (self)
+  {
+    [self _commonInit];
+    self.dataSource = aDataSource;
+  }
+  return self;
+}
+
+// XIB support
+-(id)initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
   if (self)
   {
     [self _commonInit];

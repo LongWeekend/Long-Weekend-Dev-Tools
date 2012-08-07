@@ -127,7 +127,7 @@
 @end
 
 
-@interface LWEPagingScrollViewController : UIViewController <LWEPageViewControllerDataSource>
+@interface LWEPagingScrollViewController : UIViewController
 
 @property (nonatomic, retain) id<LWEPageViewControllerDataSource> dataSource;
 @property (assign) id <LWEPagingScrollViewControllerDelegate> delegate;
@@ -135,6 +135,11 @@
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> nextPage;
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIPageControl *pageControl;
+
+/**
+ * Designated initializer.
+ */
+-(id)initWithDataSource:(id<LWEPageViewControllerDataSource>)aDataSource;
 
 /**
  * If `YES`, this class expects the `pageControl` property to be a valid `UIPageControl` or subclass.
@@ -157,8 +162,6 @@
  * the `pageControl` property.
  */
 - (IBAction)changePage:(id)sender;
-
-- (id)dataForPage:(NSInteger)pageIndex;
 
 @end
 
