@@ -30,7 +30,7 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
-#import "LWEPagingScrollViewDatasource.h"
+#import "LWEPagingScrollViewDataSource.h"
 
 /**
  * This protocol allows a delegate of the LWEAudioRecorder to update
@@ -125,7 +125,7 @@
 
 @interface LWEPagingScrollViewController : UIViewController <LWEPageViewControllerDataSource>
 
-@property (nonatomic, retain) LWEPagingScrollViewDatasource *dataSource;
+@property (nonatomic, retain) LWEPagingScrollViewDataSource *dataSource;
 @property (assign) id delegate;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> currentPage;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> nextPage;

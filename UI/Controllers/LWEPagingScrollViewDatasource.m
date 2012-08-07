@@ -1,4 +1,4 @@
-// LWEPagingScrollViewDatasource.m
+// LWEPagingScrollViewDataSource.m
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
@@ -17,9 +17,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "LWEPagingScrollViewDatasource.h"
+#import "LWEPagingScrollViewDataSource.h"
 
-@implementation LWEPagingScrollViewDatasource
+@implementation LWEPagingScrollViewDataSource
 
 @synthesize dataPages;
 

@@ -1,4 +1,4 @@
-// LWEPagingScrollViewDatasource.h
+// LWEPagingScrollViewDataSource.h
 //
 // Copyright (c) 2011 Long Weekend LLC
 //
