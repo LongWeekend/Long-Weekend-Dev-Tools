@@ -52,7 +52,7 @@
  * of each field in numeric order, or (b) add the fields as subviews
  * in the order that you want to "tab" through them.
  */
-@interface LWEFormView : UIView <UITextViewDelegate, UITextFieldDelegate>
+@interface LWEFormView : UIScrollView <UITextViewDelegate, UITextFieldDelegate>
 {
   BOOL _formIsDirty;
 }
