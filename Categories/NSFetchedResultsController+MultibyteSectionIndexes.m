@@ -32,6 +32,11 @@
     NSString *name = [s name];
     if([name length] > 0)
     {
+      if([name canBeConvertedToEncoding:NSASCIIStringEncoding])
+      {
+        // convert to uppercase if romaji
+        name = [name uppercaseString];
+      }
       [indexArray addObject:[name substringFromIndex:0]];
     }
   }
