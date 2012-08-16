@@ -22,10 +22,11 @@
 @implementation NSArray (FindNearestIndexInOtherArray)
 
 /**
- * Finds an object in the self array "nearest" to the object at the specified index,
- * searching forward or backward from the specified index.
+ * Finds nearest object in one array (self) that exists in another given array (otherArray).
+ * Useful for UITableView indexes that display more section letters than there are sections for.
+ * Searches forward or backward from the specified index and chooses the "closest" one.
  *
- * Relies on [NSObject isEqual:] method for comparison
+ * Returns NSNotFound is no match was found. Uses [NSObject isEqual:] method for comparison.
  *
  * @params object The index in array "self" to the object we want matched in the other array
  * @params otherArray The other array, containing potentially fewer objects, fro which we want the nearest match
