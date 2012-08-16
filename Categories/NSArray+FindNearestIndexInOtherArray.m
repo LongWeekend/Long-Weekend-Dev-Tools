@@ -43,11 +43,9 @@
   // loop forwards until we find a matching letter
   for (int targetIdx = startIdx; targetIdx < [sourceArray count]; targetIdx++)
   {
-    LWE_LOG(@"> targetObject is %@ at index %d", targetObject, targetIdx);
     targetObject = [sourceArray objectAtIndex:targetIdx];
     if([otherArray containsObject:targetObject])
     {
-      LWE_LOG(@"> targetObject FOUND");
       fwdMatchIdx = [otherArray indexOfObject:targetObject];
       break;
     }
@@ -63,10 +61,8 @@
     for (int targetIdx = startIdx-1; targetIdx >= 0; targetIdx--)
     {
       targetObject = [sourceArray objectAtIndex:targetIdx];
-      LWE_LOG(@"< targetObject is %@ at index %d", targetObject, targetIdx);
       if([otherArray containsObject:targetObject])
       {
-        LWE_LOG(@"< targetObject FOUND");
         bkwdMatchIdx = [otherArray indexOfObject:targetObject];
         break;
       }
@@ -81,13 +77,13 @@
   // if a fwd match is found in less/equal steps, show it
   if((fwdMatchFound && fwdMatchNearest) || (fwdMatchFound && bkwdMatchFound == NO))
   {
-    LWE_LOG(@"** fwd match used (in %d steps) **", fwdSteps);
+    //LWE_LOG(@"** fwd match used (in %d steps) **", fwdSteps);
     return fwdMatchIdx;
   }
   // otherwise show a backwards match
   else if(bkwdMatchFound)
   {
-    LWE_LOG(@"** bkwd match used (in %d steps) **", bkwdSteps);
+    //LWE_LOG(@"** bkwd match used (in %d steps) **", bkwdSteps);
     return bkwdMatchIdx;
   }
   
