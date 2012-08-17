@@ -71,7 +71,7 @@
   CGFloat scaleFactor = 0.0;
   CGFloat scaledWidth = targetWidth;
   CGFloat scaledHeight = targetHeight;
-  CGPoint thumbnailPoint = CGPointMake(0.0,0.0);
+  CGPoint thumbnailPoint = CGPointMake(0.0f,0.0f);
   
   if (CGSizeEqualToSize(imageSize, targetSize) == NO) 
   {

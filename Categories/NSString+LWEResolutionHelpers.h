@@ -1,6 +1,6 @@
-// UIColor+LWEUtilities.m
+// NSString+LWEResolutionHelpers.h
 //
-// Copyright (c) 2010-2 Long Weekend LLC
+// Copyright (c) 2012 Long Weekend LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,22 +17,23 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-#pragma mark - UIColor
+/**
+ In some environments, it is useful to manually create retina & HD filenames on your 
+ own.  This is a category of helpers on NSString that will take regular filenames and 
+ create their associated HD and @2x components.
+ 
+ TODO: Does not yet support the new iPad 3 (@HD@2x?).
+ */
+@interface NSString (LWEResolutionHelpers)
+/**
+ Creates a filename for the iPad 1/2 by appending `@-hd` before the file extension.
+ */
+- (NSString*)stringByAddingHDSpecifier;
 
-@interface UIColor (LWEUtilities)
-
-//! This method will initialize a color object with the provided hexadecimal number. (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex;
-
-//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex;
-
-//! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
-
-//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
-
+/**
+ Creates a filename for a Retina device by appending `@2x` before the file extension.
+ */
+- (NSString*)stringByAddingRetinaSpecifier;
 @end

@@ -49,7 +49,7 @@
 {
   self.delegate = theDelegate;
   
-  [self setCanCancelContentTouches:NO];
+  self.canCancelContentTouches = NO;
   
   self.clipsToBounds = YES;
   self.scrollEnabled = YES;
@@ -70,7 +70,7 @@
   }
   cx += rightPadding;
   
-  [self setContentSize:CGSizeMake(cx, self.bounds.size.height - topPadding - bottomPadding)];
+  self.contentSize = CGSizeMake(cx, self.bounds.size.height - topPadding - bottomPadding);
 }
 
 @end

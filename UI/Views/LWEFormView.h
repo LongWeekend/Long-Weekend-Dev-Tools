@@ -29,7 +29,7 @@
  *
  * If the client does not implement this protocol, the LWEFormView itself is scrolled.
  */
-@protocol LWEFormViewDelegate <NSObject>
+@protocol LWEFormViewDelegate <UIScrollViewDelegate>
 @optional
 - (UIView*) scrollingViewForFormView:(LWEFormView*)formView;
 - (BOOL) formShouldBeginEditing:(LWEFormView *)formView;
@@ -52,7 +52,7 @@
  * of each field in numeric order, or (b) add the fields as subviews
  * in the order that you want to "tab" through them.
  */
-@interface LWEFormView : UIView <UITextViewDelegate, UITextFieldDelegate>
+@interface LWEFormView : UIScrollView <UITextViewDelegate, UITextFieldDelegate>
 {
   BOOL _formIsDirty;
 }
@@ -68,7 +68,7 @@
 @property (readonly) BOOL formIsDirty;
 
 //! Order of the form elements, sorted by tag and/or the order the subview was added.
-@property (retain) NSArray *formOrder;
+@property (retain) NSArray *fieldsSortedByTag;
 
 //! How long the animation should last.  The default is 0.5 seconds.
 @property CGFloat animationInterval;

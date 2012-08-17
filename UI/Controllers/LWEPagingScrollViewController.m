@@ -39,11 +39,12 @@
 
 @implementation LWEPagingScrollViewController
 
-@synthesize datasource, delegate, currentPage, nextPage, scrollView, pageControl;
+@synthesize dataSource, delegate, currentPage, nextPage, scrollView;
+@synthesize usesPageControl, pageControl;
 
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(id<LWEPageViewControllerProtocol>)pageController
 {
-	NSInteger pageCount = [self.datasource numDataPages];
+	NSInteger pageCount = [self.dataSource numDataPages];
 	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
 
 	if (!outOfBounds)
@@ -78,9 +79,14 @@
   
 	[self.scrollView addSubview:self.currentPage.view];
 	[self.scrollView addSubview:self.nextPage.view];
-  [self.scrollView bringSubviewToFront:self.pageControl];
+  
+  if (self.usesPageControl)
+  {
+    [self.scrollView bringSubviewToFront:self.pageControl];
+    self.pageControl.numberOfPages = [self.dataSource numDataPages];
+  }
 
-	NSInteger widthCount = [self.datasource numDataPages];
+	NSInteger widthCount = [self.dataSource numDataPages];
 	if (widthCount == 0)
 	{
 		widthCount = 1;
@@ -88,14 +94,12 @@
 	
   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
 	self.scrollView.contentOffset = CGPointMake(0, 0);
-	self.pageControl.numberOfPages = [self.datasource numDataPages];
-  
-  LWE_LOG(@"The current page index is: %i", pageControl.currentPage);
 	
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
   
-  [self changePageAnimated:NO]; // go to the current page
+  // Start on page 0
+  [self changePageToIndex:0 animated:NO];
 }
 
 #pragma mark - Delegate Implementation
@@ -105,7 +109,6 @@
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupCurrentPage:)]))
   {
     id<LWEPageViewControllerProtocol> tmpVC = [self.delegate setupCurrentPage:self];
-    tmpVC.dataSource = self;
     return tmpVC;
   }
   else
@@ -119,27 +122,11 @@
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupNextPage:)]))
   {
     id<LWEPageViewControllerProtocol> tmpVC = [self.delegate setupNextPage:self];
-    tmpVC.dataSource = self;
     return tmpVC;
   }
   else
   {
     return nil;
-  }
-}
-
-#pragma mark - LWEPageViewControllerDatasource Implementation
-
-//! A page will ask for it's data, and this is the default implementation. Override to do something different
-- (id) dataForPage:(NSInteger)pageIndex
-{
-  if (pageIndex > [[self datasource] numDataPages] - 1 || pageIndex < 0) // ignore out of range requests. The pages are dumb
-  {
-    return nil;
-  }
-  else
-  {
-    return [[[self datasource] dataPages] objectAtIndex:pageIndex];
   }
 }
 
@@ -151,7 +138,23 @@
   CGFloat fractionalPage = self.scrollView.contentOffset.x / pageWidth;
 	
 	NSInteger lowerNumber = floor(fractionalPage);
+  if (lowerNumber < 0)
+  {
+    // If the view scrolls beyond the left edge of the 0-index (e.g. leftmost) page
+    lowerNumber = 0;
+  }
 	NSInteger upperNumber = lowerNumber + 1;
+  if (upperNumber >= [self.dataSource numDataPages])
+  {
+    upperNumber = [self.dataSource numDataPages] - 1;
+    if (upperNumber > 1)
+    {
+      // If the view scrolls beyond the right edge of the last page (e.g. rightmost),
+      // we need to manually set the lower number.  However, if there is only one page,
+      // don't do this, as the numbers would be the same.
+      lowerNumber = upperNumber - 1;
+    }
+  }
 	
 	if (lowerNumber == self.currentPage.pageIndex)
 	{
@@ -184,8 +187,8 @@
 		}
 	}
 	
-  [self.currentPage updateViews:NO];
-	[self.nextPage updateViews:NO];
+  [self.currentPage updateViews];
+	[self.nextPage updateViews];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
@@ -203,7 +206,7 @@
 	}
 
   // defeats the race condition where the user can "beat" you to an un updated view
-	[self.currentPage updateViews:NO];
+	[self.currentPage updateViews];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
@@ -212,9 +215,19 @@
 	self.pageControl.currentPage = self.currentPage.pageIndex;
 }
 
-- (void)changePageAnimated:(BOOL)animated
+- (void)changePageToIndex:(NSInteger)index animated:(BOOL)animated;
 {
-  NSInteger pageIndex = self.pageControl.currentPage;
+  LWE_ASSERT_EXC((index >= 0 && index < [self.dataSource numDataPages]), @"Out of bounds index: %d (num pages: %d)",index,[self.dataSource numDataPages]);
+  
+  NSInteger pageIndex = 0;
+  pageIndex = index;
+  
+  // If this method was called manually (e.g. not by the page control),
+  // update the page control so it stays in tune
+  if (self.usesPageControl && self.pageControl.currentPage != index)
+  {
+    self.pageControl.currentPage = index;
+  }
 
 	// update the scroll view to the appropriate page
   CGRect frame = self.scrollView.frame;
@@ -225,7 +238,10 @@
 
 - (IBAction)changePage:(id)sender
 {
-	[self changePageAnimated:YES];
+  if (self.usesPageControl)
+  {
+    [self changePageToIndex:self.pageControl.currentPage animated:YES];
+  }
 }
 
 - (void) viewDidUnload
@@ -238,9 +254,59 @@
   [super viewDidUnload];
 }
 
+#pragma mark - Class Plumbing
+
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+  if (self)
+  {
+    [self _commonInit];
+  }
+  return self;
+}
+
+-(id)initWithDataSource:(id<LWEPageViewControllerDataSource>)aDataSource
+{
+  self = [super initWithNibName:NSStringFromClass([self class]) bundle:nil];
+  if (self)
+  {
+    [self _commonInit];
+    self.dataSource = aDataSource;
+  }
+  return self;
+}
+
+// XIB support
+-(id)initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  if (self)
+  {
+    [self _commonInit];
+  }
+  return self;
+}
+
+- (id) init
+{
+  self = [super init];
+  if (self)
+  {
+    [self _commonInit];
+  }
+  return self;
+}
+
+- (void)_commonInit
+{
+  // Turn on the page control by default.
+  self.usesPageControl = YES;
+}
+
 - (void)dealloc
 {
-  self.datasource = nil;
+  self.dataSource = nil;
 	self.currentPage = nil;
 	self.nextPage = nil;
   self.scrollView = nil;
