@@ -1,6 +1,6 @@
-// UIColor+LWEUtilities.m
+// UIBarButtonItem+LWEAdditions.h
 //
-// Copyright (c) 2010-2 Long Weekend LLC
+// Copyright (c) 2012 Long Weekend LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -19,20 +19,14 @@
 
 #import <UIKit/UIKit.h>
 
-#pragma mark - UIColor
+@interface UIBarButtonItem (LWEAdditions)
 
-@interface UIColor (LWEUtilities)
-
-//! This method will initialize a color object with the provided hexadecimal number. (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex;
-
-//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex;
-
-//! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
-
-//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
+/**
+ Creates a custom UIBarButtonItem with a tappable image.
+ @param buttonImage The image to display.  The button will be sized to this image.
+ @param target The target to be invoked for UIControlEventTouchUpInside.
+ @param action The selector to be invoked on the target.
+ */
++ (UIBarButtonItem *) barButtonWithImage:(UIImage *)buttonImage target:(id)target action:(SEL)action;
 
 @end

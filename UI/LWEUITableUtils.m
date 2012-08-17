@@ -25,7 +25,7 @@
 //! Returns a new UITableViewCell - automatically determines whether new or off the queue
 + (UITableViewCell*) reuseCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView usingStyle:(UITableViewCellStyle)style
 {
-  UITableViewCell* cell = [lclTableView dequeueReusableCellWithIdentifier:identifier];
+  UITableViewCell *cell = [lclTableView dequeueReusableCellWithIdentifier:identifier];
   if (cell == nil)
   {
     cell = [[[UITableViewCell alloc] initWithStyle:style reuseIdentifier:identifier] autorelease];

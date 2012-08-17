@@ -30,7 +30,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <UIKit/UIKit.h>
-#import "LWEPagingScrollViewDatasource.h"
 
 /**
  * This protocol allows a delegate of the LWEAudioRecorder to update
@@ -45,17 +44,69 @@
 @protocol LWEPageViewControllerDataSource <NSObject>
 
 @required
-//! Returns whatever data package for the appropriate page index.
+/**
+ * Returns whatever data package for the appropriate page index.
+ *
+ * It is up to the implementer to determine what type of data the
+ * class should return to allow the child page VC display its data.
+ */
 -(id) dataForPage:(NSInteger)pageIndex;
+
+/**
+ * Returns the number of data pages.
+ */
+- (NSInteger)numDataPages;
 @end
 
+/**
+ * Any UIViewController that wishes to be a LWEPagingScrollViewController "page"
+ * should implement this protocol.
+ */
 @protocol LWEPageViewControllerProtocol <NSObject>
 @required
+/**
+ * The data source that provides relevant data to the child page VC
+ * for a given page index.
+ */
 @property (assign) id<LWEPageViewControllerDataSource> dataSource;
+/**
+ * The current page index inside of the parent scroll VC. 
+ *
+ * This value will be changed by the parent scroll VC as the view is scrolled,
+ * so child page VC classes should/can use it in their `updateViews` implementation
+ * to determine what content should be shown.
+ */
 @property (assign) NSInteger pageIndex;
+/**
+ * The view that the parent VC will add to the scroll view.
+ */
 @property (strong) UIView *view;
-- (void) updateViews:(BOOL)force;
+/**
+ * This method is called (many times) by the parent scroll VC when a child VC 
+ * is being scrolled onscreen.
+ *
+ * Because it is called many times, you likely want to implement the optional `setNeedsUpdate`
+ * method as well, which will only be called once before a view is scrolled on.
+ *
+ * This will allow you to not re-draw your page every time.
+ *
+ * That said, if your VC contains static content, this method need not provide any interesting
+ * implementation.
+ */
+- (void) updateViews;
 @optional
+/**
+ * When a child VC's `pageIndex` is changed, this method is called by the 
+ * parent scroll VC.
+ *
+ * If you want to change the page content when the `pageIndex` changes (often),
+ * you probably want to implement this method to set a "needsUpdate" flag in
+ * your child page VC.
+ *
+ * Later, when `-updateViews` is called, you will know that you need to
+ * get new data from the dataSource with the new `pageIndex` and figure out what content
+ * to re-display.
+ */
 - (void) setNeedsUpdate;
 @end
 
@@ -76,18 +127,41 @@
 @end
 
 
-@interface LWEPagingScrollViewController : UIViewController <LWEPageViewControllerDataSource>
+@interface LWEPagingScrollViewController : UIViewController
 
-@property (nonatomic, retain) LWEPagingScrollViewDatasource *datasource;
-@property (assign) id delegate;
+@property (nonatomic, retain) id<LWEPageViewControllerDataSource> dataSource;
+@property (assign) id <LWEPagingScrollViewControllerDelegate> delegate;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> currentPage;
 @property (nonatomic, retain) id<LWEPageViewControllerProtocol> nextPage;
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) IBOutlet UIPageControl *pageControl;
 
-- (void)changePageAnimated:(BOOL)animated;
+/**
+ * Designated initializer.
+ */
+-(id)initWithDataSource:(id<LWEPageViewControllerDataSource>)aDataSource;
+
+/**
+ * If `YES`, this class expects the `pageControl` property to be a valid `UIPageControl` or subclass.
+ *
+ * The default value is `YES` -- you need to specify a pageControl.
+ */
+@property (nonatomic) BOOL usesPageControl;
+
+/**
+ * Use this method to manually change the page index.
+ * @param index The index to scroll to.  This will raise an exception if it is out of bounds.
+ * @param animated If `YES`, the scroll view will animate to the new position.
+ */
+- (void)changePageToIndex:(NSInteger)index animated:(BOOL)animated;
+
+/**
+ * This is the IBAction that a UIPageControl should call on `valueDidChange`.
+ *
+ * Note that this will have no effect if the same UIPageControl is not hooked up to
+ * the `pageControl` property.
+ */
 - (IBAction)changePage:(id)sender;
-- (id)dataForPage:(NSInteger)pageIndex;
 
 @end
 

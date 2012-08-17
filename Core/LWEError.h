@@ -1,4 +1,5 @@
 //  LWEError.h
+#import <Foundation/Foundation.h>
 
 extern NSString * const LWEErrorDomain;
 

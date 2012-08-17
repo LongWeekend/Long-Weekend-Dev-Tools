@@ -1,6 +1,6 @@
-// UIColor+LWEUtilities.m
+// NSFetchedResultsController+MultibyteSectionIndexes.h
 //
-// Copyright (c) 2010-2 Long Weekend LLC
+// Copyright (c) 2012 Long Weekend LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,22 +17,11 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
 
-#pragma mark - UIColor
+@interface NSFetchedResultsController (MultibyteSectionIndexes)
 
-@interface UIColor (LWEUtilities)
-
-//! This method will initialize a color object with the provided hexadecimal number. (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex;
-
-//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex;
-
-//! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
-
-//! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
+/** Overrides sectionIndexTitles property to return a multibyte safe list of indexes (indices) */
+- (NSArray*)sectionIndexTitles;
 
 @end

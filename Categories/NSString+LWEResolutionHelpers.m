@@ -1,6 +1,6 @@
-// LWEPagingScrollViewDataSource.m
+// NSString+LWEResolutionHelpers.m
 //
-// Copyright (c) 2011 Long Weekend LLC
+// Copyright (c) 2012 Long Weekend LLC
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 // associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -17,41 +17,38 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import "LWEPagingScrollViewDataSource.h"
+#import "NSString+LWEResolutionHelpers.h"
 
-@implementation LWEPagingScrollViewDataSource
+@implementation NSString (LWEResolutionHelpers)
 
-@synthesize dataPages;
-
-- (id) init
+//! converts filename string into HD
+-(NSString*)stringByAddingHDSpecifier
 {
-  [NSException raise:@"Invalid Initializer" format:@"Use initWithDataPages instead"];
-  return nil;
-}
-
-- (id) initWithDataPages:(NSArray *)data
-{
-  if ((self = [super init]))
+  NSArray *filenameComponents = [self componentsSeparatedByString:@"."];
+  NSString *newFilename = [NSString stringWithFormat:@"%@-hd", [filenameComponents objectAtIndex:0]];
+  if ([filenameComponents count] > 1)
   {
-    self.dataPages = data;
+    newFilename = [NSString stringWithFormat:@"%@.%@", newFilename, [filenameComponents objectAtIndex:1]];
   }
-  return self;
+  return newFilename;
 }
 
-- (void) dealloc
-{
-  [dataPages release];
-  [super dealloc];
-}
 
-- (NSInteger)numDataPages
+//! Converts filename string into Retina (@2x)
+- (NSString*)stringByAddingRetinaSpecifier
 {
-	return [self.dataPages count];
-}
-
-- (NSDictionary *)dataForPage:(NSInteger)pageIndex
-{
-	return [self.dataPages objectAtIndex:pageIndex];
+  NSString *retinaName = nil;
+  NSRange lastPeriod = [self rangeOfString:@"." options:NSBackwardsSearch];
+  if (lastPeriod.location == NSNotFound)
+  {
+    // Append only - there is no extension (ticket #568)
+    retinaName = [self stringByAppendingString:@"@2x"];
+  }
+  else
+  {
+    retinaName = [self stringByReplacingCharactersInRange:lastPeriod withString:@"@2x."];
+  }
+  return retinaName;
 }
 
 @end
