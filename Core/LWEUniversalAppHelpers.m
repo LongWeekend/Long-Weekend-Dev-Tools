@@ -218,7 +218,7 @@
     returnVal = ipadName;
     if (useRetina && [LWEFile fileExists:ipadName] == NO)
     {
-      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      returnVal = [fileName stringByAddingRetinaSpecifier];
     }
   }
   else
