@@ -67,7 +67,7 @@
 	pageController.pageIndex = newIndex;
   
   // Tell the page controller it needs an update now
-  pageController.doesPageNeedUpdate = YES;
+  pageController.pageNeedsUpdate = YES;
 }
 
 - (void)viewDidLoad
@@ -187,16 +187,16 @@
 		}
 	}
 	
-  if (self.currentPage.doesPageNeedUpdate)
+  if (self.currentPage.pageNeedsUpdate)
   {
     [self.currentPage updateViews];
-    self.currentPage.doesPageNeedUpdate = NO;
+    self.currentPage.pageNeedsUpdate = NO;
   }
   
-  if (self.nextPage.doesPageNeedUpdate)
+  if (self.nextPage.pageNeedsUpdate)
   {
     [self.nextPage updateViews];
-    self.nextPage.doesPageNeedUpdate = NO;
+    self.nextPage.pageNeedsUpdate = NO;
   }
 }
 
@@ -215,10 +215,10 @@
 	}
 
   // defeats the race condition where the user can "beat" you to an un updated view
-	if (self.currentPage.doesPageNeedUpdate)
+	if (self.currentPage.pageNeedsUpdate)
   {
     [self.currentPage updateViews];
-    self.currentPage.doesPageNeedUpdate = NO;
+    self.currentPage.pageNeedsUpdate = NO;
   }
 }
 

@@ -94,7 +94,7 @@
  * Later, when `-updateViews` will be called, this variable will be checked. If only
  * this is `true`, `-updateViews` will be called.
  */
-@property (assign) BOOL doesPageNeedUpdate;
+@property (assign) BOOL pageNeedsUpdate;
 
 /**
  * This method is called by the parent scroll VC when a child VC is being scrolled onscreen
