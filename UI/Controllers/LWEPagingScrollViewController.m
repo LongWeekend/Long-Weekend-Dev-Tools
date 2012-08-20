@@ -38,7 +38,6 @@
 @end
 
 @implementation LWEPagingScrollViewController
-
 @synthesize dataSource, delegate, currentPage, nextPage, scrollView;
 @synthesize usesPageControl, pageControl;
 
@@ -68,10 +67,7 @@
 	pageController.pageIndex = newIndex;
   
   // Tell the page controller it needs an update now
-  if ([pageController respondsToSelector:@selector(setNeedsUpdate)])
-  {
-    [pageController setNeedsUpdate];
-  }
+  pageController.pageNeedsUpdate = YES;
 }
 
 - (void)viewDidLoad
@@ -191,8 +187,17 @@
 		}
 	}
 	
-  [self.currentPage updateViews];
-	[self.nextPage updateViews];
+  if (self.currentPage.pageNeedsUpdate)
+  {
+    [self.currentPage updateViews];
+    self.currentPage.pageNeedsUpdate = NO;
+  }
+  
+  if (self.nextPage.pageNeedsUpdate)
+  {
+    [self.nextPage updateViews];
+    self.nextPage.pageNeedsUpdate = NO;
+  }
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
@@ -210,7 +215,11 @@
 	}
 
   // defeats the race condition where the user can "beat" you to an un updated view
-	[self.currentPage updateViews];
+	if (self.currentPage.pageNeedsUpdate)
+  {
+    [self.currentPage updateViews];
+    self.currentPage.pageNeedsUpdate = NO;
+  }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
