@@ -45,21 +45,25 @@
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(id<LWEPageViewControllerProtocol>)pageController
 {
 	NSInteger pageCount = [self.dataSource numDataPages];
-	BOOL outOfBounds = newIndex >= pageCount || newIndex < 0;
+	BOOL outOfPageBounds = newIndex >= pageCount || newIndex < 0;
 
-	if (!outOfBounds)
-	{
-		CGRect pageFrame = pageController.view.frame;
-		pageFrame.origin.y = 0;
-		pageFrame.origin.x = self.scrollView.frame.size.width * newIndex;
-		pageController.view.frame = pageFrame;
-	}
-	else
+	if(outOfPageBounds)
 	{
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = self.scrollView.frame.size.height;
 		pageController.view.frame = pageFrame;
 	}
+  else
+	{
+		CGRect pageFrame = pageController.view.frame;
+		pageFrame.origin.y = 0.0f;
+    // we subtract old offset to prevent creeping
+    CGFloat oldOffset = (self.scrollView.frame.size.width * pageController.pageIndex);
+    // add pageFrame.origin.x back to allow for defined centering offsets
+		pageFrame.origin.x = (self.scrollView.frame.size.width * newIndex) + pageFrame.origin.x - oldOffset;
+		pageController.view.frame = pageFrame;
+	}
+
 
 	pageController.pageIndex = newIndex;
   
@@ -93,7 +97,7 @@
 	}
 	
   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
-	self.scrollView.contentOffset = CGPointMake(0, 0);
+	self.scrollView.contentOffset = CGPointMake(0.0f, 0.0f);
 	
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
@@ -232,7 +236,7 @@
 	// update the scroll view to the appropriate page
   CGRect frame = self.scrollView.frame;
   frame.origin.x = frame.size.width * pageIndex;
-  frame.origin.y = 0;
+  frame.origin.y = 0.0f;
   [self.scrollView scrollRectToVisible:frame animated:animated];
 }
 

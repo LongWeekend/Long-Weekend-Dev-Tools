@@ -62,7 +62,7 @@
 - (void) scrollToOrigin;
 
 //! Delegate for asking about which view to scroll
-@property (assign) IBOutlet id<LWEFormViewDelegate> delegate;
+@property (nonatomic, assign) IBOutlet id<LWEFormViewDelegate> delegate;
 
 //! Returns YES if any of the form items have been edited - even if they've been restored
 @property (readonly) BOOL formIsDirty;
