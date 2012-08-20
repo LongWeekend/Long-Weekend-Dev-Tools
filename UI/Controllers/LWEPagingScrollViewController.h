@@ -42,7 +42,6 @@
  * query data used to populate its views and behave.
  */
 @protocol LWEPageViewControllerDataSource <NSObject>
-
 @required
 /**
  * Returns whatever data package for the appropriate page index.
@@ -50,7 +49,7 @@
  * It is up to the implementer to determine what type of data the
  * class should return to allow the child page VC display its data.
  */
--(id) dataForPage:(NSInteger)pageIndex;
+-(id)dataForPage:(NSInteger)pageIndex;
 
 /**
  * Returns the number of data pages.
@@ -69,6 +68,7 @@
  * for a given page index.
  */
 @property (assign) id<LWEPageViewControllerDataSource> dataSource;
+
 /**
  * The current page index inside of the parent scroll VC. 
  *
@@ -77,10 +77,25 @@
  * to determine what content should be shown.
  */
 @property (assign) NSInteger pageIndex;
+
 /**
  * The view that the parent VC will add to the scroll view.
  */
 @property (strong) UIView *view;
+
+/**
+ * When a child VC's `pageIndex` is changed, this method is called by the
+ * parent scroll VC.
+ *
+ * When you want to change the page content when the `pageIndex` changes, you must
+ * implement this method to set a "needsUpdate" flag in your child page VC.
+ *
+ * Later, when `-updateViews` is called, you will know that you need to
+ * get new data from the dataSource with the new `pageIndex` and figure out what content
+ * to re-display.
+ */
+@property (assign) BOOL doesPageNeedUpdate;
+
 /**
  * This method is called (many times) by the parent scroll VC when a child VC 
  * is being scrolled onscreen.
@@ -94,18 +109,6 @@
  * implementation.
  */
 - (void) updateViews;
-/**
- * When a child VC's `pageIndex` is changed, this method is called by the 
- * parent scroll VC.
- *
- * When you want to change the page content when the `pageIndex` changes, you must 
- * implement this method to set a "needsUpdate" flag in your child page VC.
- *
- * Later, when `-updateViews` is called, you will know that you need to
- * get new data from the dataSource with the new `pageIndex` and figure out what content
- * to re-display.
- */
-- (void) setNeedsUpdate;
 @end
 
 
