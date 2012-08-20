@@ -85,8 +85,8 @@
  * This method is called (many times) by the parent scroll VC when a child VC 
  * is being scrolled onscreen.
  *
- * Because it is called many times, you likely want to implement the optional `setNeedsUpdate`
- * method as well, which will only be called once before a view is scrolled on.
+ * Because it is called many times, you must implement `setNeedsUpdate` method as well, 
+ * which will only be called once before a view is scrolled on.
  *
  * This will allow you to not re-draw your page every time.
  *
@@ -94,14 +94,12 @@
  * implementation.
  */
 - (void) updateViews;
-@optional
 /**
  * When a child VC's `pageIndex` is changed, this method is called by the 
  * parent scroll VC.
  *
- * If you want to change the page content when the `pageIndex` changes (often),
- * you probably want to implement this method to set a "needsUpdate" flag in
- * your child page VC.
+ * When you want to change the page content when the `pageIndex` changes, you must 
+ * implement this method to set a "needsUpdate" flag in your child page VC.
  *
  * Later, when `-updateViews` is called, you will know that you need to
  * get new data from the dataSource with the new `pageIndex` and figure out what content
