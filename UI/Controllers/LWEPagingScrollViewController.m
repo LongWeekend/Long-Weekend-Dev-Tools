@@ -68,6 +68,7 @@
   
   // Tell the page controller it needs an update now
   pageController.pageNeedsUpdate = YES;
+  [pageController updateViews];
 }
 
 - (void)viewDidLoad
@@ -76,7 +77,9 @@
   
 	self.currentPage = [self setupCurrentPage];
 	self.nextPage = [self setupNextPage];
-  
+	[self applyNewIndex:0 pageController:self.currentPage];
+	[self applyNewIndex:1 pageController:self.nextPage];
+
 	[self.scrollView addSubview:self.currentPage.view];
 	[self.scrollView addSubview:self.nextPage.view];
   
@@ -94,9 +97,6 @@
 	
   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
 	self.scrollView.contentOffset = CGPointMake(0.0f, 0.0f);
-	
-	[self applyNewIndex:0 pageController:self.currentPage];
-	[self applyNewIndex:1 pageController:self.nextPage];
   
   // Start on page 0
   [self changePageToIndex:0 animated:NO];
