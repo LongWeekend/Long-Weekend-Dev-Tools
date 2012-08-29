@@ -35,14 +35,64 @@
 //! These methods call out to the delegate if set, otherwise they have default implementation
 - (id<LWEPageViewControllerProtocol>) setupCurrentPage;
 - (id<LWEPageViewControllerProtocol>) setupNextPage;
+- (void)_tryRefresh:(id<LWEPageViewControllerProtocol>)pageViewController;
+- (void)_verifyCurrentPage;
 @end
 
 @implementation LWEPagingScrollViewController
 @synthesize dataSource, delegate, currentPage, nextPage, scrollView;
 @synthesize usesPageControl, pageControl;
 
+#pragma mark - Private Methods
+
+/**
+ * This method will try to call the `updateViews` method of the protocol
+ * method if it is set to pageNeedsUpdate. 
+ *
+ * @param pageViewController     The page itself which conforms to the LWEPageViewControllerProtocol
+ */
+- (void)_tryRefresh:(id<LWEPageViewControllerProtocol>)pageViewController
+{
+  if (pageViewController.pageNeedsUpdate)
+  {
+    [pageViewController updateViews];
+    pageViewController.pageNeedsUpdate = NO;
+  }
+}
+
+/**
+ * This method will verify the currentPage and nextPage, making sure
+ * we have both of them in order.
+ *
+ * There are several cases where we have the currentPage accidentally swapped
+ * as the nextPage.
+ */
+- (void)_verifyCurrentPage
+{
+  CGFloat pageWidth = self.scrollView.frame.size.width;
+  float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
+  NSInteger nearestNumber = lround(fractionalPage);
+  if (self.currentPage.pageIndex != nearestNumber)
+  {
+    id<LWEPageViewControllerProtocol> swapController = [self.currentPage retain];
+    self.currentPage = self.nextPage;
+    self.nextPage = swapController;
+    [swapController release];
+  }
+}
+
+#pragma mark - Public
+
 - (void)applyNewIndex:(NSInteger)newIndex pageController:(id<LWEPageViewControllerProtocol>)pageController
 {
+  if (pageController.pageIndex == newIndex)
+  {
+    // If the pageIndex of the page controller is
+    // actually the same with the new one we are applying to, dont
+    // bother calculating the new index.
+    return;
+  }
+  
 	NSInteger pageCount = [self.dataSource numDataPages];
 	BOOL outOfPageBounds = newIndex >= pageCount || newIndex < 0;
 
@@ -57,31 +107,42 @@
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = 0.0f;
     // we subtract old offset to prevent creeping
-    CGFloat oldOffset = (self.scrollView.frame.size.width * pageController.pageIndex);
+    
+    CGFloat oldOffset = (pageController.pageIndex != NSNotFound) ? (self.scrollView.frame.size.width * pageController.pageIndex) : 0;
     // add pageFrame.origin.x back to allow for defined centering offsets
 		pageFrame.origin.x = (self.scrollView.frame.size.width * newIndex) + pageFrame.origin.x - oldOffset;
 		pageController.view.frame = pageFrame;
 	}
-
-
-	pageController.pageIndex = newIndex;
   
-  // Tell the page controller it needs an update now
+  // Just setup the new page to have the new pageIndex and
+  // "mark" it as it needs update.
+  pageController.pageIndex = newIndex;
   pageController.pageNeedsUpdate = YES;
-  [pageController updateViews];
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
   
+  // Ask the delegate of the current and next page.
 	self.currentPage = [self setupCurrentPage];
 	self.nextPage = [self setupNextPage];
+  
+  // Just make sure that we are setting an "Initial" pageIndex to a NSNotFound
+  // for the first load.
+  self.currentPage.pageIndex = NSNotFound;
+  self.currentPage.pageIndex = NSNotFound;
+  // Then setup the newIndex page with some page-frame location calculation
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
 
+  // Adding those pages to the scrollView
 	[self.scrollView addSubview:self.currentPage.view];
 	[self.scrollView addSubview:self.nextPage.view];
+  
+  // Since we are first load, try refreshing the first 2 pages.
+  [self _tryRefresh:self.currentPage];
+  [self _tryRefresh:self.nextPage];
   
   if (self.usesPageControl)
   {
@@ -96,7 +157,6 @@
 	}
 	
   self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
-	self.scrollView.contentOffset = CGPointMake(0.0f, 0.0f);
   
   // Start on page 0
   [self changePageToIndex:0 animated:NO];
@@ -104,7 +164,7 @@
 
 #pragma mark - Delegate Implementation
 
-- (id<LWEPageViewControllerProtocol>) setupCurrentPage
+- (id<LWEPageViewControllerProtocol>)setupCurrentPage
 {
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupCurrentPage:)]))
   {
@@ -117,7 +177,7 @@
   }
 }
 
-- (id<LWEPageViewControllerProtocol>) setupNextPage
+- (id<LWEPageViewControllerProtocol>)setupNextPage
 {
   if (self.delegate && ([self.delegate respondsToSelector:@selector(setupNextPage:)]))
   {
@@ -160,6 +220,9 @@
 	{
 		if (upperNumber != self.nextPage.pageIndex)
 		{
+      // from scrolling to the left
+      // to scrolling to the right.
+      // thats why its changing the next to the upper.
 			[self applyNewIndex:upperNumber pageController:self.nextPage];
 		}
 	}
@@ -167,11 +230,17 @@
 	{
 		if (lowerNumber != self.nextPage.pageIndex)
 		{
+      // from scrolling to the right
+      // to scrolling to the left
+      // thatw why its changing the next to the lower.
 			[self applyNewIndex:lowerNumber pageController:self.nextPage];
 		}
 	}
 	else
 	{
+    // These stuff usually happens when we are "jumping" page, but for a
+    // "neighbor" page, just change whatever page not used to the
+    // new page.
 		if (lowerNumber == self.nextPage.pageIndex)
 		{
 			[self applyNewIndex:upperNumber pageController:self.currentPage];
@@ -186,34 +255,17 @@
 			[self applyNewIndex:upperNumber pageController:self.nextPage];
 		}
 	}
-	
-  if (self.currentPage.pageNeedsUpdate)
-  {
-    [self.currentPage updateViews];
-    self.currentPage.pageNeedsUpdate = NO;
-  }
   
-  if (self.nextPage.pageNeedsUpdate)
-  {
-    [self.nextPage updateViews];
-    self.nextPage.pageNeedsUpdate = NO;
-  }
+  // try refreshing any page if nescessary.
+  [self _tryRefresh:self.currentPage];
+  [self _tryRefresh:self.nextPage];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)newScrollView
 {
-  CGFloat pageWidth = self.scrollView.frame.size.width;
-  float fractionalPage = self.scrollView.contentOffset.x / pageWidth;
-	NSInteger nearestNumber = lround(fractionalPage);
-
-	if (self.currentPage.pageIndex != nearestNumber)
-	{
-		id<LWEPageViewControllerProtocol> swapController = [self.currentPage retain];
-		self.currentPage = self.nextPage;
-		self.nextPage = swapController;
-    [swapController release];
-	}
-
+  // Do we have the right pageIndex?
+  [self _verifyCurrentPage];
+  
   // defeats the race condition where the user can "beat" you to an un updated view
 	if (self.currentPage.pageNeedsUpdate)
   {
@@ -228,6 +280,13 @@
 	self.pageControl.currentPage = self.currentPage.pageIndex;
 }
 
+/**
+ * This method basically just change the index of the pageControl if exists,
+ * and make sure the scrollView contentOffset shows the right frame.
+ *
+ * The next step should be on the delegate of the UIScrollView itself
+ * on the scrollViewDidScroll if, there is some change on the scrollView offset.
+ */
 - (void)changePageToIndex:(NSInteger)index animated:(BOOL)animated;
 {
   LWE_ASSERT_EXC((index >= 0 && index < [self.dataSource numDataPages]), @"Out of bounds index: %d (num pages: %d)",index,[self.dataSource numDataPages]);
@@ -247,6 +306,14 @@
   frame.origin.x = frame.size.width * pageIndex;
   frame.origin.y = 0.0f;
   [self.scrollView scrollRectToVisible:frame animated:animated];
+  
+  if (animated == NO)
+  {
+    // If we are not animating the pageChanging, we dont have the
+    // scrollViewDidEndScrollingAnimation callback,
+    // so, just in case, we verify whether the current page is THE current page.
+    [self _verifyCurrentPage];
+  }
 }
 
 - (IBAction)changePage:(id)sender
@@ -257,7 +324,7 @@
   }
 }
 
-- (void) viewDidUnload
+- (void)viewDidUnload
 {
  	self.currentPage = nil;
 	self.nextPage = nil;
@@ -269,7 +336,7 @@
 
 #pragma mark - Class Plumbing
 
-- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self)
