@@ -11,25 +11,25 @@
 #import "LWEViewAnimationUtils.h"
 
 // Private Methods
-@interface LWEFormView ()
-- (void) _addFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
-- (void) _removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
+@interface LWEFormView()
+- (void)_addFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
+- (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 
-- (UIResponder*) _nextFieldAfterField:(UIResponder*)field;
-- (UIResponder*) _currentResponder;
-- (BOOL) _isLastField:(UIResponder*)field;
-- (void) _handleFocusAfterField:(UIResponder*)field;
-- (void) _handleEnteringFocus:(UIResponder*)field;
-- (BOOL) _formIsBeingEdited;
+- (UIResponder *)_nextFieldAfterField:(UIResponder*)field;
+- (UIResponder *)_currentResponder;
+- (BOOL)_isLastField:(UIResponder*)field;
+- (void)_handleFocusAfterField:(UIResponder*)field;
+- (void)_handleEnteringFocus:(UIResponder*)field;
+- (BOOL)_formIsBeingEdited;
 
-- (void) _hideKeyboardResettingScroll:(BOOL)resetScroll;
+- (void)_hideKeyboardResettingScroll:(BOOL)resetScroll;
 
-- (LWETextValidationTypes) _validationTypesForField:(UIControl*)field;
-- (NSInteger) _maximumLengthForField:(UIControl*)field;
+- (LWETextValidationTypes)_validationTypesForField:(UIControl *)field;
+- (NSInteger)_maximumLengthForField:(UIControl*)field;
 
-- (void) _scrollToPoint:(CGPoint)relPoint;
-- (void) _scrollToView:(UIView*)control;
-- (UIView*) _viewToScroll;
+- (void)_scrollToPoint:(CGPoint)relPoint;
+- (void)_scrollToView:(UIView*)control;
+- (UIView *)_viewToScroll;
 @end
 
 @implementation LWEFormView
@@ -39,7 +39,7 @@
 
 #pragma mark - Class Plumbing (init/dealloc)
 
-- (id) initWithCoder:(NSCoder *)aDecoder
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
   self = [super initWithCoder:aDecoder];
   if (self)
@@ -50,7 +50,7 @@
   return self;
 }
 
-- (id) initWithFrame:(CGRect)aFrame
+- (id)initWithFrame:(CGRect)aFrame
 {
   self = [self initWithCoder:nil];
   if (self)
@@ -60,7 +60,7 @@
   return self;
 }
 
-- (id) init
+- (id)init
 {
   return [self initWithCoder:nil];
 }
@@ -75,7 +75,7 @@
 
 #pragma mark - Subview work
 
-- (void) didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
+- (void)didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
   // NOTE:  You (if your name is RSH) might wonder why this is here, not in init.
   // This is here because `didAddSubview:` gets called BEFOREEEE any 
@@ -99,7 +99,7 @@
   }
 }
 
-- (void) willRemoveSubview:(id<LWEFormViewFieldProtocol>)theSubview
+- (void)willRemoveSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
   // Only respond to this if it's an object we care about!
   if ([self.fieldsSortedByTag containsObject:theSubview])
@@ -115,17 +115,17 @@
  * view and makes sure none of them are the
  * first responder.
  */
-- (void) hideKeyboardAndResetScroll
+- (void)hideKeyboardAndResetScroll
 {
   [self _hideKeyboardResettingScroll:YES];
 }
 
-- (void) hideKeyboard
+- (void)hideKeyboard
 {
   [self _hideKeyboardResettingScroll:NO];
 }
 
-- (void) _hideKeyboardResettingScroll:(BOOL)resetScroll
+- (void)_hideKeyboardResettingScroll:(BOOL)resetScroll
 {
   UIResponder *responder = [self _currentResponder];
   if (responder)
@@ -152,7 +152,7 @@
 
 #pragma mark - Private Methods - Form Logic
 
-- (void) _removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject
+- (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject
 {
   NSMutableArray *newArray = [self.fieldsSortedByTag mutableCopy];
   [newArray removeObject:controlObject];
@@ -161,7 +161,7 @@
   [controlObject setDelegate:nil];
 }
 
-- (void) _addFormObject:(id<LWEFormViewFieldProtocol>)controlObject
+- (void)_addFormObject:(id<LWEFormViewFieldProtocol>)controlObject
 {
   NSMutableArray *newArray = [[self.fieldsSortedByTag mutableCopy] autorelease];
   [newArray addObject:controlObject];
@@ -189,7 +189,7 @@
  * Returns the next field in the array.  If you pass the last element
  * of the field array, it will start back at the beginning.
  */
-- (UIResponder*) _nextFieldAfterField:(UIResponder*)field
+- (UIResponder *)_nextFieldAfterField:(UIResponder *)field
 {
   NSInteger currIndex = [self.fieldsSortedByTag indexOfObject:field];
   NSInteger maxIndex = ([self.fieldsSortedByTag count] - 1);
@@ -205,7 +205,7 @@
 /**
  * Returns YES if the \param controlObject is the last field in the form.
  */
-- (BOOL) _isLastField:(UIResponder*)field
+- (BOOL)_isLastField:(UIResponder *)field
 {
   NSInteger currIndex = [self.fieldsSortedByTag indexOfObject:field];
   return (currIndex == ([self.fieldsSortedByTag count] - 1));
@@ -215,7 +215,7 @@
 /**
  * Tells us who the current responder is
  */
-- (UIResponder*) _currentResponder
+- (UIResponder *)_currentResponder
 {
   UIResponder *currentResponder = nil;
   for (UIResponder *responder in self.fieldsSortedByTag)
@@ -231,7 +231,7 @@
 /**
  * Returns YES if the form is actively being edited (e.g. if anyone is first responder)
  */
-- (BOOL) _formIsBeingEdited
+- (BOOL)_formIsBeingEdited
 {
   return ([self _currentResponder] != nil);
 }
@@ -241,7 +241,7 @@
 /**
  * Get the max number of characters for a field
  */
-- (NSInteger) _maximumLengthForField:(UIControl*)field
+- (NSInteger)_maximumLengthForField:(UIControl*)field
 {
   NSInteger validationLength = kLWEMaxCharacters;
   if (self.delegate && [self.delegate respondsToSelector:@selector(maximumLengthForField:)])
@@ -255,7 +255,7 @@
  * Ask the delegate if it has any validation type rules for this field.
  * If not, don't use any.
  */
-- (LWETextValidationTypes) _validationTypesForField:(UIControl*)field
+- (LWETextValidationTypes)_validationTypesForField:(UIControl*)field
 {
   LWETextValidationTypes validationTypes = LWETextValidationTypeNone;
   if (self.delegate && [self.delegate respondsToSelector:@selector(validationTypesForField:)])
@@ -272,7 +272,7 @@
  * hide the keyboard/picker and reset the scroll.  Otherwise, activate
  * the next field.
  */
-- (void) _handleFocusAfterField:(UIResponder*)field
+- (void)_handleFocusAfterField:(UIResponder*)field
 {
   if ([self _isLastField:field])
   {
@@ -292,18 +292,21 @@
  * This method is called any time a field gets focus; if we need to, we can notify
  * the delegate or lazy-load any non-standard input views (pickers et al)
  */
-- (void) _handleEnteringFocus:(UIResponder*)field
+- (void)_handleEnteringFocus:(UIResponder*)field
 {
   // Notify the delegate if we're going to start editing a form
   if ([self _formIsBeingEdited] == NO)
   {
-    LWE_DELEGATE_CALL(@selector(formWillBeginEditing:),self);
+    if ([self.delegate respondsToSelector:@selector(formWillBeginEditing:)])
+    {
+      [self.delegate formWillBeginEditing:self];
+    }
   }
 }
 
 #pragma mark - Date Picker Helpers
 
-- (void) _doneButtonPressed:(id)sender
+- (void)_doneButtonPressed:(id)sender
 {
   UIResponder *responder = [self _currentResponder];
   [self _handleFocusAfterField:responder];
@@ -315,13 +318,13 @@
 /**
  * Returns the view to its original transformation/translation
  */
-- (void) scrollToOrigin
+- (void)scrollToOrigin
 {
   [self _scrollToPoint:CGPointZero];
 }
 
 //! Checks with the delegate and returns the UIView that will be scrolled
-- (UIView*) _viewToScroll
+- (UIView *)_viewToScroll
 {
   UIView *viewToScroll = nil;
   if (self.delegate && [self.delegate respondsToSelector:@selector(scrollingViewForFormView:)])
@@ -339,7 +342,7 @@
 /**
  * Scrolls the view by a certain number of points (e.g. pixels in non-retina world)
  */
-- (void) _scrollToPoint:(CGPoint)relPoint
+- (void)_scrollToPoint:(CGPoint)relPoint
 {
   UIView *viewToScroll = [self _viewToScroll];
   if ([viewToScroll isKindOfClass:[UIScrollView class]])
@@ -356,7 +359,7 @@
  * This helper scrolls the view to ensure that the UIView parameter
  * is above the level of the keyboard/picker
  */
-- (void) _scrollToView:(UIView*)control
+- (void)_scrollToView:(UIView*)control
 {
   UIView *viewToScroll = [self _viewToScroll];
   if ([viewToScroll isKindOfClass:[UIScrollView class]])
@@ -372,9 +375,7 @@
   }  
 }
 
-
 #pragma mark - UITextFieldDelegate
-
 
 // Notify the delegate if we're going to start editing a form
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
@@ -407,6 +408,10 @@
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
   [self _scrollToView:textField];
+  if ([self.delegate respondsToSelector:@selector(form:didEnterFocusOn:)])
+  {
+    [self.delegate form:self didEnterFocusOn:textField];
+  }
 }
 
 /**
@@ -422,7 +427,7 @@
 /**
  * Validates maximum character length text fields
  */
--(BOOL) textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
   _formIsDirty = YES;
   
@@ -460,8 +465,15 @@
   return [newText passesValidationType:validationTypes maxLength:charCount];
 }
 
-#pragma mark - UITextViewDelegate
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+  if ([self.delegate respondsToSelector:@selector(form:didLoseFocusOn:)])
+  {
+    [self.delegate form:self didLoseFocusOn:textField];
+  }
+}
 
+#pragma mark - UITextViewDelegate
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
@@ -484,6 +496,10 @@
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
   [self _scrollToView:textView];
+  if ([self.delegate respondsToSelector:@selector(form:didEnterFocusOn:)])
+  {
+    [self.delegate form:self didEnterFocusOn:textView];
+  }
 }
 
 /**
@@ -536,6 +552,14 @@
   }
   NSString *newText = [NSString stringWithFormat:@"%@%@",textView.text,text];
   return [newText passesValidationType:validationTypes maxLength:charCount];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+  if ([self.delegate respondsToSelector:@selector(form:didLoseFocusOn:)])
+  {
+    [self.delegate form:self didLoseFocusOn:textView];
+  }
 }
 
 @end

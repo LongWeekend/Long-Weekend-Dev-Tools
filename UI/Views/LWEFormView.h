@@ -31,15 +31,29 @@
  */
 @protocol LWEFormViewDelegate <UIScrollViewDelegate>
 @optional
-- (UIView*) scrollingViewForFormView:(LWEFormView*)formView;
-- (BOOL) formShouldBeginEditing:(LWEFormView *)formView;
-- (void) formWillBeginEditing:(LWEFormView*)formView;
-- (void) formDidFinishEditing:(LWEFormView*)formView;
-- (void) formDidChangeFirstResponder:(LWEFormView*)formView;
-- (BOOL) formField:(id)field shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)text;
+- (UIView*)scrollingViewForFormView:(LWEFormView *)formView;
+- (BOOL)formShouldBeginEditing:(LWEFormView *)formView;
+- (void)formWillBeginEditing:(LWEFormView *)formView;
+- (void)formDidFinishEditing:(LWEFormView *)formView;
+- (void)formDidChangeFirstResponder:(LWEFormView *)formView;
+- (BOOL)formField:(id)field shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)text;
 
-- (LWETextValidationTypes) validationTypesForField:(UIControl*)field;
-- (NSInteger) maximumLengthForField:(UIControl*)field;
+/**
+ * When there is any field, is about to get focus.
+ * @param formView  An instance of `LWEFormView`, from where the control comes from.
+ * @param responder An instance of `UIResponder` indicating what control or responder becoming a first responder.
+ */
+- (void)form:(LWEFormView *)formView didEnterFocusOn:(UIResponder *)responder;
+
+/**
+ * When there is any field, is about to lost focus.
+ * @param formView  An instance of `LWEFormView`, from where the control comes from.
+ * @param responder An instance of `UIResponder` indicating what control or responder resigning a first responder.
+ */
+- (void)form:(LWEFormView *)formView didLoseFocusOn:(UIResponder *)responder;
+
+- (LWETextValidationTypes)validationTypesForField:(UIControl *)field;
+- (NSInteger)maximumLengthForField:(UIControl *)field;
 @end
 
 /**
