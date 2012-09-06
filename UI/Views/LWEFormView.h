@@ -57,6 +57,13 @@
 @end
 
 /**
+ * A block which takes one parameter, which is the `UIControl` instance
+ * and expecting a boolean return value indicating that a control
+ * has a valid value or not.
+ */
+typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
+
+/**
  * View container that holds 1 or more UITextView or UITextField views.
  * If you put those text views inside of the LWEFormView, this class will 
  * automatically scroll the superview to make sure that the form controls
@@ -74,6 +81,18 @@
 - (void) hideKeyboard;
 - (void) hideKeyboardAndResetScroll;
 - (void) scrollToOrigin;
+
+/**
+ * Get all of the invalid fields on this form by checking each fields
+ * against the supplied block.
+ *
+ * @param block   A `LWEFormFieldValidationChecks` block which takes the control
+ *                as ann argument and return a `BOOL` indicating that the field
+ *                is valid or not.
+ * @return  A `NSArray` instance containing all of the invalid fields in this form.
+ *
+ */
+- (NSArray *)invalidFieldsWithValidationBlock:(LWEFormFieldValidationChecks)block;
 
 //! Delegate for asking about which view to scroll
 @property (nonatomic, assign) IBOutlet id<LWEFormViewDelegate> delegate;
