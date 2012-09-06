@@ -150,6 +150,29 @@
   [self hideKeyboardAndResetScroll];
 }
 
+#pragma mark - Validation Stufff
+
+- (NSArray *)invalidFieldsWithValidationBlock:(LWEFormFieldValidationChecks)block
+{
+  NSMutableArray *invalidFields = [[NSMutableArray alloc] init];
+  for (UIControl *control in [self fieldsSortedByTag])
+  {
+    // For each control we have on this form, we call the block with that field as a parameter,
+    // and let the receiver decide how to check for validation for that control, if that control is not
+    // valid, it is added into an array of invalid fields.
+    LWE_ASSERT_EXC(([control isKindOfClass:[UIControl class]]), @"All fields should be inheritting from the UIControl class.\n%@ is not.", control);
+    if (block(control) == NO)
+    {
+      [invalidFields addObject:control];
+    }
+  }
+  
+  // Prepare for a returned array
+  NSArray *returnedArray = [NSArray arrayWithArray:invalidFields];
+  [invalidFields release];
+  return returnedArray;
+}
+
 #pragma mark - Private Methods - Form Logic
 
 - (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject
