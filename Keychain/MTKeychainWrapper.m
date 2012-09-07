@@ -60,13 +60,11 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
 - (void)resetKeychainItem
 {
+  LWE_ASSERT_EXC((self.keychainItem), @"We should have a keychain item at this stage. Why shouldn't we?");
   OSStatus status = noErr;
-  if (self.keychainItem)
-  {
-    NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
-    status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
-    LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %ld", status);
-  }
+  NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
+  status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
+  LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %ld", status);
   
   self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
   [self.keychainData removeAllObjects];
