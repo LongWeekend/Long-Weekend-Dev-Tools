@@ -32,6 +32,7 @@
 #import "LWEPagingScrollViewController.h"
 
 @interface LWEPagingScrollViewController ()
+@property (nonatomic, assign) CGFloat distanceBetweenPage;
 //! These methods call out to the delegate if set, otherwise they have default implementation
 - (id<LWEPageViewControllerProtocol>) setupCurrentPage;
 - (id<LWEPageViewControllerProtocol>) setupNextPage;
@@ -42,6 +43,7 @@
 @implementation LWEPagingScrollViewController
 @synthesize dataSource, delegate, currentPage, nextPage, scrollView;
 @synthesize usesPageControl, pageControl;
+@synthesize distanceBetweenPage;
 
 #pragma mark - Private Methods
 
@@ -106,11 +108,18 @@
 	{
 		CGRect pageFrame = pageController.view.frame;
 		pageFrame.origin.y = 0.0f;
-    // we subtract old offset to prevent creeping
     
-    CGFloat oldOffset = (pageController.pageIndex != NSNotFound) ? (self.scrollView.frame.size.width * pageController.pageIndex) : 0;
+    // we subtract old offset to preserve the value of original
+    // page.
+    CGFloat originalX = 0.0f;
+    if (pageController.pageIndex != NSNotFound)
+    {
+      CGFloat oldOffset = CGRectGetWidth(self.scrollView.frame)*pageController.pageIndex + self.distanceBetweenPage;
+      originalX = CGRectGetMinX(pageFrame) - oldOffset;
+    }
+    
     // add pageFrame.origin.x back to allow for defined centering offsets
-		pageFrame.origin.x = (self.scrollView.frame.size.width * newIndex) + pageFrame.origin.x - oldOffset;
+		pageFrame.origin.x = CGRectGetWidth(self.scrollView.frame)*newIndex + self.distanceBetweenPage + originalX;
 		pageController.view.frame = pageFrame;
 	}
   
@@ -128,10 +137,23 @@
 	self.currentPage = [self setupCurrentPage];
 	self.nextPage = [self setupNextPage];
   
+  // Setup the distanceBetweenPage if implemented
+  if (self.delegate && [self.delegate respondsToSelector:@selector(distanceBetweenPageInPagingViewController:)])
+  {
+    self.distanceBetweenPage = [self.delegate distanceBetweenPageInPagingViewController:self];
+   
+    // Make the scrollview bigger than it is supposed to be to support both
+    // paging and adding the distance at the same time.
+    CGRect newAdjustedFrame = self.scrollView.frame;
+    newAdjustedFrame.origin.x = CGRectGetMinX(self.scrollView.frame) - self.distanceBetweenPage;
+    newAdjustedFrame.size.width = CGRectGetWidth(self.scrollView.frame) + self.distanceBetweenPage * 2.0f;
+    self.scrollView.frame = newAdjustedFrame;
+  }
+  
   // Just make sure that we are setting an "Initial" pageIndex to a NSNotFound
   // for the first load.
   self.currentPage.pageIndex = NSNotFound;
-  self.currentPage.pageIndex = NSNotFound;
+  self.nextPage.pageIndex = NSNotFound;
   // Then setup the newIndex page with some page-frame location calculation
 	[self applyNewIndex:0 pageController:self.currentPage];
 	[self applyNewIndex:1 pageController:self.nextPage];
@@ -150,13 +172,13 @@
     self.pageControl.numberOfPages = [self.dataSource numDataPages];
   }
 
-	NSInteger widthCount = [self.dataSource numDataPages];
-	if (widthCount == 0)
-	{
-		widthCount = 1;
-	}
+  // Make sure we dont have 0 page.
+  // total width will calculate the total width of all the pages including the distance.
+  NSUInteger totalPages = ([self.dataSource numDataPages] == 0) ? 1 : [self.dataSource numDataPages];
+  CGFloat totalWidth = CGRectGetWidth(self.scrollView.frame) * totalPages;
 	
-  self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * widthCount, self.scrollView.frame.size.height);
+  // Make scrollview scrollable.
+  self.scrollView.contentSize = CGSizeMake(totalWidth, CGRectGetHeight(self.scrollView.frame));
   
   // Start on page 0
   [self changePageToIndex:0 animated:NO];
@@ -346,7 +368,7 @@
   return self;
 }
 
--(id)initWithDataSource:(id<LWEPageViewControllerDataSource>)aDataSource
+- (id)initWithDataSource:(id<LWEPageViewControllerDataSource>)aDataSource
 {
   self = [super initWithNibName:NSStringFromClass([self class]) bundle:nil];
   if (self)
@@ -358,7 +380,7 @@
 }
 
 // XIB support
--(id)initWithCoder:(NSCoder *)aDecoder
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
   self = [super initWithCoder:aDecoder];
   if (self)
@@ -368,7 +390,7 @@
   return self;
 }
 
-- (id) init
+- (id)init
 {
   self = [super init];
   if (self)
@@ -380,8 +402,11 @@
 
 - (void)_commonInit
 {
-  // Turn on the page control by default.
+  // Turn on the page control
+  // and set the 0 distance between page
+  // by default.
   self.usesPageControl = YES;
+  self.distanceBetweenPage = 0.0f;
 }
 
 - (void)dealloc
