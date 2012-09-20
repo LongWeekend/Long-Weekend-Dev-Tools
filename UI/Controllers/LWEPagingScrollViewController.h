@@ -108,17 +108,24 @@
 
 
 @protocol LWEPagingScrollViewControllerDelegate <NSObject>
+@optional
+
+/**
+ * If implemented, there will be a distance between the pages depending on the return value.
+ */
+- (CGFloat)distanceBetweenPageInPagingViewController:(LWEPagingScrollViewController *)svController;
+
 @required
 
 /**
  * Called when the paging will setup the currentPage
  */
-- (id<LWEPageViewControllerProtocol>)setupCurrentPage:(LWEPagingScrollViewController*)svcontroller;
+- (id<LWEPageViewControllerProtocol>)setupCurrentPage:(LWEPagingScrollViewController *)svcontroller;
 
 /**
  * Called when the paging will setup the nextPage
  */
-- (id<LWEPageViewControllerProtocol>)setupNextPage:(LWEPagingScrollViewController*)svcontroller;
+- (id<LWEPageViewControllerProtocol>)setupNextPage:(LWEPagingScrollViewController *)svcontroller;
 
 @end
 
