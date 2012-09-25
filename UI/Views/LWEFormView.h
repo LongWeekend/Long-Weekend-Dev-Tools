@@ -52,6 +52,16 @@
  */
 - (void)form:(LWEFormView *)formView didLoseFocusOn:(UIResponder *)responder;
 
+/**
+ * When there is any field which "return" button is tapped. Just a different handler
+ * for textFieldShouldReturn: 
+ *
+ * @param formView    The form view where the field is at.
+ * @param responder   An instance of `UITextField` where the "return" button is tapped.
+ * @param A boolean whether the current textField is resigning its first responder or not.
+ */
+- (BOOL)form:(LWEFormView *)formView textFieldShouldReturn:(UITextField *)textField;
+
 - (LWETextValidationTypes)validationTypesForField:(UIControl *)field;
 - (NSInteger)maximumLengthForField:(UIControl *)field;
 @end

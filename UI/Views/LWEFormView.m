@@ -444,6 +444,12 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 { 
   [self _handleFocusAfterField:textField];
+  
+  // If the delegate is implementing it, let the delegate answer.
+  if ([self.delegate respondsToSelector:@selector(form:textFieldShouldReturn:)])
+  {
+    return [self.delegate form:self textFieldShouldReturn:textField];
+  }
   return YES;
 }
 
