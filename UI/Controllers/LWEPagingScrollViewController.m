@@ -79,6 +79,7 @@
     id<LWEPageViewControllerProtocol> swapController = [self.currentPage retain];
     self.currentPage = self.nextPage;
     self.nextPage = swapController;
+    self.nextPage.pageNeedsUpdate = YES;
     [swapController release];
   }
 }
@@ -229,7 +230,7 @@
   if (upperNumber >= [self.dataSource numDataPages])
   {
     upperNumber = [self.dataSource numDataPages] - 1;
-    if (upperNumber > 1)
+    if (upperNumber >= 1)
     {
       // If the view scrolls beyond the right edge of the last page (e.g. rightmost),
       // we need to manually set the lower number.  However, if there is only one page,
@@ -289,11 +290,7 @@
   [self _verifyCurrentPage];
   
   // defeats the race condition where the user can "beat" you to an un updated view
-	if (self.currentPage.pageNeedsUpdate)
-  {
-    [self.currentPage updateViews];
-    self.currentPage.pageNeedsUpdate = NO;
-  }
+  [self _tryRefresh:self.currentPage];
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)newScrollView
