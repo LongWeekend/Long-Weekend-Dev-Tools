@@ -45,6 +45,9 @@
   } while (0)
 #endif
 
+// Throws an exception if we have the wrong type.
+#define LWE_ASSERT_TYPE(OBJ,EXPECTED) do { LWE_ASSERT_EXC(([OBJ class] == EXPECTED),@"Expected class type: %@, got class type: %@ (obj was: %@)", EXPECTED, [OBJ class], OBJ); } while(0)
+
 // For dumping anything to the console
 #if defined(LWE_RELEASE_APP_STORE)
   #define LWE_LOG(format, ...);

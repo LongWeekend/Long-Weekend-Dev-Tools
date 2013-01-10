@@ -29,7 +29,6 @@
 
 - (void)_scrollToPoint:(CGPoint)relPoint;
 - (void)_scrollToView:(UIView*)control;
-- (UIView *)_viewToScroll;
 @end
 
 @implementation LWEFormView
@@ -106,6 +105,37 @@
   {
     [self _removeFormObject:theSubview];
   }
+}
+
+#pragma mark - Manual Form Management
+
+- (void) addFormField:(id<LWEFormViewFieldProtocol>)formField
+{
+  [self _addFormObject:formField];
+}
+
+- (void) removeFormField:(id<LWEFormViewFieldProtocol>)formField
+{
+  // If we don't have this field, don't do anything.
+  if ([self.fieldsSortedByTag containsObject:formField] == NO)
+  {
+    return;
+  }
+  
+  if ([self _currentResponder] == formField)
+  {
+    // OK, we are removing the active field.
+    // If it's last field, be done, otherwise move to the next
+    if ([self _isLastField:formField])
+    {
+      [self hideKeyboardAndResetScroll];
+    }
+    else
+    {
+      [self _handleFocusAfterField:formField];
+    }
+  }
+  [self _removeFormObject:formField];
 }
 
 #pragma mark - Methods - Hit Testing & Keyboard
@@ -346,36 +376,12 @@
   [self _scrollToPoint:CGPointZero];
 }
 
-//! Checks with the delegate and returns the UIView that will be scrolled
-- (UIView *)_viewToScroll
-{
-  UIView *viewToScroll = nil;
-  if (self.delegate && [self.delegate respondsToSelector:@selector(scrollingViewForFormView:)])
-  {
-    viewToScroll = [self.delegate scrollingViewForFormView:self];
-  }
-  else
-  {
-    // Delegate is nil, so just use the super view
-    viewToScroll = self; //self.superview;
-  }
-  return viewToScroll;
-}
-
 /**
  * Scrolls the view by a certain number of points (e.g. pixels in non-retina world)
  */
 - (void)_scrollToPoint:(CGPoint)relPoint
 {
-  UIView *viewToScroll = [self _viewToScroll];
-  if ([viewToScroll isKindOfClass:[UIScrollView class]])
-  {
-    [(UIScrollView *)viewToScroll setContentOffset: relPoint animated:YES];
-  }
-  else 
-  {
-    [LWEViewAnimationUtils translateView:[self _viewToScroll] byPoint:relPoint withInterval:self.animationInterval];
-  }  
+  [self setContentOffset:relPoint animated:YES];
 }
 
 /**
@@ -384,18 +390,17 @@
  */
 - (void)_scrollToView:(UIView*)control
 {
-  UIView *viewToScroll = [self _viewToScroll];
-  if ([viewToScroll isKindOfClass:[UIScrollView class]])
+  CGFloat yDiff = (control.frame.origin.y) - self.topPadding;
+  [self _scrollToPoint:CGPointMake(0,yDiff)];
+}
+
+- (void)_scrollToViewAndNotifyDelegate:(UIView *)control
+{
+  [self _scrollToView:control];
+  if ([self.delegate respondsToSelector:@selector(form:didEnterFocusOn:)])
   {
-    CGFloat yDiff = (control.frame.origin.y) - self.topPadding;
-    [self _scrollToPoint:CGPointMake(0,yDiff)];
+    [self.delegate form:self didEnterFocusOn:control];
   }
-  else 
-  {
-    // topPadding is a buffer so we don't scroll the title off the top of the screen
-    CGFloat yDiff = (control.frame.origin.y * -1) + self.topPadding;
-    [self _scrollToPoint:CGPointMake(0,yDiff)];
-  }  
 }
 
 #pragma mark - UITextFieldDelegate
@@ -414,9 +419,21 @@
     // set the next or done return key depending on field order
     if ([self _isLastField:textField])
     {
-      textField.returnKeyType = UIReturnKeyGo;
+      if (self.delegate && [self.delegate respondsToSelector:@selector(returnKeyForLastFormField:)])
+      {
+        textField.returnKeyType = [self.delegate returnKeyForLastFormField:self];
+      }
+      else
+      {
+        // If the delegate doesn't tell us what type to be, be "done", unless the field already has a
+        // type associated with it.
+        if (textField.returnKeyType == UIReturnKeyDefault)
+        {
+          textField.returnKeyType = UIReturnKeyDone;
+        }
+      }
     }
-    else 
+    else
     {
       textField.returnKeyType = UIReturnKeyNext;
     }
@@ -524,11 +541,7 @@
  */
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-  [self _scrollToView:textView];
-  if ([self.delegate respondsToSelector:@selector(form:didEnterFocusOn:)])
-  {
-    [self.delegate form:self didEnterFocusOn:textView];
-  }
+  [self _scrollToViewAndNotifyDelegate:textView];
 }
 
 /**
