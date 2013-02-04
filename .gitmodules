@@ -1,6 +1,0 @@
-[submodule "External/json-framework"]
-	path = External/json-framework
-	url = git://github.com/stig/json-framework.git
-[submodule "External/Reachability"]
-	path = External/Reachability
-	url = git@github.com:moneytree/Reachability.git
