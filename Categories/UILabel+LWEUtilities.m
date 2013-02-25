@@ -60,7 +60,7 @@
 - (void) adjustFrameWithFontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin
 {
   CGSize constraint = CGSizeMake(width - (margin * 2), CGFLOAT_MAX);
-  CGSize size = [self.text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
+  CGSize size = [self.text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
   self.frame = CGRectMake(margin, margin, width - (margin * 2), MAX(size.height, 44.0f));
   [self setNeedsDisplay];
 }

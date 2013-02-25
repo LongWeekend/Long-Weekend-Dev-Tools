@@ -68,7 +68,7 @@
 + (CGFloat) autosizeHeightForCellWithText:(NSString*)text fontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin 
 {
   CGSize constraint = CGSizeMake(width - (margin * 2), 20000.0f);
-  CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
+  CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
   CGFloat height = MAX(size.height, 44.0f);
   return height + (margin * 2);
 }
