@@ -400,6 +400,14 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // Then, find out the height of the keyboard from that frame.
   CGRect keyboardFrame = [keyboardMetadata[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   self.keyboardHeight = CGRectGetHeight(keyboardFrame);
+  
+  // Try to scroll again, make sure we are scrolling to the right position.
+  UIResponder *responder = [self _currentResponder];
+  if ([responder isKindOfClass:[UIView class]])
+  {
+    UIView *currentResponder = (UIView *)responder;
+    [self _scrollToView:currentResponder];
+  }
 }
 
 #pragma mark - Methods - View Scrolling Helpers
@@ -424,7 +432,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  * This helper scrolls the view to ensure that the UIView parameter
  * is above the level of the keyboard/picker
  */
-- (void)_scrollToView:(UIView*)control
+- (void)_scrollToView:(UIView *)control
 {
   // Get the distance of where the control should be above the keyboard. 
   CGFloat distance = self.componentDistanceFromKeyboard;
@@ -500,11 +508,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  */
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-  [self _scrollToView:textField];
-  if ([self.delegate respondsToSelector:@selector(form:didEnterFocusOn:)])
-  {
-    [self.delegate form:self didEnterFocusOn:textField];
-  }
+  [self _scrollToViewAndNotifyDelegate:textField];
 }
 
 /**
