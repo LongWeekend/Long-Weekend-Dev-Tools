@@ -51,6 +51,11 @@
   return ([LWEUniversalAppHelpers isAnIPad] == NO);
 }
 
++(BOOL)isFourInchRetinaDisplay
+{
+  return ( fabs( ( double )[ [ UIScreen mainScreen ] bounds ].size.height - ( double )568 ) < DBL_EPSILON );
+}
+
 + (kLWEDeviceType) deviceType
 {
   NSString *deviceString = [LWEUniversalAppHelpers deviceModelString];
