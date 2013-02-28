@@ -51,6 +51,12 @@
   return ([LWEUniversalAppHelpers isAnIPad] == NO);
 }
 
++(BOOL)isFourInchRetinaDisplay
+{
+  // Is the main screen height equal to 568?
+  return (fabs((double)CGRectGetHeight([[UIScreen mainScreen] bounds]) - (double)568) < DBL_EPSILON);
+}
+
 + (kLWEDeviceType) deviceType
 {
   NSString *deviceString = [LWEUniversalAppHelpers deviceModelString];
