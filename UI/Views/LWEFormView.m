@@ -10,8 +10,15 @@
 #import "LWEFormDatePickerField.h"
 #import "LWEViewAnimationUtils.h"
 
+/** Default value for the distance between keyboard and the component when the keyboard appear */
+static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
+
 // Private Methods
 @interface LWEFormView()
+
+/** Keep reference to the keyboard height when it will appear. */
+@property (assign, nonatomic) CGFloat keyboardHeight;
+
 - (void)_addFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 - (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 
@@ -34,7 +41,8 @@
 @implementation LWEFormView
 
 @synthesize delegate;
-@synthesize fieldsSortedByTag, formIsDirty = _formIsDirty, animationInterval, topPadding;
+@synthesize fieldsSortedByTag, formIsDirty = _formIsDirty, animationInterval;
+@synthesize componentDistanceFromKeyboard;
 
 #pragma mark - Class Plumbing (init/dealloc)
 
@@ -44,7 +52,9 @@
   if (self)
   {
     self.userInteractionEnabled = YES;
-    self.animationInterval = 0.5;    
+    self.animationInterval = 0.5;
+    
+    [self startListeningToKeyboardNotification_];
   }
   return self;
 }
@@ -55,6 +65,8 @@
   if (self)
   {
     self.frame = aFrame;
+    
+    [self startListeningToKeyboardNotification_];
   }
   return self;
 }
@@ -69,6 +81,10 @@
   // Need to set this to nil; if we don't, the willRemoveSubview: call in the superclass
   // will call us again in the [super dealloc] call and make us crash!
   self.fieldsSortedByTag = nil;
+  
+  // Stop listening to notifications.
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  
   [super dealloc];
 }
 
@@ -85,7 +101,7 @@
   if (self.fieldsSortedByTag == nil)
   {
     // default topPadding
-    self.topPadding = 20.0f;
+    self.componentDistanceFromKeyboard = LWEFormViewDefaultDistanceComponentFromKeyboard;
     self.fieldsSortedByTag = [NSArray array];
   }
   
@@ -365,6 +381,26 @@
   [self _handleFocusAfterField:responder];
 }
 
+#pragma mark - Keyboard Helpers
+
+/** Start listening to any keyboard appearing notification. */
+- (void)startListeningToKeyboardNotification_
+{
+  // When the keyboard appear, try to get the keyboard height.
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveKeyboardHeight_:)
+                                               name:UIKeyboardWillShowNotification object:nil];
+}
+
+/** Record the height of the keyboard whenever they are about to appear. */
+- (void)saveKeyboardHeight_:(NSNotification *)notification
+{
+  NSDictionary *keyboardMetadata = notification.userInfo;
+  
+  // Get it from the UIKeyboardFrameEndUserInfoKey key and get the CGRect value.
+  // Then, find out the height of the keyboard from that frame.
+  CGRect keyboardFrame = [keyboardMetadata[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  self.keyboardHeight = CGRectGetHeight(keyboardFrame);
+}
 
 #pragma mark - Methods - View Scrolling Helpers
 
@@ -390,8 +426,25 @@
  */
 - (void)_scrollToView:(UIView*)control
 {
-  CGFloat yDiff = (control.frame.origin.y) - self.topPadding;
-  [self _scrollToPoint:CGPointMake(0,yDiff)];
+  // Get the distance of where the control should be above the keyboard. 
+  CGFloat distance = self.componentDistanceFromKeyboard;
+  if ([self.delegate respondsToSelector:@selector(form:distanceFromKeyboardForResponder:)])
+  {
+    distance = [self.delegate form:self distanceFromKeyboardForResponder:control];
+  }
+  
+  // This is the rest of the screen after the total height being deducted by the height of the keyboard
+  // and the distance, where the component should be.
+  CGFloat leadingScreenHeight = CGRectGetHeight(self.frame) - self.keyboardHeight - distance;
+  
+  // Then, we should find out how far the scroll view should be scrolled up.
+  CGFloat offset = CGRectGetMaxY(control.frame) - leadingScreenHeight;
+  if (offset < 0)
+  {
+    offset = 0;
+  }
+  
+  [self _scrollToPoint:CGPointMake(0, offset)];
 }
 
 - (void)_scrollToViewAndNotifyDelegate:(UIView *)control
