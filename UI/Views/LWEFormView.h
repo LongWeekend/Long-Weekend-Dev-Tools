@@ -69,6 +69,12 @@
  */
 - (BOOL)form:(LWEFormView *)formView textFieldShouldReturn:(UITextField *)textField;
 
+/**
+ * Allows the delegate to override the value determines by `componentDistanceFromKeyboard`
+ * for an individual responder. 
+ */
+- (CGFloat)form:(LWEFormView *)formView distanceFromKeyboardForResponder:(UIResponder *)responder;
+
 - (LWETextValidationTypes)validationTypesForField:(UIControl *)field;
 - (NSInteger)maximumLengthForField:(UIControl *)field;
 @end
@@ -105,7 +111,7 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
  * 
  * Set the form field's tag to control its tab position in the form.
  */
-- (void) addFormField:(id<LWEFormViewFieldProtocol>)formField;
+- (void)addFormField:(id<LWEFormViewFieldProtocol>)formField;
 
 /**
  * Removes a form field from the form.  Removing the view from the subview
@@ -113,7 +119,7 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
  *
  * If the form is currently editing this field, this method will resign the responder.
  */
-- (void) removeFormField:(id<LWEFormViewFieldProtocol>)formField;
+- (void)removeFormField:(id<LWEFormViewFieldProtocol>)formField;
 
 /**
  * Get all of the invalid fields on this form by checking each fields
@@ -139,8 +145,8 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
 //! How long the animation should last.  The default is 0.5 seconds.
 @property CGFloat animationInterval;
 
-//! How many points the view should pad at the top of the scrolling (more = active form field is down farther)
-@property CGFloat topPadding;
+//! Determines how far the component should be from keyboard when it becomes first responder.
+@property CGFloat componentDistanceFromKeyboard;
 
 @end
 
