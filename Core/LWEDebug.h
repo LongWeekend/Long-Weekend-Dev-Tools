@@ -48,7 +48,10 @@
 // Throws an exception if we have the wrong type.
 #define LWE_ASSERT_TYPE(OBJ,EXPECTED) do { LWE_ASSERT_EXC(([OBJ isKindOfClass:EXPECTED]), @"Expected class type: %@, got class type: %@ (obj was: %@)", EXPECTED, [OBJ class], OBJ); } while(0)
 
-// For dumping anything to the console
+// Throws an exception if we dont conforms to a specific protocol
+#define LWE_ASSERT_PROTOCOL(OBJ,EXPECTED_PROTOCOL) do { LWE_ASSERT_EXC(([OBJ conformsToProtocol:EXPECTED_PROTOCOL]), @"Object: %@ is expected to conforms with protocol: %@, (obj was: %@)", OBJ, EXPECTED_PROTOCOL, [OBJ class]); } while(0)
+
+// For dumping anythiang to the console
 #if defined(LWE_RELEASE_APP_STORE)
   #define LWE_LOG(format, ...);
 #else
