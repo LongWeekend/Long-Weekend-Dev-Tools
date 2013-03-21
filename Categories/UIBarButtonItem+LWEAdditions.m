@@ -35,6 +35,7 @@
  
   // Finally create the button w/ the custom view
   UIBarButtonItem *barBtn = [[UIBarButtonItem alloc] initWithCustomView:customView];
+  [customView release];
   return [barBtn autorelease];
 }
 
