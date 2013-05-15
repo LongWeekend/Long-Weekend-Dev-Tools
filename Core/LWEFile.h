@@ -38,6 +38,7 @@ typedef enum
 + (BOOL) createDirectoryIfNotExisting:(NSString*)path withIntermediateDirectories:(BOOL)createIntermediates attributes:(NSDictionary *)attributes error:(NSError **)error;
 + (BOOL) createDirectory:(NSString*)pathname error:(NSError**)error;
 + (BOOL) deleteFile:(NSString*)filename;
++ (BOOL) deleteFile:(NSString*)filename error:(NSError**)error;
 + (BOOL) fileExists:(NSString*)filename;
 + (BOOL) copyFromBundleWithFilename:(NSString *)source toDocumentsWithFilename:(NSString *)dest shouldOverwrite:(BOOL)overwrite;
 + (BOOL) copyFromMainBundleToDocuments:(NSString*)filename shouldOverwrite:(BOOL)overwrite;

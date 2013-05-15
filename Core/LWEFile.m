@@ -122,7 +122,15 @@
 /**
  * Just delete the damn thing.
  */
-+ (BOOL) deleteFile:(NSString*)filename
++ (BOOL)deleteFile:(NSString *)filename
+{
+  return [self deleteFile:filename error:nil];
+}
+
+/**
+ * Delete the damn thing with an option to know what is the error.
+ */
++ (BOOL)deleteFile:(NSString *)filename error:(NSError **)error
 {
   // Sanity check
   if (filename == nil)
@@ -130,15 +138,20 @@
     return NO;
   }
   
-  NSError *error = nil;
+  NSError *localError = nil;
   NSFileManager *fm = [NSFileManager defaultManager];
-  if ([fm removeItemAtPath:filename error:&error])
+  if ([fm removeItemAtPath:filename error:&localError])
   {
     return YES;
   }
   else
   {
-    LWE_LOG(@"Could not delete file at specified location: %@ (error: %@)",filename,error);
+    // If there is a pointer to a NSError provided, assign it to the local error object.
+    LWE_LOG(@"Could not delete file at specified location: %@ (error: %@)", filename, localError);
+    if (error)
+    {
+      *error = localError;
+    }
     return NO;
   }
 }
