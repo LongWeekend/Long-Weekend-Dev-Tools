@@ -179,7 +179,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
       [returnDictionary setObject:dataDict forKey:(__bridge id)kSecValueData];
       
       // 3d. Set thos values back to the ivar.
-      self.keychainItem = [NSDictionary dictionaryWithDictionary:returnDictionary];
+      self.keychainItem = [NSMutableDictionary dictionaryWithDictionary:returnDictionary];
       self.keychainData = dataDict;
     }
     else
