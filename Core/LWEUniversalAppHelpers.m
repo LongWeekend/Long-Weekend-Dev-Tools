@@ -30,6 +30,18 @@
 
 @implementation LWEUniversalAppHelpers
 
++ (BOOL) isiOS7OrAbove
+{
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+  {
+    return NO;
+  }
+  else
+  {
+    return YES;
+  }
+}
+
 // TODO: this is a bit of a naive implementation - change this to use deviceModelString?
 + (BOOL) isAnIPad
 {
