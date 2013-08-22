@@ -78,6 +78,9 @@ typedef enum
 //! Determines if the device is an 4" retina display or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isFourInchRetinaDisplay;
 
+//! Determines if the device is running ios7 or above.
++ (BOOL)isiOS7OrAbove;
+
 /**
  * \brief Returns the name of this device, e.g. "iPhone 2,1" for an iPhone 3GS.
  * This method returns the string by making a C system call asking the system to identify its
