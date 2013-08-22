@@ -35,7 +35,8 @@
   if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
   {
     return NO;
-  } else
+  }
+  else
   {
     return YES;
   }
