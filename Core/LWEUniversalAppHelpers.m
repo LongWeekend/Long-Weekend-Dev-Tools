@@ -32,7 +32,10 @@
 
 + (BOOL) isiOS7OrAbove
 {
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+  // TODO: Change this when we are dumping XCode 4.6 and move to XCode 5.0 instead.
+  // #define NSFoundationVersionNumber_iOS_6_1  993.00
+  // if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+  if (floor(NSFoundationVersionNumber) <= 993.00)
   {
     return NO;
   }
