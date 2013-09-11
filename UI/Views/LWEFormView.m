@@ -19,9 +19,6 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 /** Keep reference to the keyboard height when it will appear. */
 @property (assign, nonatomic) CGFloat keyboardHeight;
 
-/** We manipulate the content offset; when finished, return it to what it was */
-@property (assign, nonatomic) CGPoint originalContentOffset;
-
 - (void)_addFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 - (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
 
@@ -420,7 +417,9 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  */
 - (void)scrollToOrigin
 {
-  [self _scrollToPoint:self.originalContentOffset];
+  CGFloat yZeroOrigin = 0 - self.contentInset.top;
+  CGPoint origin = (CGPoint){ 0.0f, yZeroOrigin };
+  [self _scrollToPoint:origin];
 }
 
 /**
@@ -501,10 +500,6 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
     {
       textField.returnKeyType = UIReturnKeyNext;
     }
-
-    // Save the current content offset, we will reset it back to
-    // this value when we are done editing
-    self.originalContentOffset = self.contentOffset;
 
     [self _handleEnteringFocus:textField];
   }
