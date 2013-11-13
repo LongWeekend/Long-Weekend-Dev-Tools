@@ -34,7 +34,7 @@
 -(NSInteger)findNearestIndex:(NSInteger)index inOtherArray:(NSArray*)otherArray
 {
   NSArray *sourceArray = self;
-  NSString *targetObject = [self objectAtIndex:index]; // the object we want
+  NSString *targetObject = nil; // the object we want
   NSInteger startIdx = index; // index of letter we want (e.g. @"D")
   
   NSInteger fwdSteps = 0;
