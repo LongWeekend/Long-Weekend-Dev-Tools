@@ -51,6 +51,10 @@ if (OBJ)\
 
 #pragma mark - NSString 
 
+// Equality for a double variable.
+// Return `YES` if X (double) is equal to Y (double)
+#define fequal(x,y) (fabs(x-y) < DBL_EPSILON)
+
 //Convert a preprocessor symbol to an NSString
 //EXAMPLE//  NSString *version = CONVERT_SYMBOL_TO_NSSTRING(SRC_ROOT);
 

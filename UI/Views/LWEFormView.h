@@ -31,16 +31,60 @@
  */
 @protocol LWEFormViewDelegate <UIScrollViewDelegate>
 @optional
-- (UIView*) scrollingViewForFormView:(LWEFormView*)formView;
-- (BOOL) formShouldBeginEditing:(LWEFormView *)formView;
-- (void) formWillBeginEditing:(LWEFormView*)formView;
-- (void) formDidFinishEditing:(LWEFormView*)formView;
-- (void) formDidChangeFirstResponder:(LWEFormView*)formView;
-- (BOOL) formField:(id)field shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString*)text;
+- (UIView*)scrollingViewForFormView:(LWEFormView *)formView;
+- (BOOL)formShouldBeginEditing:(LWEFormView *)formView;
+- (void)formWillBeginEditing:(LWEFormView *)formView;
+- (void)formDidFinishEditing:(LWEFormView *)formView;
+- (void)formDidChangeFirstResponder:(LWEFormView *)formView;
+- (BOOL)formField:(id)field shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)text;
 
-- (LWETextValidationTypes) validationTypesForField:(UIControl*)field;
-- (NSInteger) maximumLengthForField:(UIControl*)field;
+/**
+ * This programmatically sets the return key type for the last field on the form.
+ * 
+ * If you set the return type manually, it will be overridden if you implement this method.
+ */
+- (UIReturnKeyType)returnKeyForLastFormField:(LWEFormView *)formView;
+
+/**
+ * When there is any field, is about to get focus.
+ * @param formView  An instance of `LWEFormView`, from where the control comes from.
+ * @param responder An instance of `UIResponder` indicating what control or responder becoming a first responder.
+ */
+- (void)form:(LWEFormView *)formView didEnterFocusOn:(UIResponder *)responder;
+
+/**
+ * When there is any field, is about to lost focus.
+ * @param formView  An instance of `LWEFormView`, from where the control comes from.
+ * @param responder An instance of `UIResponder` indicating what control or responder resigning a first responder.
+ */
+- (void)form:(LWEFormView *)formView didLoseFocusOn:(UIResponder *)responder;
+
+/**
+ * When there is any field which "return" button is tapped. Just a different handler
+ * for textFieldShouldReturn: 
+ *
+ * @param formView    The form view where the field is at.
+ * @param responder   An instance of `UITextField` where the "return" button is tapped.
+ * @param A boolean whether the current textField is resigning its first responder or not.
+ */
+- (BOOL)form:(LWEFormView *)formView textFieldShouldReturn:(UITextField *)textField;
+
+/**
+ * Allows the delegate to override the value determines by `componentDistanceFromKeyboard`
+ * for an individual responder. 
+ */
+- (CGFloat)form:(LWEFormView *)formView distanceFromKeyboardForResponder:(UIResponder *)responder;
+
+- (LWETextValidationTypes)validationTypesForField:(UIControl *)field;
+- (NSInteger)maximumLengthForField:(UIControl *)field;
 @end
+
+/**
+ * A block which takes one parameter, which is the `UIControl` instance
+ * and expecting a boolean return value indicating that a control
+ * has a valid value or not.
+ */
+typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
 
 /**
  * View container that holds 1 or more UITextView or UITextField views.
@@ -61,8 +105,36 @@
 - (void) hideKeyboardAndResetScroll;
 - (void) scrollToOrigin;
 
+/**
+ * Adds a form field to the form.  Adding the view to the subview
+ * is the caller's responsibility.
+ * 
+ * Set the form field's tag to control its tab position in the form.
+ */
+- (void)addFormField:(id<LWEFormViewFieldProtocol>)formField;
+
+/**
+ * Removes a form field from the form.  Removing the view from the subview
+ * is the caller's responsibility.
+ *
+ * If the form is currently editing this field, this method will resign the responder.
+ */
+- (void)removeFormField:(id<LWEFormViewFieldProtocol>)formField;
+
+/**
+ * Get all of the invalid fields on this form by checking each fields
+ * against the supplied block.
+ *
+ * @param block   A `LWEFormFieldValidationChecks` block which takes the control
+ *                as ann argument and return a `BOOL` indicating that the field
+ *                is valid or not.
+ * @return  A `NSArray` instance containing all of the invalid fields in this form.
+ *
+ */
+- (NSArray *)invalidFieldsWithValidationBlock:(LWEFormFieldValidationChecks)block;
+
 //! Delegate for asking about which view to scroll
-@property (assign) IBOutlet id<LWEFormViewDelegate> delegate;
+@property (nonatomic, assign) IBOutlet id<LWEFormViewDelegate> delegate;
 
 //! Returns YES if any of the form items have been edited - even if they've been restored
 @property (readonly) BOOL formIsDirty;
@@ -73,8 +145,8 @@
 //! How long the animation should last.  The default is 0.5 seconds.
 @property CGFloat animationInterval;
 
-//! How many points the view should pad at the top of the scrolling (more = active form field is down farther)
-@property CGFloat topPadding;
+//! Determines how far the component should be from keyboard when it becomes first responder.
+@property CGFloat componentDistanceFromKeyboard;
 
 @end
 

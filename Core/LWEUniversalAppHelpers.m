@@ -30,6 +30,22 @@
 
 @implementation LWEUniversalAppHelpers
 
++ (BOOL) isiOS7OrAbove
+{
+  // TODO: Change this when we are dumping XCode 4.6 and move to XCode 5.0 instead.
+#ifndef NSFoundationVersionNumber_iOS_6_1
+  #define NSFoundationVersionNumber_iOS_6_1  993.00
+#endif
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+  {
+    return NO;
+  }
+  else
+  {
+    return YES;
+  }
+}
+
 // TODO: this is a bit of a naive implementation - change this to use deviceModelString?
 + (BOOL) isAnIPad
 {
@@ -49,6 +65,12 @@
 + (BOOL)isAnIPhone
 {
   return ([LWEUniversalAppHelpers isAnIPad] == NO);
+}
+
++(BOOL)isFourInchRetinaDisplay
+{
+  // Is the main screen height equal to 568?
+  return fequal((double)CGRectGetHeight([[UIScreen mainScreen] bounds]), (double)568.0);
 }
 
 + (kLWEDeviceType) deviceType
@@ -218,7 +240,7 @@
     returnVal = ipadName;
     if (useRetina && [LWEFile fileExists:ipadName] == NO)
     {
-      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      returnVal = [fileName stringByAddingRetinaSpecifier];
     }
   }
   else

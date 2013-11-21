@@ -24,6 +24,12 @@
 
 #import <Foundation/Foundation.h>
 
+#define SYSTEM_VERSION_EQUAL_TO(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
+#define SYSTEM_VERSION_GREATER_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
+
 // There can only be X device types where X = (number of bits - 4) in an int on this platform.  Since that's
 // usually 32-bits for compatibility, we have 28 device classes.
 typedef enum
@@ -74,6 +80,12 @@ typedef enum
 
 //! Determines if the device is an iPhone or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isAnIPhone;
+
+//! Determines if the device is an 4" retina display or not. Works with pre 3.2 iOS versions as well
++(BOOL)isFourInchRetinaDisplay;
+
+//! Determines if the device is running ios7 or above.
++ (BOOL)isiOS7OrAbove;
 
 /**
  * \brief Returns the name of this device, e.g. "iPhone 2,1" for an iPhone 3GS.
