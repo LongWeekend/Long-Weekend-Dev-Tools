@@ -41,7 +41,7 @@
   NSInteger fwdMatchIdx = NSIntegerMax;
   
   // loop forwards until we find a matching letter
-  for (int targetIdx = startIdx; targetIdx < [sourceArray count]; targetIdx++)
+  for (NSInteger targetIdx = startIdx; targetIdx < [sourceArray count]; targetIdx++)
   {
     targetObject = [sourceArray objectAtIndex:targetIdx];
     if([otherArray containsObject:targetObject])
@@ -58,7 +58,7 @@
   if(startIdx-1 > 0)
   {
     // loop backwards until we find a matching letter
-    for (int targetIdx = startIdx-1; targetIdx >= 0; targetIdx--)
+    for (NSInteger targetIdx = startIdx-1; targetIdx >= 0; targetIdx--)
     {
       targetObject = [sourceArray objectAtIndex:targetIdx];
       if([otherArray containsObject:targetObject])

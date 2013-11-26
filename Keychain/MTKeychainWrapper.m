@@ -64,7 +64,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   OSStatus status = noErr;
   NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
   status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
-  LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %ld", status);
+  LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %d", (int)status);
   
   self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
   [self.keychainData removeAllObjects];
@@ -225,14 +225,14 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     
     // An implicit assumption is that you can only update a single item at a time.
     result = SecItemUpdate((__bridge CFDictionaryRef)dictionary, (__bridge CFDictionaryRef)updatedItem);
-		NSAssert(result == noErr, @"Couldn't update the Keychain Item with error : %ld", result);
+		NSAssert(result == noErr, @"Couldn't update the Keychain Item with error : %d", (int)result);
   }
   else
   {
     // No previous item found; add the new one.
     NSDictionary *addedItem = [self _dictionaryToSecItemFormat];
     result = SecItemAdd((__bridge CFDictionaryRef)addedItem, NULL);
-    NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %ld", result);
+    NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %d", (int)result);
   }
 }
 
