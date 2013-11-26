@@ -308,7 +308,7 @@
  */
 - (void)changePageToIndex:(NSInteger)index animated:(BOOL)animated;
 {
-  LWE_ASSERT_EXC((index >= 0 && index < [self.dataSource numDataPages]), @"Out of bounds index: %d (num pages: %d)",index,[self.dataSource numDataPages]);
+  LWE_ASSERT_EXC((index >= 0 && index < [self.dataSource numDataPages]), @"Out of bounds index: %ld (num pages: %ld)",(long)index,(long)[self.dataSource numDataPages]);
   
   NSInteger pageIndex = 0;
   pageIndex = index;
