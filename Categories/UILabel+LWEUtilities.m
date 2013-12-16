@@ -23,16 +23,15 @@
 @implementation UILabel (LWEUtilities)
 
 //! Resize font within constraints, works with multi-line labels.
-- (void) resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
+- (void)resizeWithMinFontSize:(NSInteger)minFontSize maxFontSize:(NSInteger)maxFontSize
 {
   LWE_ASSERT_EXC(minFontSize <= maxFontSize, @"Min font size must be less or equal to max font size.");
   UIFont *newFont = self.font;
   CGRect newFrame = self.frame;
-  CGSize expectedLabelSize = CGSizeZero;
   CGSize parentViewSize = self.superview.frame.size;
   
   // Initialize
-  expectedLabelSize.height = 0;
+  CGRect expectedLabelRect = CGRectZero;
   
   // Loop from Max Font to Min Font Size until one fits, or scrolling is inevitable
   for (NSInteger i = maxFontSize; i > minFontSize; i=i-2)
@@ -42,26 +41,41 @@
     CGSize constraintSize = self.frame.size;
     constraintSize.width = constraintSize.width;
     constraintSize.height = CGFLOAT_MAX;
-    expectedLabelSize = [self.text sizeWithFont:newFont constrainedToSize:constraintSize lineBreakMode:self.lineBreakMode];
+    
+    NSDictionary *attributes = @{ NSFontAttributeName : newFont };
+    expectedLabelRect = [self.text boundingRectWithSize:constraintSize
+                                                options:NSStringDrawingUsesLineFragmentOrigin
+                                             attributes:attributes
+                                                context:nil];
     
     // Break if this fontsize fits within the available scrollable height?
-    if (expectedLabelSize.height < parentViewSize.height)
+    if (CGRectGetHeight(expectedLabelRect) < parentViewSize.height)
     {
       break;
     }
   }
-  newFrame.size.height = expectedLabelSize.height;
+  
+  newFrame.size.height = CGRectGetHeight(expectedLabelRect);
+  
   self.frame = newFrame;
   self.font = newFont;
+  
   [self setNeedsDisplay];
 }
 
 //! Makes a frame for a text based on provided width, margin, and font size
-- (void) adjustFrameWithFontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin
+- (void)adjustFrameWithFontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin
 {
   CGSize constraint = CGSizeMake(width - (margin * 2), CGFLOAT_MAX);
-  CGSize size = [self.text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:NSLineBreakByWordWrapping];
-  self.frame = CGRectMake(margin, margin, width - (margin * 2), MAX(size.height, 44.0f));
+  
+  CGRect rect = [self.text boundingRectWithSize:constraint
+                                        options:NSStringDrawingUsesLineFragmentOrigin
+                                     attributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:fontSize] }
+                                        context:nil];
+  
+  CGRect newFrame = CGRectMake(margin, margin, width - (margin * 2), MAX(CGRectGetHeight(rect), 44.0f));
+  self.frame = newFrame;
+  
   [self setNeedsDisplay];
 }
 
