@@ -428,9 +428,8 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // setContentOffset it is... AWR 10 Jan 2014
   
   // Find out whether the control is obscured by the keyboard. If it isn't, do nothing.
-  UIView *rootView = self.window.subviews[0];
-  CGPoint bottomLeftCornerOfControl = CGPointMake(control.frame.origin.x, control.frame.origin.y + control.frame.size.height);
-  CGPoint bottomLeftCornerInWholeScreen = [rootView convertPoint:bottomLeftCornerOfControl fromView:self];
+  CGPoint bottomLeftCornerOfControl = CGPointMake(control.frame.origin.x, CGRectGetMaxY(control.frame));
+  CGPoint bottomLeftCornerInWholeScreen = [self convertPoint:bottomLeftCornerOfControl toView:nil];
 
   if (CGRectContainsPoint(self.keyboardFrame, bottomLeftCornerInWholeScreen))
   {
@@ -438,6 +437,10 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
     
     // We don't want the control sitting _on_ the keyboard. Push it up a little.
     CGFloat bufferAboveKeyboard = 20.0f;
+    if ([self.delegate respondsToSelector:@selector(form:distanceFromKeyboardForResponder:)])
+    {
+      bufferAboveKeyboard = [self.delegate form:self distanceFromKeyboardForResponder:control];
+    }
   
     CGFloat wholeScreenYCoordinateOfKeyboardTop = self.keyboardFrame.origin.y;
     CGFloat desiredOffset = bottomLeftCornerInWholeScreen.y - wholeScreenYCoordinateOfKeyboardTop + bufferAboveKeyboard + self.contentOffset.y;
