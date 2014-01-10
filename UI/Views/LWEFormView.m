@@ -17,32 +17,29 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 @interface LWEFormView()
 
 /** Keep reference to the keyboard height when it will appear. */
-@property (assign, nonatomic) CGFloat keyboardHeight;
+@property (assign, nonatomic) CGRect keyboardFrame;
 
-- (void)_addFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
-- (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject;
+@property (assign) BOOL formIsDirty;
 
-- (UIResponder *)_nextFieldAfterField:(UIResponder*)field;
-- (UIResponder *)_currentResponder;
-- (BOOL)_isLastField:(UIResponder*)field;
-- (void)_handleFocusAfterField:(UIResponder*)field;
-- (void)_handleEnteringFocus:(UIResponder*)field;
-- (BOOL)_formIsBeingEdited;
+- (void)addFormObject_:(id<LWEFormViewFieldProtocol>)controlObject;
+- (void)removeFormObject_:(id<LWEFormViewFieldProtocol>)controlObject;
 
-- (void)_hideKeyboardResettingScroll:(BOOL)resetScroll;
+- (UIResponder *)nextFieldAfterField_:(UIResponder*)field;
+- (UIResponder *)currentResponder_;
+- (BOOL)isLastField_:(UIResponder*)field;
+- (void)handleFocusAfterField_:(UIResponder*)field;
+- (void)handleEnteringFocus_:(UIResponder*)field;
+- (BOOL)formIsBeingEdited_;
 
-- (LWETextValidationTypes)_validationTypesForField:(UIControl *)field;
-- (NSInteger)_maximumLengthForField:(UIControl*)field;
+- (void)hideKeyboardResettingScroll_:(BOOL)resetScroll;
 
-- (void)_scrollToPoint:(CGPoint)relPoint;
-- (void)_scrollToView:(UIView*)control;
+- (LWETextValidationTypes)validationTypesForField_:(UIControl *)field;
+- (NSInteger)maximumLengthForField_:(UIControl*)field;
+
+- (void)scrollToView_:(UIView*)control;
 @end
 
 @implementation LWEFormView
-
-@synthesize delegate;
-@synthesize fieldsSortedByTag, formIsDirty = _formIsDirty, animationInterval;
-@synthesize componentDistanceFromKeyboard;
 
 #pragma mark - Class Plumbing (init/dealloc)
 
@@ -110,7 +107,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
   if (isTextView || isTextField)
   {
-    [self _addFormObject:theSubview];
+    [self addFormObject_:theSubview];
   }
 }
 
@@ -119,18 +116,18 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // Only respond to this if it's an object we care about!
   if ([self.fieldsSortedByTag containsObject:theSubview])
   {
-    [self _removeFormObject:theSubview];
+    [self removeFormObject_:theSubview];
   }
 }
 
 #pragma mark - Manual Form Management
 
-- (void) addFormField:(id<LWEFormViewFieldProtocol>)formField
+- (void)addFormField:(id<LWEFormViewFieldProtocol>)formField
 {
-  [self _addFormObject:formField];
+  [self addFormObject_:formField];
 }
 
-- (void) removeFormField:(id<LWEFormViewFieldProtocol>)formField
+- (void)removeFormField:(id<LWEFormViewFieldProtocol>)formField
 {
   // If we don't have this field, don't do anything.
   if ([self.fieldsSortedByTag containsObject:formField] == NO)
@@ -138,20 +135,20 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
     return;
   }
   
-  if ([self _currentResponder] == formField)
+  if ([self currentResponder_] == formField)
   {
     // OK, we are removing the active field.
     // If it's last field, be done, otherwise move to the next
-    if ([self _isLastField:formField])
+    if ([self isLastField_:formField])
     {
       [self hideKeyboardAndResetScroll];
     }
     else
     {
-      [self _handleFocusAfterField:formField];
+      [self handleFocusAfterField_:formField];
     }
   }
-  [self _removeFormObject:formField];
+  [self removeFormObject_:formField];
 }
 
 #pragma mark - Methods - Hit Testing & Keyboard
@@ -163,17 +160,17 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  */
 - (void)hideKeyboardAndResetScroll
 {
-  [self _hideKeyboardResettingScroll:YES];
+  [self hideKeyboardResettingScroll_:YES];
 }
 
 - (void)hideKeyboard
 {
-  [self _hideKeyboardResettingScroll:NO];
+  [self hideKeyboardResettingScroll_:NO];
 }
 
-- (void)_hideKeyboardResettingScroll:(BOOL)resetScroll
+- (void)hideKeyboardResettingScroll_:(BOOL)resetScroll
 {
-  UIResponder *responder = [self _currentResponder];
+  UIResponder *responder = [self currentResponder_];
   if (responder)
   {
     [responder resignFirstResponder];
@@ -221,7 +218,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 
 #pragma mark - Private Methods - Form Logic
 
-- (void)_removeFormObject:(id<LWEFormViewFieldProtocol>)controlObject
+- (void)removeFormObject_:(id<LWEFormViewFieldProtocol>)controlObject
 {
   NSMutableArray *newArray = [self.fieldsSortedByTag mutableCopy];
   [newArray removeObject:controlObject];
@@ -230,7 +227,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   [controlObject setDelegate:nil];
 }
 
-- (void)_addFormObject:(id<LWEFormViewFieldProtocol>)controlObject
+- (void)addFormObject_:(id<LWEFormViewFieldProtocol>)controlObject
 {
   NSMutableArray *newArray = [[self.fieldsSortedByTag mutableCopy] autorelease];
   [newArray addObject:controlObject];
@@ -247,7 +244,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
     UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next", @"Next")
                                                                   style:UIBarButtonItemStyleDone
                                                                  target:self
-                                                                 action:@selector(_doneButtonPressed:)];
+                                                                 action:@selector(doneButtonPressed_:)];
     LWEFormDatePickerField *pickerField = (LWEFormDatePickerField*)controlObject;
     pickerField.doneButton = barButton;
     [barButton release];
@@ -258,7 +255,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  * Returns the next field in the array.  If you pass the last element
  * of the field array, it will start back at the beginning.
  */
-- (UIResponder *)_nextFieldAfterField:(UIResponder *)field
+- (UIResponder *)nextFieldAfterField_:(UIResponder *)field
 {
   NSInteger currIndex = [self.fieldsSortedByTag indexOfObject:field];
   NSInteger maxIndex = ([self.fieldsSortedByTag count] - 1);
@@ -274,7 +271,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 /**
  * Returns YES if the \param controlObject is the last field in the form.
  */
-- (BOOL)_isLastField:(UIResponder *)field
+- (BOOL)isLastField_:(UIResponder *)field
 {
   NSInteger currIndex = [self.fieldsSortedByTag indexOfObject:field];
   return (currIndex == ([self.fieldsSortedByTag count] - 1));
@@ -284,7 +281,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 /**
  * Tells us who the current responder is
  */
-- (UIResponder *)_currentResponder
+- (UIResponder *)currentResponder_
 {
   UIResponder *currentResponder = nil;
   for (UIResponder *responder in self.fieldsSortedByTag)
@@ -300,9 +297,9 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 /**
  * Returns YES if the form is actively being edited (e.g. if anyone is first responder)
  */
-- (BOOL)_formIsBeingEdited
+- (BOOL)formIsBeingEdited_
 {
-  return ([self _currentResponder] != nil);
+  return ([self currentResponder_] != nil);
 }
 
 #pragma mark - Private Methods - validation
@@ -310,7 +307,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 /**
  * Get the max number of characters for a field
  */
-- (NSInteger)_maximumLengthForField:(UIControl*)field
+- (NSInteger)maximumLengthForField_:(UIControl*)field
 {
   NSInteger validationLength = kLWEMaxCharacters;
   if (self.delegate && [self.delegate respondsToSelector:@selector(maximumLengthForField:)])
@@ -324,7 +321,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  * Ask the delegate if it has any validation type rules for this field.
  * If not, don't use any.
  */
-- (LWETextValidationTypes)_validationTypesForField:(UIControl*)field
+- (LWETextValidationTypes)validationTypesForField_:(UIControl*)field
 {
   LWETextValidationTypes validationTypes = LWETextValidationTypeNone;
   if (self.delegate && [self.delegate respondsToSelector:@selector(validationTypesForField:)])
@@ -341,15 +338,15 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  * hide the keyboard/picker and reset the scroll.  Otherwise, activate
  * the next field.
  */
-- (void)_handleFocusAfterField:(UIResponder*)field
+- (void)handleFocusAfterField_:(UIResponder*)field
 {
-  if ([self _isLastField:field])
+  if ([self isLastField_:field])
   {
     [self hideKeyboardAndResetScroll];
   }
   else
   {
-    UIResponder *nextField = [self _nextFieldAfterField:field];
+    UIResponder *nextField = [self nextFieldAfterField_:field];
     [nextField becomeFirstResponder];
     
     // Tell the delegate something changed, in case they want to do something.
@@ -361,10 +358,10 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  * This method is called any time a field gets focus; if we need to, we can notify
  * the delegate or lazy-load any non-standard input views (pickers et al)
  */
-- (void)_handleEnteringFocus:(UIResponder*)field
+- (void)handleEnteringFocus_:(UIResponder*)field
 {
   // Notify the delegate if we're going to start editing a form
-  if ([self _formIsBeingEdited] == NO)
+  if ([self formIsBeingEdited_] == NO)
   {
     if ([self.delegate respondsToSelector:@selector(formWillBeginEditing:)])
     {
@@ -375,10 +372,10 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 
 #pragma mark - Date Picker Helpers
 
-- (void)_doneButtonPressed:(id)sender
+- (void)doneButtonPressed_:(id)sender
 {
-  UIResponder *responder = [self _currentResponder];
-  [self _handleFocusAfterField:responder];
+  UIResponder *responder = [self currentResponder_];
+  [self handleFocusAfterField_:responder];
 }
 
 #pragma mark - Keyboard Helpers
@@ -387,79 +384,73 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 - (void)startListeningToKeyboardNotification_
 {
   // When the keyboard appear, try to get the keyboard height.
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveKeyboardHeight_:)
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveKeyboardFrame_:)
                                                name:UIKeyboardWillShowNotification object:nil];
 }
 
-/** Record the height of the keyboard whenever they are about to appear. */
-- (void)saveKeyboardHeight_:(NSNotification *)notification
+/** Record the keyboard frame whenever it appears. */
+- (void)saveKeyboardFrame_:(NSNotification *)notification
 {
   NSDictionary *keyboardMetadata = notification.userInfo;
-  
-  // Get it from the UIKeyboardFrameEndUserInfoKey key and get the CGRect value.
-  // Then, find out the height of the keyboard from that frame.
   CGRect keyboardFrame = [keyboardMetadata[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  self.keyboardHeight = CGRectGetHeight(keyboardFrame);
+  
+  // Watch out for landscape mode! From the Apple docs on UIKeyboardFrameEndUserInfoKey: "The key for an NSValue object containing a CGRect that identifies the end frame of the keyboard in screen coordinates.
+  // These coordinates do not take into account any rotation factors applied to the window’s contents as a result of interface orientation changes.
+  // Thus, you may need to convert the rectangle to window coordinates (using the convertRect:fromWindow: method) or to view coordinates (using the convertRect:fromView: method) before using it."
+  self.keyboardFrame = [self.window.rootViewController.view convertRect:keyboardFrame fromView:nil];
   
   // Try to scroll again, make sure we are scrolling to the right position.
-  UIResponder *responder = [self _currentResponder];
+  UIResponder *responder = [self currentResponder_];
   if ([responder isKindOfClass:[UIView class]])
   {
     UIView *currentResponder = (UIView *)responder;
-    [self _scrollToView:currentResponder];
+    [self scrollToView_:currentResponder];
   }
 }
 
 #pragma mark - Methods - View Scrolling Helpers
 
-/**
- * Returns the view to its original transformation/translation
- */
+/** Returns the view to its original transformation/translation */
 - (void)scrollToOrigin
 {
   CGFloat yZeroOrigin = 0 - self.contentInset.top;
   CGPoint origin = (CGPoint){ 0.0f, yZeroOrigin };
-  [self _scrollToPoint:origin];
-}
-
-/**
- * Scrolls the view by a certain number of points (e.g. pixels in non-retina world)
- */
-- (void)_scrollToPoint:(CGPoint)relPoint
-{
-  [self setContentOffset:relPoint animated:YES];
+  [self setContentOffset:origin animated:YES];
 }
 
 /**
  * This helper scrolls the view to ensure that the UIView parameter
  * is above the level of the keyboard/picker
  */
-- (void)_scrollToView:(UIView *)control
+- (void)scrollToView_:(UIView *)control
 {
-  // Get the distance of where the control should be above the keyboard. 
-  CGFloat distance = self.componentDistanceFromKeyboard;
-  if ([self.delegate respondsToSelector:@selector(form:distanceFromKeyboardForResponder:)])
+  // In theory, scrollRectToVisible:animated: should take care of all of this but I couldn't get it working.
+  // setContentOffset it is... AWR 10 Jan 2014
+  
+  // Find out whether the control is obscured by the keyboard. If it isn't, do nothing.
+  CGPoint bottomLeftCornerOfControl = CGPointMake(control.frame.origin.x, CGRectGetMaxY(control.frame));
+  CGPoint bottomLeftCornerInWholeScreen = [self convertPoint:bottomLeftCornerOfControl toView:nil];
+
+  if (CGRectContainsPoint(self.keyboardFrame, bottomLeftCornerInWholeScreen))
   {
-    distance = [self.delegate form:self distanceFromKeyboardForResponder:control];
+    // If it is, scroll it up until it's visible
+    
+    // We don't want the control sitting _on_ the keyboard. Push it up a little.
+    CGFloat bufferAboveKeyboard = 20.0f;
+    if ([self.delegate respondsToSelector:@selector(form:distanceFromKeyboardForResponder:)])
+    {
+      bufferAboveKeyboard = [self.delegate form:self distanceFromKeyboardForResponder:control];
+    }
+  
+    CGFloat wholeScreenYCoordinateOfKeyboardTop = self.keyboardFrame.origin.y;
+    CGFloat desiredOffset = bottomLeftCornerInWholeScreen.y - wholeScreenYCoordinateOfKeyboardTop + bufferAboveKeyboard + self.contentOffset.y;
+    [self setContentOffset:CGPointMake(0, desiredOffset) animated:YES];
   }
-  
-  // This is the rest of the screen after the total height being deducted by the height of the keyboard
-  // and the distance, where the component should be.
-  CGFloat leadingScreenHeight = CGRectGetHeight(self.frame) - self.keyboardHeight - distance;
-  
-  // Then, we should find out how far the scroll view should be scrolled up.
-  CGFloat offset = CGRectGetMaxY(control.frame) - leadingScreenHeight;
-  if (offset < 0)
-  {
-    offset = 0;
-  }
-  
-  [self _scrollToPoint:CGPointMake(0, offset)];
 }
 
-- (void)_scrollToViewAndNotifyDelegate:(UIView *)control
+- (void)scrollToViewAndNotifyDelegate_:(UIView *)control
 {
-  [self _scrollToView:control];
+  [self scrollToView_:control];
   if ([self.delegate respondsToSelector:@selector(form:didEnterFocusOn:)])
   {
     [self.delegate form:self didEnterFocusOn:control];
@@ -480,7 +471,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   if (shouldEdit)
   {
     // set the next or done return key depending on field order
-    if ([self _isLastField:textField])
+    if ([self isLastField_:textField])
     {
       if (self.delegate && [self.delegate respondsToSelector:@selector(returnKeyForLastFormField:)])
       {
@@ -501,17 +492,15 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
       textField.returnKeyType = UIReturnKeyNext;
     }
 
-    [self _handleEnteringFocus:textField];
+    [self handleEnteringFocus_:textField];
   }
   return shouldEdit;
 }
 
-/**
- * Uses the delegate hook to scroll the view to the location of the text field
- */
+/** Uses the delegate hook to scroll the view to the location of the text field  */
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-  [self _scrollToViewAndNotifyDelegate:textField];
+  [self scrollToViewAndNotifyDelegate_:textField];
 }
 
 /**
@@ -520,7 +509,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  */
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 { 
-  [self _handleFocusAfterField:textField];
+  [self handleFocusAfterField_:textField];
   
   // If the delegate is implementing it, let the delegate answer.
   if ([self.delegate respondsToSelector:@selector(form:textFieldShouldReturn:)])
@@ -557,7 +546,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   
   // Get the validation types from the delegate and run them against the text.  Don't do the email now.
   NSInteger charCount = kLWEMaxCharacters;
-  LWETextValidationTypes validationTypes = [self _validationTypesForField:(UIControl*)textField];
+  LWETextValidationTypes validationTypes = [self validationTypesForField_:(UIControl*)textField];
   if (validationTypes & LWETextValidationTypeEmail)
   {
     validationTypes = validationTypes ^ LWETextValidationTypeEmail;
@@ -565,7 +554,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 
   if (validationTypes & LWETextValidationTypeLength)
   {
-    charCount = [self _maximumLengthForField:(UIControl*)textField];
+    charCount = [self maximumLengthForField_:(UIControl*)textField];
   }
   NSString *newText = [NSString stringWithFormat:@"%@%@",textField.text,string];
   return [newText passesValidationType:validationTypes maxLength:charCount];
@@ -591,7 +580,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   
   if (shouldEdit)
   {
-    [self _handleEnteringFocus:textView];
+    [self handleEnteringFocus_:textView];
   }
   return shouldEdit;
 }
@@ -601,7 +590,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  */
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-  [self _scrollToViewAndNotifyDelegate:textView];
+  [self scrollToViewAndNotifyDelegate_:textView];
 }
 
 /**
@@ -627,7 +616,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // else catch 'return' button taps and exit the field - quick return
 	if ([text isEqualToString:@"\n"])
   {
-    [self _handleFocusAfterField:textView];
+    [self handleFocusAfterField_:textView];
     return NO;
 	}
 
@@ -641,7 +630,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // Now worry about text validation - Don't validate email now.
   // it's a regex so it won't validate until they've finished typing it
   NSInteger charCount = kLWEMaxCharacters;
-  LWETextValidationTypes validationTypes = [self _validationTypesForField:(UIControl*)textView];
+  LWETextValidationTypes validationTypes = [self validationTypesForField_:(UIControl*)textView];
   if (validationTypes & LWETextValidationTypeEmail)
   {
     validationTypes = validationTypes ^ LWETextValidationTypeEmail;
@@ -650,7 +639,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // Now do the length
   if (validationTypes & LWETextValidationTypeLength)
   {
-    charCount = [self _maximumLengthForField:(UIControl*)textView];
+    charCount = [self maximumLengthForField_:(UIControl*)textView];
   }
   NSString *newText = [NSString stringWithFormat:@"%@%@",textView.text,text];
   return [newText passesValidationType:validationTypes maxLength:charCount];
