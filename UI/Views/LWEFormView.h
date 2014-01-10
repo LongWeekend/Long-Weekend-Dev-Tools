@@ -97,9 +97,6 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
  * in the order that you want to "tab" through them.
  */
 @interface LWEFormView : UIScrollView <UITextViewDelegate, UITextFieldDelegate>
-{
-  BOOL _formIsDirty;
-}
 
 - (void) hideKeyboard;
 - (void) hideKeyboardAndResetScroll;
