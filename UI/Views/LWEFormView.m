@@ -415,7 +415,7 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
 {
   CGFloat yZeroOrigin = 0 - self.contentInset.top;
   CGPoint origin = (CGPoint){ 0.0f, yZeroOrigin };
-  [self setContentOffset:origin];
+  [self setContentOffset:origin animated:YES];
 }
 
 /**
