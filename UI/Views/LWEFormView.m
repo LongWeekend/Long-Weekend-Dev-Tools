@@ -415,6 +415,7 @@
     if ([self isDescendantOfView:windowSubview])
     {
       viewToReturn = windowSubview;
+      break;
     }
   }
   return viewToReturn;
