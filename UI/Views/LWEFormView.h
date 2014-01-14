@@ -70,10 +70,12 @@
 - (BOOL)form:(LWEFormView *)formView textFieldShouldReturn:(UITextField *)textField;
 
 /**
- * Allows the delegate to override the value determines by `componentDistanceFromKeyboard`
- * for an individual responder. 
+ * Allows the delegate to define the minimum distance it has to be above the keyboard when it appears.
+ *
+ * @param formView      The form view where the control resides
+ * @param responder     The responder that will be repositioned when the keyboard appears
  */
-- (CGFloat)form:(LWEFormView *)formView distanceFromKeyboardForResponder:(UIResponder *)responder;
+- (CGFloat)form:(LWEFormView *)formView minimumDistanceAboveKeyboardForResponder:(UIResponder *)responder;
 
 - (LWETextValidationTypes)validationTypesForField:(UIControl *)field;
 - (NSInteger)maximumLengthForField:(UIControl *)field;
@@ -141,9 +143,6 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
 
 //! How long the animation should last.  The default is 0.5 seconds.
 @property CGFloat animationInterval;
-
-//! Determines how far the component should be from keyboard when it becomes first responder.
-@property CGFloat componentDistanceFromKeyboard;
 
 @end
 
