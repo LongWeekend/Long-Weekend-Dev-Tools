@@ -142,9 +142,6 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
 //! How long the animation should last.  The default is 0.5 seconds.
 @property CGFloat animationInterval;
 
-//! Determines how far the component should be from keyboard when it becomes first responder.
-@property CGFloat componentDistanceFromKeyboard;
-
 @end
 
 #define kLWEMaxCharacters 255
