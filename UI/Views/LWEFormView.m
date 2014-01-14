@@ -10,9 +10,6 @@
 #import "LWEFormDatePickerField.h"
 #import "LWEViewAnimationUtils.h"
 
-/** Default value for the distance between keyboard and the component when the keyboard appear */
-static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
-
 // Private Methods
 @interface LWEFormView()
 
@@ -97,8 +94,6 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
   // but I'm not 100% confident that works well.  MMA - 7/13/2012
   if (self.fieldsSortedByTag == nil)
   {
-    // default topPadding
-    self.componentDistanceFromKeyboard = LWEFormViewDefaultDistanceComponentFromKeyboard;
     self.fieldsSortedByTag = [NSArray array];
   }
   
@@ -424,27 +419,25 @@ static CGFloat const LWEFormViewDefaultDistanceComponentFromKeyboard = 10.0f;
  */
 - (void)scrollToView_:(UIView *)control
 {
-  // In theory, scrollRectToVisible:animated: should take care of all of this but I couldn't get it working.
-  // setContentOffset it is... AWR 10 Jan 2014
-  
-  // Find out whether the control is obscured by the keyboard. If it isn't, do nothing.
+  // Get some coordinates that we'll need. We need to convert to whole screen coordinates because the form view
+  // can be smaller than the entire screen on the iPad. (However the keyboard always covers the entire screen width)
   CGPoint bottomLeftCornerOfControl = CGPointMake(control.frame.origin.x, CGRectGetMaxY(control.frame));
   CGPoint bottomLeftCornerInWholeScreen = [self convertPoint:bottomLeftCornerOfControl toView:nil];
 
-  if (CGRectContainsPoint(self.keyboardFrame, bottomLeftCornerInWholeScreen))
+  // Find out if the delegate wants a minimum distance above the keyboard. Use it if so.
+  CGFloat minimumDistanceAboveKeyboard = 20.0f;
+  if ([self.delegate respondsToSelector:@selector(form:minimumDistanceAboveKeyboardForResponder:)])
   {
-    // If it is, scroll it up until it's visible
-    
-    // We don't want the control sitting _on_ the keyboard. Push it up a little.
-    CGFloat bufferAboveKeyboard = 20.0f;
-    if ([self.delegate respondsToSelector:@selector(form:distanceFromKeyboardForResponder:)])
-    {
-      bufferAboveKeyboard = [self.delegate form:self distanceFromKeyboardForResponder:control];
-    }
-  
+    minimumDistanceAboveKeyboard = [self.delegate form:self minimumDistanceAboveKeyboardForResponder:control];
+  }
+
+  // Find out whether the control is above the required distance. If it is, don't move it.
+  if (!CGRectIsEmpty(self.keyboardFrame) && (bottomLeftCornerInWholeScreen.y + minimumDistanceAboveKeyboard) > CGRectGetMinY(self.keyboardFrame))
+  {
+    // If it isn't, move the control to the minimum distance
     CGFloat wholeScreenYCoordinateOfKeyboardTop = self.keyboardFrame.origin.y;
-    CGFloat desiredOffset = bottomLeftCornerInWholeScreen.y - wholeScreenYCoordinateOfKeyboardTop + bufferAboveKeyboard + self.contentOffset.y;
-    [self setContentOffset:CGPointMake(0, desiredOffset) animated:YES];
+    CGFloat requiredOffsetY = bottomLeftCornerInWholeScreen.y - wholeScreenYCoordinateOfKeyboardTop + minimumDistanceAboveKeyboard + self.contentOffset.y;
+    [self setContentOffset:CGPointMake(0, requiredOffsetY) animated:YES];
   }
 }
 
