@@ -387,12 +387,15 @@
 - (void)saveKeyboardFrame_:(NSNotification *)notification
 {
   NSDictionary *keyboardMetadata = notification.userInfo;
-  CGRect keyboardFrame = [keyboardMetadata[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect localKeyboardFrame = [keyboardMetadata[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   
   // Watch out for landscape mode! From the Apple docs on UIKeyboardFrameEndUserInfoKey: "The key for an NSValue object containing a CGRect that identifies the end frame of the keyboard in screen coordinates.
   // These coordinates do not take into account any rotation factors applied to the window’s contents as a result of interface orientation changes.
   // Thus, you may need to convert the rectangle to window coordinates (using the convertRect:fromWindow: method) or to view coordinates (using the convertRect:fromView: method) before using it."
-  self.keyboardFrame = [self.window.rootViewController.view convertRect:keyboardFrame fromView:nil];
+  //
+  // TODO: In this case, we have to use a view that is in the view hierarchy because something like self.window.rootviewController.view may not be, and therefore will not rotate.
+  // We examine self.window.subviews to find a superview of the form view. This should have the correct orientation and dimensions. There may be a faster way of doing this. AWR 14 Jan 2014
+  self.keyboardFrame = [[self windowSubviewThatIsASuperview_] convertRect:localKeyboardFrame fromView:nil];
   
   // Try to scroll again, make sure we are scrolling to the right position.
   UIResponder *responder = [self currentResponder_];
@@ -401,6 +404,20 @@
     UIView *currentResponder = (UIView *)responder;
     [self scrollToView_:currentResponder];
   }
+}
+
+// Returns the subview of UIWindow that is a superview of self
+- (UIView *)windowSubviewThatIsASuperview_
+{
+  UIView *viewToReturn = nil;
+  for (UIView *windowSubview in self.window.subviews)
+  {
+    if ([self isDescendantOfView:windowSubview])
+    {
+      viewToReturn = windowSubview;
+    }
+  }
+  return viewToReturn;
 }
 
 #pragma mark - Methods - View Scrolling Helpers
@@ -422,7 +439,7 @@
   // Get some coordinates that we'll need. We need to convert to whole screen coordinates because the form view
   // can be smaller than the entire screen on the iPad. (However the keyboard always covers the entire screen width)
   CGPoint bottomLeftCornerOfControl = CGPointMake(control.frame.origin.x, CGRectGetMaxY(control.frame));
-  CGPoint bottomLeftCornerInWholeScreen = [self convertPoint:bottomLeftCornerOfControl toView:nil];
+  CGPoint bottomLeftCornerInWholeScreen = [[self windowSubviewThatIsASuperview_] convertPoint:bottomLeftCornerOfControl fromView:self];
 
   // Find out if the delegate wants a minimum distance above the keyboard. Use it if so.
   CGFloat minimumDistanceAboveKeyboard = 20.0f;
