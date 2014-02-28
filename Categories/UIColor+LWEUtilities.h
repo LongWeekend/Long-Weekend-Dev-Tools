@@ -24,15 +24,15 @@
 @interface UIColor (LWEUtilities)
 
 //! This method will initialize a color object with the provided hexadecimal number. (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex;
+- (id)initWithHex:(NSUInteger)hex;
 
 //! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex;
++ (id)colorWithHex:(NSUInteger)hex;
 
 //! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
+- (id)initWithHex:(NSUInteger)hex alpha:(CGFloat)alpha;
 
 //! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSInteger)hex alpha:(CGFloat)alpha;
++ (id)colorWithHex:(NSUInteger)hex alpha:(CGFloat)alpha;
 
 @end
