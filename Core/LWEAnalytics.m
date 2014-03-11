@@ -29,8 +29,6 @@
 #import "GANTracker.h"
 #endif
 
-static const NSInteger kGANDispatchPeriodSec = 10;
-
 @implementation LWEAnalytics
 
 + (void) startSessionWithKey:(NSString *)key
@@ -46,6 +44,7 @@ static const NSInteger kGANDispatchPeriodSec = 10;
 #endif 
 #if defined(LWE_USE_GAN)
   // start Google analytics if live
+  static const NSInteger kGANDispatchPeriodSec = 10;
   [[GANTracker sharedTracker] startTrackerWithAccountID:apiKey dispatchPeriod:kGANDispatchPeriodSec delegate:nil];
 #endif
 }
