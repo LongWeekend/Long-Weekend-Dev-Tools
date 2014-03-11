@@ -60,13 +60,11 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
 - (void)resetKeychainItem
 {
+  LWE_ASSERT_EXC((self.keychainItem), @"We should have a keychain item at this stage. Why shouldn't we?");
   OSStatus status = noErr;
-  if (self.keychainItem)
-  {
-    NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
-    status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
-    LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %ld", status);
-  }
+  NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
+  status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
+  LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %d", (int)status);
   
   self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
   [self.keychainData removeAllObjects];
@@ -181,7 +179,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
       [returnDictionary setObject:dataDict forKey:(__bridge id)kSecValueData];
       
       // 3d. Set thos values back to the ivar.
-      self.keychainItem = [NSDictionary dictionaryWithDictionary:returnDictionary];
+      self.keychainItem = [NSMutableDictionary dictionaryWithDictionary:returnDictionary];
       self.keychainData = dataDict;
     }
     else
@@ -227,14 +225,14 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     
     // An implicit assumption is that you can only update a single item at a time.
     result = SecItemUpdate((__bridge CFDictionaryRef)dictionary, (__bridge CFDictionaryRef)updatedItem);
-		NSAssert(result == noErr, @"Couldn't update the Keychain Item with error : %ld", result);
+		NSAssert(result == noErr, @"Couldn't update the Keychain Item with error : %d", (int)result);
   }
   else
   {
     // No previous item found; add the new one.
     NSDictionary *addedItem = [self _dictionaryToSecItemFormat];
     result = SecItemAdd((__bridge CFDictionaryRef)addedItem, NULL);
-    NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %ld", result);
+    NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %d", (int)result);
   }
 }
 

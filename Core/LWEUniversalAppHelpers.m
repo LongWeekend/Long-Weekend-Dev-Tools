@@ -30,28 +30,37 @@
 
 @implementation LWEUniversalAppHelpers
 
-// TODO: this is a bit of a naive implementation - change this to use deviceModelString?
-+ (BOOL) isAnIPad
++ (BOOL) isiOS7OrAbove
 {
-    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200  // this is when the UI_USER_INTERFACE_IDIOM was added
-      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-      else 
-        // This is a 3.2.0+ but not an iPad (for future, when iPhone/iPod Touch runs with same OS than iPad)    
-        return NO;
-    #else
-      // It's an iPhone/iPod Touch (OS < 3.2.0)
-      return NO;
-    #endif
+  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
+  {
+    return NO;
+  }
+  else
+  {
+    return YES;
+  }
 }
 
-// TODO: this is a bit of a naive implementation
++ (BOOL)isAnIPad
+{
+  UIDevice *currentDevice = [UIDevice currentDevice];
+  return ([currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPad);
+}
+
 + (BOOL)isAnIPhone
 {
-  return ([LWEUniversalAppHelpers isAnIPad] == NO);
+  UIDevice *currentDevice = [UIDevice currentDevice];
+  return ([currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
 }
 
-+ (kLWEDeviceType) deviceType
++ (BOOL)isFourInchRetinaDisplay
+{
+  // Is the main screen height equal to 568?
+  return fequal((double)CGRectGetHeight([[UIScreen mainScreen] bounds]), (double)568.0);
+}
+
++ (kLWEDeviceType)deviceType
 {
   NSString *deviceString = [LWEUniversalAppHelpers deviceModelString];
   return [LWEUniversalAppHelpers deviceTypeWithString:deviceString];
@@ -218,7 +227,7 @@
     returnVal = ipadName;
     if (useRetina && [LWEFile fileExists:ipadName] == NO)
     {
-      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      returnVal = [fileName stringByAddingRetinaSpecifier];
     }
   }
   else

@@ -6,86 +6,75 @@
 #import "LWERoundedRectView.h"
 
 @implementation LWERoundedRectView
-
 @synthesize strokeColor;
 @synthesize rectColor;
 @synthesize strokeWidth;
 @synthesize cornerRadius;
 @synthesize shadowOffset;
 
+#pragma mark - Init
+
 - (id)initWithCoder:(NSCoder *)decoder
 {
-  if (self = [super initWithCoder:decoder])
+  self = [super initWithCoder:decoder];
+  if (self)
   {
-    self.strokeColor = kDefaultStrokeColor;
-    self.shadowOffset = CGSizeZero;
-    self.backgroundColor = [UIColor clearColor];
-    self.strokeWidth = kDefaultStrokeWidth;
-    self.rectColor = kDefaultRectColor;
-    self.cornerRadius = kDefaultCornerRadius;
+    [self commonInit_];
   }
   return self;
 }
 
 - (id)initWithFrame:(CGRect)frame 
 {
-  if (self = [super initWithFrame:frame]) 
+  self = [super initWithFrame:frame];
+  if (self)
   {
-    // Initialization code
-    self.opaque = NO;
-    self.shadowOffset = CGSizeZero;
-    self.strokeColor = kDefaultStrokeColor;
-    self.backgroundColor = [UIColor clearColor];
-    self.rectColor = kDefaultRectColor;
-    self.strokeWidth = kDefaultStrokeWidth;
-    self.cornerRadius = kDefaultCornerRadius;
+    [self commonInit_];
   }
   return self;
 }
 
 - (void)drawRect:(CGRect)rect
 {
+  // Get the rectangle where we are drawing it to
   CGFloat shadowX = self.shadowOffset.width;
   CGFloat shadowY = self.shadowOffset.height;
+  CGRect contentRect = self.bounds;
   
   CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetLineWidth(context, strokeWidth);
-  CGContextSetStrokeColorWithColor(context, self.strokeColor.CGColor);
-  CGContextSetFillColorWithColor(context, self.rectColor.CGColor);
   
-  CGRect rrect = self.bounds;
+  // Stroke the border!
+  [self strokeWithContext_:context];
   
-  // TODO: find out why this matters when we have a stroke?
-//  rrect.origin.x = rrect.origin.x + 1;
-//  rrect.origin.y = rrect.origin.y + 1;
-//  rrect.size.height = rrect.size.height - 1;
-//  rrect.size.width = rrect.size.width - 1;
+  // Inset the rect based on the strokeWidth so that the stroke
+  // does not get clipped.
+  contentRect = CGRectInset(contentRect, self.strokeWidth, self.strokeWidth);
   
   // If we have a shadow other than zero, offset either the size or the origin (move the box)
   if (shadowX > 0)
   {
-    rrect.size.width = rrect.size.width - (2 * shadowX);
+    contentRect.size.width = contentRect.size.width - (2 * shadowX);
   }
   else if (shadowX < 0)
   {
-    rrect.origin.x = rrect.origin.x - (2 * shadowX);
-    rrect.size.width = rrect.size.width - (2 * shadowX);
+    contentRect.origin.x = contentRect.origin.x - (2 * shadowX);
+    contentRect.size.width = contentRect.size.width - (2 * shadowX);
   }
 
   if (shadowY > 0)
   {
-    rrect.size.height = rrect.size.height - ( 2 * shadowY);
+    contentRect.size.height = contentRect.size.height - ( 2 * shadowY);
   }
   else if (shadowY < 0)
   {
-    rrect.origin.y = rrect.origin.y - ( 2 * shadowY);
-    rrect.size.height = rrect.size.height - ( 2 * shadowY);
+    contentRect.origin.y = contentRect.origin.y - ( 2 * shadowY);
+    contentRect.size.height = contentRect.size.height - ( 2 * shadowY);
   }
   
   
   CGFloat radius = cornerRadius;
-  CGFloat width = CGRectGetWidth(rrect);
-  CGFloat height = CGRectGetHeight(rrect);
+  CGFloat width = CGRectGetWidth(contentRect);
+  CGFloat height = CGRectGetHeight(contentRect);
   
   // Make sure corner radius isn't larger than half the shorter side
   if (radius > width/2.0)
@@ -93,12 +82,12 @@
   if (radius > height/2.0)
     radius = height/2.0;
   
-  CGFloat minx = CGRectGetMinX(rrect);
-  CGFloat midx = CGRectGetMidX(rrect);
-  CGFloat maxx = CGRectGetMaxX(rrect);
-  CGFloat miny = CGRectGetMinY(rrect);
-  CGFloat midy = CGRectGetMidY(rrect);
-  CGFloat maxy = CGRectGetMaxY(rrect);
+  CGFloat minx = CGRectGetMinX(contentRect);
+  CGFloat midx = CGRectGetMidX(contentRect);
+  CGFloat maxx = CGRectGetMaxX(contentRect);
+  CGFloat miny = CGRectGetMinY(contentRect);
+  CGFloat midy = CGRectGetMidY(contentRect);
+  CGFloat maxy = CGRectGetMaxY(contentRect);
   
   CGContextSaveGState(context);
   CGContextSetShadow(context, CGSizeMake(shadowX, shadowY), kDefaultShadowBlur);  
@@ -118,7 +107,47 @@
 {
   [strokeColor release];
   [rectColor release];
+  
   [super dealloc];
+}
+
+#pragma mark - Private
+
+/** Initialize the parameters with the default value. */
+- (void)commonInit_
+{
+  // Initialization code
+  self.opaque = NO;
+  self.shadowOffset = CGSizeZero;
+  self.strokeColor = kDefaultStrokeColor;
+  self.backgroundColor = [UIColor clearColor];
+  self.rectColor = kDefaultRectColor;
+  self.strokeWidth = kDefaultStrokeWidth;
+  self.cornerRadius = kDefaultCornerRadius;
+  
+  // Make the dashes pattern nil as the default stroke type is solid.
+  self.strokeType = LWEStrokeTypeSolidStroke;
+  self.dashesPattern = nil;
+}
+
+/** Stroke this view with the current context. */
+- (void)strokeWithContext_:(CGContextRef)context
+{
+  CGContextSetLineWidth(context, self.strokeWidth);
+  CGContextSetStrokeColorWithColor(context, self.strokeColor.CGColor);
+  CGContextSetFillColorWithColor(context, self.rectColor.CGColor);
+  
+  // If the stroke typed dotted line
+  // draw the dotted line according to the parameter.
+  if (self.strokeType == LWEStrokeTypeDottedLine)
+  {
+    // Make sure dashes pattern is not nil.
+    LWE_ASSERT_EXC(self.dashesPattern, @"Stroke typed LWEStrokeTypeDottedLine has to specify the dashes pattern.");
+    
+    // Sets up the required parameter to the dotted line
+    NSUInteger dashesElementCount = sizeof(self.dashesPattern)/sizeof(CGFloat);
+    CGContextSetLineDash(context, 0, self.dashesPattern, dashesElementCount);
+  }
 }
 
 @end

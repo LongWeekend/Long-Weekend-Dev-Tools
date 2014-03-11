@@ -39,8 +39,8 @@
   CGImageRef imageRef = [image CGImage];
 
   // Strips the alpha info out of the image
-  CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef);
-  alphaInfo = kCGImageAlphaNoneSkipLast;
+  //CGImageAlphaInfo alphaInfo = CGImageGetAlphaInfo(imageRef);
+  CGImageAlphaInfo alphaInfo = kCGImageAlphaNoneSkipLast;
   
   CGContextRef bitmap = CGBitmapContextCreate(NULL, width, height, CGImageGetBitsPerComponent(imageRef), 4 * width, CGImageGetColorSpace(imageRef), alphaInfo);
   
@@ -186,12 +186,11 @@
   CGFloat height = CGImageGetHeight(img);
   
   CGRect bounds = CGRectMake(0, 0, width, height);
-  CGSize size = bounds.size;
   CGFloat scale = (bounds.size.width)/width;
 
   LWEOrientationTransform orientTransform = [LWEImageUtils orientationTransformForImage:image];
   CGAffineTransform transform = orientTransform.transform;
-  size = orientTransform.size;
+  CGSize size = orientTransform.size;
   
   UIGraphicsBeginImageContext(size);
   CGContextRef context = UIGraphicsGetCurrentContext();

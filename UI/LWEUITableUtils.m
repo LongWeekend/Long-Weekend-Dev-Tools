@@ -23,7 +23,7 @@
 @implementation LWEUITableUtils
 
 //! Returns a new UITableViewCell - automatically determines whether new or off the queue
-+ (UITableViewCell*) reuseCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView usingStyle:(UITableViewCellStyle)style
++ (UITableViewCell *)reuseCellForIdentifier: (NSString*) identifier onTable:(UITableView*) lclTableView usingStyle:(UITableViewCellStyle)style
 {
   UITableViewCell *cell = [lclTableView dequeueReusableCellWithIdentifier:identifier];
   if (cell == nil)
@@ -44,7 +44,7 @@
 /**
  * Called autosizeHeightForCellWithText:fontSize:cellWidth:cellMargin: with default parameters for everything
  */
-+ (CGFloat) autosizeHeightForCellWithText:(NSString *)text
++ (CGFloat)autosizeHeightForCellWithText:(NSString *)text
 {
   return [LWEUITableUtils autosizeHeightForCellWithText:text fontSize:LWE_UITABLE_CELL_FONT_SIZE cellWidth:LWE_UITABLE_CELL_CONTENT_WIDTH cellMargin:LWE_UITABLE_CELL_CONTENT_MARGIN];
 }
@@ -53,7 +53,7 @@
  * Called autosizeHeightForCellWithText:fontSize:cellWidth:cellMargin: with default parameters for
  * cellWidth & cellMargin
  */
-+ (CGFloat) autosizeHeightForCellWithText:(NSString *)text fontSize:(NSInteger)fontSize
++ (CGFloat)autosizeHeightForCellWithText:(NSString *)text fontSize:(NSInteger)fontSize
 {
   return [LWEUITableUtils autosizeHeightForCellWithText:text fontSize:fontSize cellWidth:LWE_UITABLE_CELL_CONTENT_WIDTH cellMargin:LWE_UITABLE_CELL_CONTENT_MARGIN];
 }
@@ -65,11 +65,15 @@
  * \param width Total width of the cell
  * \param margin Margin to use inside the cell (padding)
  */
-+ (CGFloat) autosizeHeightForCellWithText:(NSString*)text fontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin 
++ (CGFloat)autosizeHeightForCellWithText:(NSString*)text fontSize:(NSInteger)fontSize cellWidth:(NSInteger)width cellMargin:(NSInteger)margin
 {
   CGSize constraint = CGSizeMake(width - (margin * 2), 20000.0f);
-  CGSize size = [text sizeWithFont:[UIFont systemFontOfSize:fontSize] constrainedToSize:constraint lineBreakMode:UILineBreakModeWordWrap];
-  CGFloat height = MAX(size.height, 44.0f);
+  CGRect rect = [text boundingRectWithSize:constraint
+                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                attributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:fontSize] }
+                                   context:nil];
+  
+  CGFloat height = MAX(CGRectGetHeight(rect), 44.0f);
   return height + (margin * 2);
 }
 
