@@ -381,6 +381,10 @@
   // When the keyboard appear, try to get the keyboard height.
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(saveKeyboardFrame_:)
                                                name:UIKeyboardWillShowNotification object:nil];
+  
+  // When the keyboard disappears, put the scrollView offset back to its original position
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasDismissed_:)
+                                               name:UIKeyboardDidHideNotification object:nil];
 }
 
 /** Record the keyboard frame whenever it appears. */
@@ -404,6 +408,11 @@
     UIView *currentResponder = (UIView *)responder;
     [self scrollToView_:currentResponder];
   }
+}
+
+- (void)keyboardWasDismissed_:(NSNotification *)notification
+{
+  [self scrollToOrigin];
 }
 
 // Returns the subview of UIWindow that is a superview of self
