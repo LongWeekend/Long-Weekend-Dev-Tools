@@ -384,7 +384,7 @@
   
   // When the keyboard disappears, put the scrollView offset back to its original position
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasDismissed_:)
-                                               name:UIKeyboardDidHideNotification object:nil];
+                                               name:UIKeyboardWillHideNotification object:nil];
 }
 
 /** Record the keyboard frame whenever it appears. */
