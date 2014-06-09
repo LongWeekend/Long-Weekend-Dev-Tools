@@ -46,7 +46,13 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 {
   if (object == nil) return;
   id currentObject = [self.keychainData objectForKey:key];
-  if (![currentObject isEqual:object])
+  
+  if (object == nil)
+  {
+    [self.keychainData removeObjectForKey:key];
+    [self _writeToKeychain];
+  }
+  else if ([currentObject isEqual:object] == NO)
   {
     [self.keychainData setObject:object forKey:key];
     [self _writeToKeychain];
