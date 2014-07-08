@@ -31,7 +31,7 @@
 
  @param		hex The color code in hexadecimal, "0x123456".
  */
-- (id)initWithHex:(NSUInteger)hex
+- (instancetype)initWithHex:(NSUInteger)hex
 {
   return [self initWithHex:hex alpha:1.0f];
 }
@@ -43,14 +43,14 @@
  * @details This method is currently only supports 24bits color, so please dont give 12bits color like 0xFFF but instead give it 0xFFFFFF. It might be
  *					upgraded, or extended in the future. But now it is nice to have a 24 bits color converter from hexa to RGB.
  */
-+ (id)colorWithHex:(NSUInteger)hex
++ (instancetype)colorWithHex:(NSUInteger)hex
 {
 	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex alpha:1.0f] autorelease];
 	return tmpColor;
 }
 
 //! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
-- (id)initWithHex:(NSUInteger)hex alpha:(CGFloat)alpha
+- (instancetype)initWithHex:(NSUInteger)hex alpha:(CGFloat)alpha
 {
 	//What it does here is, whatever (and) F should return itself, and whatever (and) 0 should return 0. So first it tries to 
 	//do and (&) operator to take the first two digit for red. second two digit for green, and the rest is for blue. after that, cause 2 digits hexa is 
@@ -71,7 +71,7 @@
 }
 
 //! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
-+ (id)colorWithHex:(NSUInteger)hex alpha:(CGFloat)alpha
++ (instancetype)colorWithHex:(NSUInteger)hex alpha:(CGFloat)alpha
 {
 	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex alpha:alpha] autorelease];
 	return tmpColor;
