@@ -65,13 +65,17 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 - (void)resetKeychainItem
 {
   LWE_ASSERT_EXC((self.keychainItem), @"We should have a keychain item at this stage. Why shouldn't we?");
-  OSStatus status = noErr;
-  NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
-  status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
-  LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %d", (int)status);
-  
-  self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
-  [self.keychainData removeAllObjects];
+
+  // Delete everything from the keychain that is stored under our identifier. We want to keep our delete query as general as possible,
+  // so that it clears even old keychain items from previous versions of the app, without making it so general that it might
+  // delete keychain items maintained by other code in our app.
+  NSMutableDictionary *keychainQuery = [NSMutableDictionary dictionary];
+  [keychainQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+  [keychainQuery setObject:self.identifier forKey:(__bridge id)kSecAttrGeneric];
+  OSStatus status = SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
+  MT_ASSERT(status == noErr || status == errSecItemNotFound, @"Problem deleting keychain items for identifier %@: %d", self.identifier, (int)status);
+
+  [self initializeForEmptyKeychain_];
 }
 
 #pragma mark - Privates
@@ -151,8 +155,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   CFDictionaryRef cfdict = NULL;
   if (!SecItemCopyMatching((__bridge CFDictionaryRef)self.genericPasswordQuery, (CFTypeRef *)&cfdict) == noErr)
   {
-    self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
-    self.keychainData = [[NSMutableDictionary alloc] init];
+    [self initializeForEmptyKeychain_];
   }
   else
   {
@@ -192,6 +195,12 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
       LWE_ASSERT_EXC((NO), @"The keychain should have the 'data'/'password' on its item.");
     }
   }
+}
+
+- (void)initializeForEmptyKeychain_
+{
+  self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
+  self.keychainData = [[NSMutableDictionary alloc] init];
 }
 
 - (void)_writeToKeychain
