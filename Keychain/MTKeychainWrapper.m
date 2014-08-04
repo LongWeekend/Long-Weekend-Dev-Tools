@@ -42,12 +42,12 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   if (object == nil)
   {
     [self.keychainData removeObjectForKey:key];
-    status = [self _writeToKeychain];
+    status = [self writeToKeychain_];
   }
   else if ([currentObject isEqual:object] == NO)
   {
     [self.keychainData setObject:object forKey:key];
-    status = [self _writeToKeychain];
+    status = [self writeToKeychain_];
   }
   return status;
 }
@@ -55,7 +55,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 - (OSStatus)removeObjectsForKeys:(NSArray *)keys
 {
   [self.keychainData removeObjectsForKeys:keys];
-  return [self _writeToKeychain];
+  return [self writeToKeychain_];
 }
 
 - (id)objectForKey:(NSString *)key
@@ -204,7 +204,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   self.keychainData = [[NSMutableDictionary alloc] init];
 }
 
-- (OSStatus)_writeToKeychain
+- (OSStatus)writeToKeychain_
 {
   CFDictionaryRef cfdict = NULL;
 	OSStatus result;
