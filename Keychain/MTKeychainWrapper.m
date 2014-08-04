@@ -29,32 +29,33 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 @property (nonatomic, strong) NSDictionary *genericPasswordQuery;
 @property (nonatomic, strong) NSMutableDictionary *keychainItem;
 @property (nonatomic, strong) NSMutableDictionary *keychainData;
-- (NSMutableDictionary *)_dictionaryToSecItemFormat;
-- (NSDictionary *)_generateGenericDictionaryForSearching:(BOOL)forSearching;
-- (void)_getKeychainData;
-- (void)_writeToKeychain;
 @end
 
 @implementation MTKeychainWrapper
-@synthesize identifier = _identifier, accessGroup = _accessGroup;
-@synthesize genericPasswordQuery = _generateGenericDictionary;
-@synthesize keychainItem = _keychainItem, keychainData = _keychainData;
 
 #pragma mark - Public Methods
 
-- (void)setObject:(id)object forKey:(NSString *)key
+- (OSStatus)setObject:(id)object forKey:(NSString *)key
 {
   id currentObject = self.keychainData[key];
+  OSStatus status = noErr;
   if (object == nil)
   {
     [self.keychainData removeObjectForKey:key];
-    [self _writeToKeychain];
+    status = [self _writeToKeychain];
   }
   else if ([currentObject isEqual:object] == NO)
   {
     [self.keychainData setObject:object forKey:key];
-    [self _writeToKeychain];
+    status = [self _writeToKeychain];
   }
+  return status;
+}
+
+- (OSStatus)removeObjectsForKeys:(NSArray *)keys
+{
+  [self.keychainData removeObjectsForKeys:keys];
+  return [self _writeToKeychain];
 }
 
 - (id)objectForKey:(NSString *)key
@@ -203,7 +204,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   self.keychainData = [[NSMutableDictionary alloc] init];
 }
 
-- (void)_writeToKeychain
+- (OSStatus)_writeToKeychain
 {
   CFDictionaryRef cfdict = NULL;
 	OSStatus result;
@@ -247,6 +248,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     result = SecItemAdd((__bridge CFDictionaryRef)addedItem, NULL);
     NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %d", (int)result);
   }
+  return result;
 }
 
 #pragma mark - Class Plumbing

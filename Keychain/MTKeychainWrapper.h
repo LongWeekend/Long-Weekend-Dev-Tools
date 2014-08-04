@@ -23,7 +23,8 @@
 
 @interface MTKeychainWrapper : NSObject
 
-- (void)setObject:(id)object forKey:(NSString *)key;
+- (OSStatus)removeObjectsForKeys:(NSArray *)keys;
+- (OSStatus)setObject:(id)object forKey:(NSString *)key;
 - (id)objectForKey:(NSString *)key;
 - (void)resetKeychainItem;
 
