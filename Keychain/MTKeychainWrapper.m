@@ -65,18 +65,23 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
 - (void)resetKeychainItem
 {
-  LWE_ASSERT_EXC((self.keychainItem), @"We should have a keychain item at this stage. Why shouldn't we?");
+  [[self class] resetKeychainForIdentifier:self.identifier];
+  [self initializeForEmptyKeychain_];
+}
 
++ (void)resetKeychainForIdentifier:(NSString *)keychainIdentifier
+{
   // Delete everything from the keychain that is stored under our identifier. We want to keep our delete query as general as possible,
   // so that it clears even old keychain items from previous versions of the app, without making it so general that it might
   // delete keychain items maintained by other code in our app.
   NSMutableDictionary *keychainQuery = [NSMutableDictionary dictionary];
   [keychainQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
-  [keychainQuery setObject:self.identifier forKey:(__bridge id)kSecAttrGeneric];
+  if (keychainIdentifier)
+  {
+    [keychainQuery setObject:keychainIdentifier forKey:(__bridge id)kSecAttrGeneric];
+  }
   OSStatus status = SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
-  MT_ASSERT(status == noErr || status == errSecItemNotFound, @"Problem deleting keychain items for identifier %@: %d", self.identifier, (int)status);
-
-  [self initializeForEmptyKeychain_];
+  MT_ASSERT(status == noErr || status == errSecItemNotFound, @"Problem deleting keychain items: %d", (int)status);
 }
 
 #pragma mark - Privates
