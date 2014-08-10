@@ -30,6 +30,7 @@
 
 @implementation LWEUniversalAppHelpers
 
+// TODO: remove this method after we remove all our iOS 7 compatibility code
 + (BOOL) isiOS7OrAbove
 {
   if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
