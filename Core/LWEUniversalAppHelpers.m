@@ -30,16 +30,9 @@
 
 @implementation LWEUniversalAppHelpers
 
-+ (BOOL) isiOS7OrAbove
++ (BOOL)isiOS8OrAbove
 {
-  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1)
-  {
-    return NO;
-  }
-  else
-  {
-    return YES;
-  }
+  return [@"8.0" compare:[[UIDevice currentDevice] systemVersion] options:NSNumericSearch] != NSOrderedDescending;
 }
 
 + (BOOL)isAnIPad
