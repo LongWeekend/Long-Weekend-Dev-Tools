@@ -42,6 +42,11 @@
   }
 }
 
++ (BOOL)isiOS8OrAbove
+{
+  return [@"8.0" compare:[[UIDevice currentDevice] systemVersion] options:NSNumericSearch] != NSOrderedDescending;
+}
+
 + (BOOL)isAnIPad
 {
   UIDevice *currentDevice = [UIDevice currentDevice];

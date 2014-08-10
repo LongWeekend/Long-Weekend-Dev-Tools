@@ -87,6 +87,8 @@ typedef enum
 //! Determines if the device is running ios7 or above.
 + (BOOL)isiOS7OrAbove;
 
++ (BOOL)isiOS8OrAbove;
+
 /**
  * \brief Returns the name of this device, e.g. "iPhone 2,1" for an iPhone 3GS.
  * This method returns the string by making a C system call asking the system to identify its
