@@ -49,8 +49,12 @@
 
 + (BOOL)isFourInchRetinaDisplay
 {
-  // Is the main screen height equal to 568?
   return fequal((double)CGRectGetHeight([[UIScreen mainScreen] bounds]), (double)568.0);
+}
+
++ (BOOL)is3Point5InchRetinaDisplay
+{
+  return [UIScreen mainScreen].bounds.size.height < 568.0;
 }
 
 + (kLWEDeviceType)deviceType
