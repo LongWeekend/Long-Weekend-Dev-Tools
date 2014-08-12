@@ -81,6 +81,8 @@ typedef enum
 //! Determines if the device is an iPhone or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isAnIPhone;
 
++ (BOOL)is3Point5InchRetinaDisplay;
+
 //! Determines if the device is an 4" retina display or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isFourInchRetinaDisplay;
 
