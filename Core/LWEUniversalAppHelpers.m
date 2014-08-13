@@ -29,6 +29,10 @@
 #include <sys/sysctl.h>
 #import <LocalAuthentication/LocalAuthentication.h>
 
+
+static const CGFloat FourInchDisplayHeight = 568.0;
+
+
 @implementation LWEUniversalAppHelpers
 
 + (BOOL)isiOS8OrAbove
@@ -48,14 +52,27 @@
   return ([currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
 }
 
-+ (BOOL)isFourInchRetinaDisplay
-{
-  return fequal((double)CGRectGetHeight([[UIScreen mainScreen] bounds]), (double)568.0);
-}
-
 + (BOOL)is3Point5InchRetinaDisplay
 {
-  return [UIScreen mainScreen].bounds.size.height < 568.0;
+  return [self screenHeight_] < FourInchDisplayHeight;
+}
+
++ (BOOL)isFourInchRetinaDisplay
+{
+  return fequal((double)[self screenHeight_], (double)FourInchDisplayHeight);
+}
+
++ (CGFloat)screenHeightDifferenceFrom4InchDisplay
+{
+  return [self screenHeight_] - FourInchDisplayHeight;
+}
+
++ (CGFloat)screenHeight_
+{
+  // Currently [UIScreen mainScreen].bounds.size.height is incorrect in the resizable iPhone simulator; if
+  // this gets straightened out then we can go back to that.
+  //return [UIScreen mainScreen].bounds.size.height;
+  return [UIApplication sharedApplication].keyWindow.bounds.size.height;
 }
 
 + (BOOL)isTouchIDAvailable
