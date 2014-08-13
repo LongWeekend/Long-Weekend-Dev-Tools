@@ -28,6 +28,10 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
+
+static const CGFloat FourInchDisplayHeight = 568.0;
+
+
 @implementation LWEUniversalAppHelpers
 
 + (BOOL)isiOS8OrAbove
@@ -47,14 +51,19 @@
   return ([currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
 }
 
-+ (BOOL)isFourInchRetinaDisplay
-{
-  return fequal((double)CGRectGetHeight([[UIScreen mainScreen] bounds]), (double)568.0);
-}
-
 + (BOOL)is3Point5InchRetinaDisplay
 {
-  return [UIScreen mainScreen].bounds.size.height < 568.0;
+  return [UIScreen mainScreen].bounds.size.height < FourInchDisplayHeight;
+}
+
++ (BOOL)isFourInchRetinaDisplay
+{
+  return fequal((double)CGRectGetHeight([[UIScreen mainScreen] bounds]), (double)FourInchDisplayHeight);
+}
+
++ (CGFloat)screenHeightDifferenceFrom4InchDisplay
+{
+  return [UIScreen mainScreen].bounds.size.height - FourInchDisplayHeight;
 }
 
 + (kLWEDeviceType)deviceType

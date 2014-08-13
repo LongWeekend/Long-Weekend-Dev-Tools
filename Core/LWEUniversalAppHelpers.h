@@ -86,6 +86,9 @@ typedef enum
 //! Determines if the device is an 4" retina display or not. Works with pre 3.2 iOS versions as well
 +(BOOL)isFourInchRetinaDisplay;
 
+/** Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4" */
++ (CGFloat)screenHeightDifferenceFrom4InchDisplay;
+
 + (BOOL)isiOS8OrAbove;
 
 /**
