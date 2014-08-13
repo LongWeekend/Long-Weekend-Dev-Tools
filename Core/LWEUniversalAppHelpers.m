@@ -27,6 +27,7 @@
 #import <UIKit/UIKit.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 
 @implementation LWEUniversalAppHelpers
 
@@ -55,6 +56,19 @@
 + (BOOL)is3Point5InchRetinaDisplay
 {
   return [UIScreen mainScreen].bounds.size.height < 568.0;
+}
+
++ (BOOL)isTouchIDAvailable
+{
+  // Don't crash if we're on iOS 7 or below
+  if ([self isiOS8OrAbove] == NO)
+  {
+    return NO;
+  }
+  
+  // We don't care about the error, we just want to know if we can use touch ID or not
+  LAContext *context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
 }
 
 + (kLWEDeviceType)deviceType

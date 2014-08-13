@@ -88,6 +88,9 @@ typedef enum
 
 + (BOOL)isiOS8OrAbove;
 
+//! Determines if touch ID is available or not.
++ (BOOL)isTouchIDAvailable;
+
 /**
  * \brief Returns the name of this device, e.g. "iPhone 2,1" for an iPhone 3GS.
  * This method returns the string by making a C system call asking the system to identify its
