@@ -67,6 +67,11 @@ static const CGFloat FourInchDisplayHeight = 568.0;
   return [self screenHeight_] - FourInchDisplayHeight;
 }
 
++ (CGFloat)fourInchDisplayHeight
+{
+  return FourInchDisplayHeight;
+}
+
 + (CGFloat)screenHeight_
 {
   // Currently [UIScreen mainScreen].bounds.size.height is incorrect in the resizable iPhone simulator; if

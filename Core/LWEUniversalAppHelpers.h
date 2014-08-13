@@ -89,6 +89,9 @@ typedef enum
 /** Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4" */
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay;
 
+/** Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4" */
++ (CGFloat)fourInchDisplayHeight;
+
 + (BOOL)isiOS8OrAbove;
 
 //! Determines if touch ID is available or not.
