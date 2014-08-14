@@ -27,7 +27,9 @@
 #import <UIKit/UIKit.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#ifdef __IPHONE_8_0
 #import <LocalAuthentication/LocalAuthentication.h>
+#endif
 
 
 static const CGFloat FourInchDisplayHeight = 568.0;
@@ -77,6 +79,7 @@ static const CGFloat FourInchDisplayHeight = 568.0;
   return [UIScreen mainScreen].bounds.size.height;
 }
 
+#ifdef __IPHONE_8_0
 + (BOOL)isTouchIDAvailable
 {
   // Don't crash if we're on iOS 7 or below
@@ -89,6 +92,7 @@ static const CGFloat FourInchDisplayHeight = 568.0;
   LAContext *context = [[LAContext alloc] init];
   return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
 }
+#endif
 
 + (kLWEDeviceType)deviceType
 {
