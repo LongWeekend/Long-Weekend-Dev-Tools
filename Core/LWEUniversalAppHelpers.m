@@ -60,26 +60,20 @@
   return [UIScreen mainScreen].bounds.size.height < 568.0;
 }
 
+#ifdef __IPHONE_8_0
 + (BOOL)isTouchIDAvailable
 {
+  // Don't crash if we're on iOS 7 or below
   if ([self isiOS8OrAbove] == NO)
   {
     return NO;
   }
-
-  // TODO: Remove this when we move from Xcode 5 to Xcode 6
-  Class laContextClass = NSClassFromString(@"LAContext");
-  if (laContextClass)
-  {
-    id context = [[laContextClass alloc] init];
-    // The constant LAPolicyDeviceOwnerAuthenticationWithBiometrics would normally be used; this evaluates to one
-    return [context performSelector:@selector(canEvaluatePolicy:error:) withObject:1 withObject:nil];
-  }
-  else
-  {
-    return NO;
-  }
+  
+  // We don't care about the error, we just want to know if we can use touch ID or not
+  LAContext *context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
 }
+#endif
 
 + (kLWEDeviceType)deviceType
 {
