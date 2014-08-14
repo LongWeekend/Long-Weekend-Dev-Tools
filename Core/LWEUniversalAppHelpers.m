@@ -27,7 +27,9 @@
 #import <UIKit/UIKit.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#ifdef __IPHONE_8_0
 #import <LocalAuthentication/LocalAuthentication.h>
+#endif
 
 @implementation LWEUniversalAppHelpers
 
@@ -60,15 +62,23 @@
 
 + (BOOL)isTouchIDAvailable
 {
-  // Don't crash if we're on iOS 7 or below
   if ([self isiOS8OrAbove] == NO)
   {
     return NO;
   }
-  
-  // We don't care about the error, we just want to know if we can use touch ID or not
-  LAContext *context = [[LAContext alloc] init];
-  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+
+  // TODO: Remove this when we move from Xcode 5 to Xcode 6
+  Class laContextClass = NSClassFromString(@"LAContext");
+  if (laContextClass)
+  {
+    id context = [[laContextClass alloc] init];
+    // The constant LAPolicyDeviceOwnerAuthenticationWithBiometrics would normally be used; this evaluates to one
+    return [context performSelector:@selector(canEvaluatePolicy:error:) withObject:1 withObject:nil];
+  }
+  else
+  {
+    return NO;
+  }
 }
 
 + (kLWEDeviceType)deviceType
