@@ -74,10 +74,7 @@ static const CGFloat FourInchDisplayHeight = 568.0;
 
 + (CGFloat)screenHeight_
 {
-  // Currently [UIScreen mainScreen].bounds.size.height is incorrect in the resizable iPhone simulator; if
-  // this gets straightened out then we can go back to that.
-  //return [UIScreen mainScreen].bounds.size.height;
-  return [UIApplication sharedApplication].keyWindow.bounds.size.height;
+  return [UIScreen mainScreen].bounds.size.height;
 }
 
 + (BOOL)isTouchIDAvailable
