@@ -140,5 +140,9 @@ typedef enum
  */
 + (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
 
+/**
+ * Returns the rotation transform needed to rotate a window or view to appear upright given the specified orientation of the device.
+ */
++ (CGAffineTransform)rotationTransformForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @end
