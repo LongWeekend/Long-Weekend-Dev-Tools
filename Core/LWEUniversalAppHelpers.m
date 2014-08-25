@@ -279,4 +279,19 @@ static const CGFloat FourInchDisplayHeight = 568.0;
   return returnVal;
 }
 
++ (CGAffineTransform)rotationTransformForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  switch (interfaceOrientation)
+  {
+    case UIInterfaceOrientationLandscapeLeft:
+      return CGAffineTransformMakeRotation(-0.5*M_PI);
+    case UIInterfaceOrientationLandscapeRight:
+      return CGAffineTransformMakeRotation(0.5*M_PI);
+    case UIInterfaceOrientationPortraitUpsideDown:
+      return CGAffineTransformMakeRotation(M_PI);
+    default:
+      return CGAffineTransformIdentity;
+  }
+}
+
 @end
