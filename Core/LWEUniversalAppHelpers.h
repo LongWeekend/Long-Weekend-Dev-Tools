@@ -92,6 +92,9 @@ typedef enum
  */
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay;
 
+/** Used by client code when running with a non 3.5" screen that wants to adjust layout optimized for 3.5" */
++ (CGFloat)threePoint5InchDisplayHeight;
+
 /** Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4" */
 + (CGFloat)fourInchDisplayHeight;
 

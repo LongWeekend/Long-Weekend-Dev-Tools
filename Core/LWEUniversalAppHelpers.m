@@ -33,6 +33,7 @@
 
 
 static const CGFloat FourInchDisplayHeight = 568.0;
+static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 
 @implementation LWEUniversalAppHelpers
@@ -67,6 +68,11 @@ static const CGFloat FourInchDisplayHeight = 568.0;
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay
 {
   return [self screenHeight_] - FourInchDisplayHeight;
+}
+
++ (CGFloat)threePoint5InchDisplayHeight
+{
+  return ThreePointFiveInchDisplayHeight;
 }
 
 + (CGFloat)fourInchDisplayHeight
