@@ -32,7 +32,7 @@
 #endif
 
 
-static const CGFloat FourInchDisplayHeight = 568.0;
+static const CGSize FourInchDisplaySize = { 320.0, 568.0 };
 static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 
@@ -57,17 +57,17 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 + (BOOL)is3Point5InchRetinaDisplay
 {
-  return [self screenHeight_] < FourInchDisplayHeight;
+  return [self screenHeight_] < [self fourInchDisplayHeight];
 }
 
 + (BOOL)isFourInchRetinaDisplay
 {
-  return fequal((double)[self screenHeight_], (double)FourInchDisplayHeight);
+  return fequal((double)[self screenHeight_], (double)[self fourInchDisplayHeight]);
 }
 
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay
 {
-  return [self screenHeight_] - FourInchDisplayHeight;
+  return [self screenHeight_] - [self fourInchDisplayHeight];
 }
 
 + (CGFloat)threePoint5InchDisplayHeight
@@ -77,7 +77,12 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 + (CGFloat)fourInchDisplayHeight
 {
-  return FourInchDisplayHeight;
+  return FourInchDisplaySize.height;
+}
+
++ (CGSize)fourInchDisplaySize
+{
+  return FourInchDisplaySize;
 }
 
 + (CGFloat)screenHeight_

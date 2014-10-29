@@ -73,18 +73,17 @@ typedef enum
  * Retina someday; this class should/would not care about that at that point.
  */
 @interface LWEUniversalAppHelpers : NSObject
-{
-}
+
 //! Determines if the device is an iPad or not. Works with pre 3.2 iOS versions as well
-+(BOOL)isAnIPad;
++ (BOOL)isAnIPad;
 
 //! Determines if the device is an iPhone or not. Works with pre 3.2 iOS versions as well
-+(BOOL)isAnIPhone;
++ (BOOL)isAnIPhone;
 
 + (BOOL)is3Point5InchRetinaDisplay;
 
 //! Determines if the device is an 4" retina display or not. Works with pre 3.2 iOS versions as well
-+(BOOL)isFourInchRetinaDisplay;
++ (BOOL)isFourInchRetinaDisplay;
 
 /**
  * Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4"
@@ -98,6 +97,9 @@ typedef enum
 /** Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4" */
 + (CGFloat)fourInchDisplayHeight;
 
+/** Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4" */
++ (CGSize)fourInchDisplaySize;
+
 + (BOOL)isiOS8OrAbove;
 
 //! Determines if touch ID is available or not.
@@ -108,7 +110,7 @@ typedef enum
  * This method returns the string by making a C system call asking the system to identify its
  * hardware.
  */
-+ (NSString*)deviceModelString;
++ (NSString *)deviceModelString;
 
 /**
  * Converts a device string (retrieved likely from the hardware via a call to -deviceModelString)
@@ -116,24 +118,22 @@ typedef enum
  * \param deviceString Should be a string from -deviceModelString -- something of the format "iPhone 2,1"
  * \return The device type, as a member of enum kLWEDeviceType
  */
-+ (kLWEDeviceType)deviceTypeWithString:(NSString*)deviceString;
++ (kLWEDeviceType)deviceTypeWithString:(NSString *)deviceString;
 
 /**
  * Helper method that calls +deviceTypeWithString: with the return val of +deviceModelString as the param
  */
 + (kLWEDeviceType)deviceType;
 
-/**
- * Adds a @HD extension to the name, if it is an iPad
- */
-+ (NSString*) fileNamed:(NSString*)fileName;
+/** Adds a @HD extension to the name, if it is an iPad */
++ (NSString *)fileNamed:(NSString*)fileName;
 
 /**
  * Adds an @HD extension to the name if the device is an iPad.  If the @HD filename does not exist
  * and useRetinaIfMissing is YES, it will be @2x instead.
  * Also, if NON ipad and is a retina device on 4.0.x, this method will return @2x
  */
-+ (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
++ (NSString *)fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
 
 /**
  * Returns an appropriate filename based on the filename given, making considerations for whether the device is an iPad or not, and whether the device is Retina or not.
@@ -141,7 +141,7 @@ typedef enum
  * \param useRetina If the device is an iPad, and no iPad HD file is found for the given fileName, setting this param to YES will return the retina filename instead.
  * \return Returns a filename based on the input fileName -- e.g. foo.png => foo@HD.png or foo@2x.png ... or maybe just foo.png.
  */
-+ (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
++ (NSString *)fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
 
 /**
  * Returns the rotation transform needed to rotate a window or view to appear upright given the specified orientation of the device.
