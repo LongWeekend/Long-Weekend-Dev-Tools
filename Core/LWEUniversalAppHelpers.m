@@ -65,6 +65,19 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   return fequal((double)[self screenHeight_], (double)[self fourInchDisplayHeight]);
 }
 
++ (BOOL)isLargeScreenSizePhone
+{
+  if ([LWEUniversalAppHelpers isAnIPhone])
+  {
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    return screenSize.width > FourInchDisplaySize.width || screenSize.height > FourInchDisplaySize.height;
+  }
+  else
+  {
+    return NO;
+  }
+}
+
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay
 {
   return [self screenHeight_] - [self fourInchDisplayHeight];
