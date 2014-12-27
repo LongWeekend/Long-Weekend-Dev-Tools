@@ -65,14 +65,16 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
 - (void)resetKeychainItem
 {
-  [[self class] resetKeychainForIdentifier:self.identifier];
+  [[self class] resetKeychainForIdentifier:self.identifier accessGroup:self.accessGroup];
   [self initializeForEmptyKeychain_];
 }
 
-+ (void)resetKeychainForIdentifier:(NSString *)keychainIdentifier
++ (void)resetKeychainForIdentifier:(NSString *)keychainIdentifier accessGroup:(NSString *)accessGroup
 {
-  // Delete everything from the keychain that is stored under our identifier. We want to keep our delete query as general as possible,
-  // so that it clears even old keychain items from previous versions of the app, without making it so general that it might
+  // Delete everything from the keychain that is stored under our identifier.
+  // We want to keep our delete query as general as possible,
+  // so that it clears even old keychain items from previous versions of the app,
+  // without making it so general that it might
   // delete keychain items maintained by other code in our app.
   NSMutableDictionary *keychainQuery = [NSMutableDictionary dictionary];
   [keychainQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
@@ -80,6 +82,23 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   {
     [keychainQuery setObject:keychainIdentifier forKey:(__bridge id)kSecAttrGeneric];
   }
+
+  if (accessGroup != nil)
+  {
+#if TARGET_IPHONE_SIMULATOR
+    // Ignore the access group if running on the iPhone simulator.
+    //
+    // Apps that are built for the simulator aren't signed, so there's no keychain access group
+    // for the simulator to check. This means that all apps can see all keychain items when run
+    // on the simulator.
+    //
+    // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
+    // simulator will return -25243 (errSecNoAccessForItem).
+#else
+    [keychainQuery setObject:accessGroup forKey:(__bridge id)kSecAttrAccessGroup];
+#endif
+  }
+
   OSStatus status = SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
   MT_ASSERT(status == noErr || status == errSecItemNotFound, @"Problem deleting keychain items: %d", (int)status);
 }

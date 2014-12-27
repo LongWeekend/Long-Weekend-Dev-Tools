@@ -28,10 +28,11 @@
 - (id)objectForKey:(NSString *)key;
 - (void)resetKeychainItem;
 
-/** Resets all items in the keychain. `keychainIdentifier` argument is optional; if nil, everything is
- *  cleared out (that we have access to).
+/** 
+ * Resets all items in the keychain. `keychainIdentifier` argument is optional; if nil, everything is
+ * cleared out (that we have access to).
  */
-+ (void)resetKeychainForIdentifier:(NSString *)keychainIdentifier;
++ (void)resetKeychainForIdentifier:(NSString *)keychainIdentifier accessGroup:(NSString *)accessGroup;
 
 - (id)initWithIdentifier:(NSString *)identifier accessGroup:(NSString *)accessGroup;
 
