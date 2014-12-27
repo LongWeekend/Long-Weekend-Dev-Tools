@@ -20,7 +20,6 @@
 
 #import "MTKeychainWrapper.h"
 #import "LWEDebug.h"
-#import "Constants.h"
 
 static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
@@ -101,7 +100,10 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   }
 
   OSStatus status = SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
-  MT_ASSERT(status == noErr || status == errSecItemNotFound, @"Problem deleting keychain items: %d", (int)status);
+  if (status != noErr && status != errSecItemNotFound)
+  {
+    NSLog(@"Problem deleting keychain items: %d", (int)status);
+  }
 }
 
 #pragma mark - Privates
