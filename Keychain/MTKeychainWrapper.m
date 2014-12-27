@@ -20,6 +20,7 @@
 
 #import "MTKeychainWrapper.h"
 #import "LWEDebug.h"
+#import "Constants.h"
 
 static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
