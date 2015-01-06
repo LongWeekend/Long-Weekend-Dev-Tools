@@ -19,7 +19,6 @@
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "MTKeychainWrapper.h"
-#import "LWEDebug.h"
 
 static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
@@ -219,8 +218,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     }
     else
     {
-      //Exception!
-      LWE_ASSERT_EXC((NO), @"The keychain should have the 'data'/'password' on its item.");
+      NSAssert((NO), @"The keychain should have the 'data'/'password' on its item.");
     }
   }
 }
