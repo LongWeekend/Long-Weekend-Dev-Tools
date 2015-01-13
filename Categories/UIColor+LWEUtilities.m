@@ -45,8 +45,7 @@
  */
 + (instancetype)colorWithHex:(NSUInteger)hex
 {
-	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex alpha:1.0f] autorelease];
-	return tmpColor;
+	return [[UIColor alloc] initWithHex:hex alpha:1.0f];
 }
 
 //! This method will initialize a color object with the provided hexadecimal number, and alpha (0.0-1.0). (Currently it only supports 24 bits color)
@@ -73,8 +72,7 @@
 //! This is the class method, that will call the method above, and give the autorelease object. It will transform the hexadecimal color, into individual red, green, blue color.
 + (instancetype)colorWithHex:(NSUInteger)hex alpha:(CGFloat)alpha
 {
-	UIColor *tmpColor = [[[UIColor alloc] initWithHex:hex alpha:alpha] autorelease];
-	return tmpColor;
+	return [[UIColor alloc] initWithHex:hex alpha:alpha];
 }
 
 @end
