@@ -88,6 +88,10 @@ typedef enum
 /** Returns `YES` for iPhone screen larger than 4"  */
 + (BOOL)isLargeScreenSizePhone;
 
++ (BOOL)is4Point7InchRetinaDisplay;
+
++ (BOOL)is5Point5InchRetinaDisplay;
+
 /**
  * Used by client code when running with a non 4" screen that wants to adjust layout optimized for 4"
  * NOTE: Currently this method returns incorrect results when run in the resizable iPhone simulator.

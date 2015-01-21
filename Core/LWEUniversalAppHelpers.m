@@ -32,6 +32,8 @@
 #endif
 
 
+static const CGSize Retina5Point5InchDisplaySize = { 414, 736 };
+static const CGSize Retina4Point7InchDisplaySize = { 375, 667 };
 static const CGSize FourInchDisplaySize = { 320.0, 568.0 };
 static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
@@ -76,6 +78,16 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   {
     return NO;
   }
+}
+
++ (BOOL)is4Point7InchRetinaDisplay
+{
+  return CGSizeEqualToSize([UIScreen mainScreen].bounds.size, Retina4Point7InchDisplaySize);
+}
+
++ (BOOL)is5Point5InchRetinaDisplay
+{
+  return CGSizeEqualToSize([UIScreen mainScreen].bounds.size, Retina5Point5InchDisplaySize);
 }
 
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay
