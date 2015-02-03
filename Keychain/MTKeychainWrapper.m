@@ -264,14 +264,12 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     
     // An implicit assumption is that you can only update a single item at a time.
     result = SecItemUpdate((__bridge CFDictionaryRef)dictionary, (__bridge CFDictionaryRef)updatedItem);
-		NSAssert(result == noErr, @"Couldn't update the Keychain Item with error : %d", (int)result);
   }
   else
   {
     // No previous item found; add the new one.
     NSDictionary *addedItem = [self _dictionaryToSecItemFormat];
     result = SecItemAdd((__bridge CFDictionaryRef)addedItem, NULL);
-    NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %d", (int)result);
   }
   return result;
 }
