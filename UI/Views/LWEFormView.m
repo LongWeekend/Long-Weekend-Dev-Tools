@@ -38,6 +38,8 @@
 
 @implementation LWEFormView
 
+@dynamic delegate;
+
 #pragma mark - Class Plumbing (init/dealloc)
 
 - (id)initWithCoder:(NSCoder *)aDecoder
