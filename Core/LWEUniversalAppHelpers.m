@@ -95,6 +95,33 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   return [self screenHeight_] - [self fourInchDisplayHeight];
 }
 
++ (CGFloat)ratioHeightDifferenceFrom4InchDisplay
+{
+  static CGFloat ratio__ = 0;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    if ([self isLargeScreenSizePhone] == NO)
+    {
+      ratio__ = 1;
+    }
+    else
+    {
+      ratio__ = [self screenHeightDifferenceFrom4InchDisplay]/[LWEUniversalAppHelpers fourInchDisplayHeight];
+    }
+  });
+  return ratio__;
+}
+
++ (CGFloat)scaledInBiggerIphoneFor:(CGFloat)number
+{
+  if ([self isLargeScreenSizePhone])
+  {
+    CGFloat ratio = [self ratioHeightDifferenceFrom4InchDisplay];
+    return number+(ratio*number);
+  }
+  return number;
+}
+
 + (CGFloat)threePoint5InchDisplayHeight
 {
   return ThreePointFiveInchDisplayHeight;
