@@ -98,8 +98,18 @@ typedef enum
  */
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay;
 
+/** 
+ * Derrived the number from `screenHeightDifferenceFrom4InchDisplay` method, it takes the height ratio,
+ * how much bigger in a percentage.
+ *
+ * Returns 1 for smaller iPhone and iPad.
+ */
 + (CGFloat)ratioHeightDifferenceFrom4InchDisplay;
 
+/**
+ * Given a measurement number for iPhone with 4" screen, it gets the
+ * screen difference ratio and return what the scaled measurement for bigger iPhone.
+ */
 + (CGFloat)scaledInBiggerIphoneFor:(CGFloat)number;
 
 /** Used by client code when running with a non 3.5" screen that wants to adjust layout optimized for 3.5" */
