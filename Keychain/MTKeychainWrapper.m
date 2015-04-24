@@ -18,6 +18,10 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// TODO: Clean up this class, this class is F in messed up -- RPR 2015-04-24
+// Maybe pull this out from LWE's and start a new MT's one.
+// Ticket is here: https://www.pivotaltracker.com/story/show/93187208
+
 #import "MTKeychainWrapper.h"
 
 static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
@@ -116,6 +120,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   
   // Add the Generic Password keychain item class attribute. (If its not already there)
   [returnDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+  [returnDictionary setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlock forKey:(__bridge id)kSecAttrAccessible];
   
   // Convert the NSDictionary to NSData to meet the requirements for the value type kSecValueData.
   // This is where to store sensitive data that should be encrypted.
@@ -123,7 +128,6 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
   [archiver encodeObject:self.keychainData forKey:LWEKeychainDictionaryKey];
   [archiver finishEncoding];
-
   [returnDictionary setObject:data forKey:(__bridge id)kSecValueData];
   
   return returnDictionary;
