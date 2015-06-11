@@ -42,34 +42,21 @@
 
 #pragma mark - Class Plumbing (init/dealloc)
 
-- (id)initWithCoder:(NSCoder *)aDecoder
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
   self = [super initWithCoder:aDecoder];
-  if (self)
-  {
-    self.userInteractionEnabled = YES;
-    self.animationInterval = 0.5;
-    
-    [self startListeningToKeyboardNotification_];
-  }
+  [self commonInit_];
   return self;
 }
 
-- (id)initWithFrame:(CGRect)aFrame
+- (instancetype)initWithFrame:(CGRect)aFrame
 {
-  self = [self initWithCoder:nil];
+  self = [super initWithFrame:aFrame];
   if (self)
   {
-    self.frame = aFrame;
-    
-    [self startListeningToKeyboardNotification_];
+    [self commonInit_];
   }
   return self;
-}
-
-- (id)init
-{
-  return [self initWithCoder:nil];
 }
 
 - (void)dealloc
@@ -82,6 +69,14 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   [super dealloc];
+}
+
+- (void)commonInit_
+{
+  self.userInteractionEnabled = YES;
+  self.animationInterval = 0.5;
+
+  [self startListeningToKeyboardNotification_];
 }
 
 #pragma mark - Subview work
