@@ -33,38 +33,43 @@
 @interface LWEUIAlertView : NSObject
 
 /**
- * \brief Shows standard no-network alert view 
+ * Allow the ability for this class to instantiate another type of 
+ * object, as long as `alertViewClassType` inehrits from the `UIAlertView`.
+ *
+ * Next subsequent call to the factory methods from this class will result
+ * in an object of type `alertViewClassType` specified.
+ *
+ * By default, its going to return `UIAlertView` type instead.
  */
-+ (UIAlertView*) noNetworkAlert;
++ (void)setAlertViewClassType:(Class)alertViewClassType;
 
-/**
- * \brief Shows standard no-network alert view with delegate
- */
-+ (UIAlertView*) noNetworkAlertWithDelegate:(id)delegate;
+/** Shows standard no-network alert view */
++ (UIAlertView *)noNetworkAlert;
 
-/**
- * \brief Shows an "OK" alert notification
- */
-+ (UIAlertView*) notificationAlertWithTitle:(NSString*)title message:(NSString*)message;
+/** Shows standard no-network alert view with delegate */
++ (UIAlertView *)noNetworkAlertWithDelegate:(id)delegate;
 
-/**
- * \brief Shows an "OK" alert notification (with delegate)
- */
-+ (UIAlertView*) notificationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate;
+/** Shows an "OK" alert notification */
++ (UIAlertView *)notificationAlertWithTitle:(NSString *)title message:(NSString *)message;
 
-/**
- * \brief Shows a Cancel/OK confirmation alert with standard OK/Cancel
- */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message delegate:(id)delegate;
+/** Shows an "OK" alert notification (with delegate) */
++ (UIAlertView *)notificationAlertWithTitle:(NSString *)title message:(NSString *)message delegate:(id)delegate;
 
-/**
- * \brief Shows a Cancel/OK confirmation alert with customized OK/Cancel
- */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate;
+/** Shows a Cancel/OK confirmation alert with standard OK/Cancel */
++ (UIAlertView *)confirmationAlertWithTitle:(NSString *)title message:(NSString *)message delegate:(id)delegate;
 
-/**
- * \brief Shows a Cancel/OK confirmation alert with customized OK/Cancel and takes an optional tag for the alert view
- */
-+ (UIAlertView*) confirmationAlertWithTitle:(NSString*)title message:(NSString*)message ok:(NSString*)ok cancel:(NSString*)cancel delegate:(id)delegate tag:(int)tag;
+/** Shows a Cancel/OK confirmation alert with customized OK/Cancel */
++ (UIAlertView *)confirmationAlertWithTitle:(NSString *)title message:(NSString *)message ok:(NSString *)ok cancel:(NSString *)cancel delegate:(id)delegate;
+
+/** Shows a Cancel/OK confirmation alert with customized OK/Cancel and takes an optional tag for the alert view */
++ (UIAlertView *)confirmationAlertWithTitle:(NSString *)title message:(NSString *)message ok:(NSString *)ok cancel:(NSString *)cancel delegate:(id)delegate tag:(int)tag;
+
++ (UIAlertView *)confirmationAlertWithTitle:(NSString *)title
+                                    message:(NSString *)message
+                                         ok:(NSString *)ok
+                                     cancel:(NSString *)cancel
+                                   delegate:(id)delegate
+                         customizationBlock:(void(^)(UIAlertView *))customisationBlock
+                                        tag:(int)tag;
 
 @end

@@ -18,8 +18,11 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// TODO: Clean up this class, this class is F in messed up -- RPR 2015-04-24
+// Maybe pull this out from LWE's and start a new MT's one.
+// Ticket is here: https://www.pivotaltracker.com/story/show/93187208
+
 #import "MTKeychainWrapper.h"
-#import "LWEDebug.h"
 
 static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
@@ -29,28 +32,33 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 @property (nonatomic, strong) NSDictionary *genericPasswordQuery;
 @property (nonatomic, strong) NSMutableDictionary *keychainItem;
 @property (nonatomic, strong) NSMutableDictionary *keychainData;
-- (NSMutableDictionary *)_dictionaryToSecItemFormat;
-- (NSDictionary *)_generateGenericDictionaryForSearching:(BOOL)forSearching;
-- (void)_getKeychainData;
-- (void)_writeToKeychain;
 @end
 
 @implementation MTKeychainWrapper
-@synthesize identifier = _identifier, accessGroup = _accessGroup;
-@synthesize genericPasswordQuery = _generateGenericDictionary;
-@synthesize keychainItem = _keychainItem, keychainData = _keychainData;
 
 #pragma mark - Public Methods
 
-- (void)setObject:(id)object forKey:(NSString *)key
+- (OSStatus)setObject:(id)object forKey:(NSString *)key
 {
-  if (object == nil) return;
-  id currentObject = [self.keychainData objectForKey:key];
-  if (![currentObject isEqual:object])
+  id currentObject = self.keychainData[key];
+  OSStatus status = noErr;
+  if (object == nil)
+  {
+    [self.keychainData removeObjectForKey:key];
+    status = [self writeToKeychain_];
+  }
+  else if ([currentObject isEqual:object] == NO)
   {
     [self.keychainData setObject:object forKey:key];
-    [self _writeToKeychain];
+    status = [self writeToKeychain_];
   }
+  return status;
+}
+
+- (OSStatus)removeObjectsForKeys:(NSArray *)keys
+{
+  [self.keychainData removeObjectsForKeys:keys];
+  return [self writeToKeychain_];
 }
 
 - (id)objectForKey:(NSString *)key
@@ -60,16 +68,45 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
 - (void)resetKeychainItem
 {
-  OSStatus status = noErr;
-  if (self.keychainItem)
+  [[self class] resetKeychainForIdentifier:self.identifier accessGroup:self.accessGroup];
+  [self initializeForEmptyKeychain_];
+}
+
++ (void)resetKeychainForIdentifier:(NSString *)keychainIdentifier accessGroup:(NSString *)accessGroup
+{
+  // Delete everything from the keychain that is stored under our identifier.
+  // We want to keep our delete query as general as possible,
+  // so that it clears even old keychain items from previous versions of the app,
+  // without making it so general that it might
+  // delete keychain items maintained by other code in our app.
+  NSMutableDictionary *keychainQuery = [NSMutableDictionary dictionary];
+  [keychainQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+  if (keychainIdentifier)
   {
-    NSMutableDictionary *tempDictionary = [self _dictionaryToSecItemFormat];
-    status = SecItemDelete((__bridge CFDictionaryRef)tempDictionary);
-    LWE_ASSERT_EXC((status == noErr||status == errSecItemNotFound), @"Problem deleting current dictionary: %ld", status);
+    [keychainQuery setObject:keychainIdentifier forKey:(__bridge id)kSecAttrGeneric];
   }
-  
-  self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
-  [self.keychainData removeAllObjects];
+
+  if (accessGroup != nil)
+  {
+#if TARGET_IPHONE_SIMULATOR
+    // Ignore the access group if running on the iPhone simulator.
+    //
+    // Apps that are built for the simulator aren't signed, so there's no keychain access group
+    // for the simulator to check. This means that all apps can see all keychain items when run
+    // on the simulator.
+    //
+    // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
+    // simulator will return -25243 (errSecNoAccessForItem).
+#else
+    [keychainQuery setObject:accessGroup forKey:(__bridge id)kSecAttrAccessGroup];
+#endif
+  }
+
+  OSStatus status = SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
+  if (status != noErr && status != errSecItemNotFound)
+  {
+    NSLog(@"Problem deleting keychain items: %d", (int)status);
+  }
 }
 
 #pragma mark - Privates
@@ -83,6 +120,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   
   // Add the Generic Password keychain item class attribute. (If its not already there)
   [returnDictionary setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
+  [returnDictionary setObject:(__bridge id)kSecAttrAccessibleAfterFirstUnlock forKey:(__bridge id)kSecAttrAccessible];
   
   // Convert the NSDictionary to NSData to meet the requirements for the value type kSecValueData.
   // This is where to store sensitive data that should be encrypted.
@@ -90,7 +128,6 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
   [archiver encodeObject:self.keychainData forKey:LWEKeychainDictionaryKey];
   [archiver finishEncoding];
-
   [returnDictionary setObject:data forKey:(__bridge id)kSecValueData];
   
   return returnDictionary;
@@ -149,8 +186,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
   CFDictionaryRef cfdict = NULL;
   if (!SecItemCopyMatching((__bridge CFDictionaryRef)self.genericPasswordQuery, (CFTypeRef *)&cfdict) == noErr)
   {
-    self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
-    self.keychainData = [[NSMutableDictionary alloc] init];
+    [self initializeForEmptyKeychain_];
   }
   else
   {
@@ -181,18 +217,23 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
       [returnDictionary setObject:dataDict forKey:(__bridge id)kSecValueData];
       
       // 3d. Set thos values back to the ivar.
-      self.keychainItem = [NSDictionary dictionaryWithDictionary:returnDictionary];
+      self.keychainItem = [NSMutableDictionary dictionaryWithDictionary:returnDictionary];
       self.keychainData = dataDict;
     }
     else
     {
-      //Exception!
-      LWE_ASSERT_EXC((NO), @"The keychain should have the 'data'/'password' on its item.");
+      NSAssert((NO), @"The keychain should have the 'data'/'password' on its item.");
     }
   }
 }
 
-- (void)_writeToKeychain
+- (void)initializeForEmptyKeychain_
+{
+  self.keychainItem = (NSMutableDictionary *)[self _generateGenericDictionaryForSearching:NO];
+  self.keychainData = [[NSMutableDictionary alloc] init];
+}
+
+- (OSStatus)writeToKeychain_
 {
   CFDictionaryRef cfdict = NULL;
 	OSStatus result;
@@ -227,15 +268,14 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     
     // An implicit assumption is that you can only update a single item at a time.
     result = SecItemUpdate((__bridge CFDictionaryRef)dictionary, (__bridge CFDictionaryRef)updatedItem);
-		NSAssert(result == noErr, @"Couldn't update the Keychain Item with error : %ld", result);
   }
   else
   {
     // No previous item found; add the new one.
     NSDictionary *addedItem = [self _dictionaryToSecItemFormat];
     result = SecItemAdd((__bridge CFDictionaryRef)addedItem, NULL);
-    NSAssert(result == noErr, @"Couldn't add the Keychain Item with error: %ld", result);
   }
+  return result;
 }
 
 #pragma mark - Class Plumbing

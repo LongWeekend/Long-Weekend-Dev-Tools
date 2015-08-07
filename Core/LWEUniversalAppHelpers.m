@@ -27,31 +27,139 @@
 #import <UIKit/UIKit.h>
 #include <sys/types.h>
 #include <sys/sysctl.h>
+#ifdef __IPHONE_8_0
+#import <LocalAuthentication/LocalAuthentication.h>
+#endif
+
+
+static const CGSize Retina5Point5InchDisplaySize = { 414, 736 };
+static const CGSize Retina4Point7InchDisplaySize = { 375, 667 };
+static const CGSize FourInchDisplaySize = { 320.0, 568.0 };
+static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
+
 
 @implementation LWEUniversalAppHelpers
 
-// TODO: this is a bit of a naive implementation - change this to use deviceModelString?
-+ (BOOL) isAnIPad
++ (BOOL)isiOS8OrAbove
 {
-    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200  // this is when the UI_USER_INTERFACE_IDIOM was added
-      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        return YES;
-      else 
-        // This is a 3.2.0+ but not an iPad (for future, when iPhone/iPod Touch runs with same OS than iPad)    
-        return NO;
-    #else
-      // It's an iPhone/iPod Touch (OS < 3.2.0)
-      return NO;
-    #endif
+  return [@"8.0" compare:[[UIDevice currentDevice] systemVersion] options:NSNumericSearch] != NSOrderedDescending;
 }
 
-// TODO: this is a bit of a naive implementation
++ (BOOL)isAnIPad
+{
+  UIDevice *currentDevice = [UIDevice currentDevice];
+  return ([currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPad);
+}
+
 + (BOOL)isAnIPhone
 {
-  return ([LWEUniversalAppHelpers isAnIPad] == NO);
+  UIDevice *currentDevice = [UIDevice currentDevice];
+  return ([currentDevice userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
 }
 
-+ (kLWEDeviceType) deviceType
++ (BOOL)is3Point5InchRetinaDisplay
+{
+  return [self screenHeight_] < [self fourInchDisplayHeight];
+}
+
++ (BOOL)isFourInchRetinaDisplay
+{
+  return fequal((double)[self screenHeight_], (double)[self fourInchDisplayHeight]);
+}
+
++ (BOOL)isLargeScreenSizePhone
+{
+  if ([LWEUniversalAppHelpers isAnIPhone])
+  {
+    CGSize screenSize = [UIScreen mainScreen].bounds.size;
+    return screenSize.width > FourInchDisplaySize.width || screenSize.height > FourInchDisplaySize.height;
+  }
+  else
+  {
+    return NO;
+  }
+}
+
++ (BOOL)is4Point7InchRetinaDisplay
+{
+  return CGSizeEqualToSize([UIScreen mainScreen].bounds.size, Retina4Point7InchDisplaySize);
+}
+
++ (BOOL)is5Point5InchRetinaDisplay
+{
+  return CGSizeEqualToSize([UIScreen mainScreen].bounds.size, Retina5Point5InchDisplaySize);
+}
+
++ (CGFloat)screenHeightDifferenceFrom4InchDisplay
+{
+  return [self screenHeight_] - [self fourInchDisplayHeight];
+}
+
++ (CGFloat)ratioHeightDifferenceFrom4InchDisplay
+{
+  static CGFloat ratio__ = 0;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    if ([self isLargeScreenSizePhone] == NO)
+    {
+      ratio__ = 1;
+    }
+    else
+    {
+      ratio__ = [self screenHeightDifferenceFrom4InchDisplay]/[LWEUniversalAppHelpers fourInchDisplayHeight];
+    }
+  });
+  return ratio__;
+}
+
++ (CGFloat)scaledInBiggerIphoneFor:(CGFloat)number
+{
+  if ([self isLargeScreenSizePhone])
+  {
+    CGFloat ratio = [self ratioHeightDifferenceFrom4InchDisplay];
+    return number+(ratio*number);
+  }
+  return number;
+}
+
++ (CGFloat)threePoint5InchDisplayHeight
+{
+  return ThreePointFiveInchDisplayHeight;
+}
+
++ (CGFloat)fourInchDisplayHeight
+{
+  return FourInchDisplaySize.height;
+}
+
++ (CGSize)fourInchDisplaySize
+{
+  return FourInchDisplaySize;
+}
+
++ (CGFloat)screenHeight_
+{
+  return [UIScreen mainScreen].bounds.size.height;
+}
+
++ (BOOL)isTouchIDAvailable
+{
+#ifdef __IPHONE_8_0
+  // Don't crash if we're on iOS 7 or below
+  if ([self isiOS8OrAbove] == NO)
+  {
+    return NO;
+  }
+  
+  // We don't care about the error, we just want to know if we can use touch ID or not
+  LAContext *context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+#else
+  return NO;
+#endif
+}
+
++ (kLWEDeviceType)deviceType
 {
   NSString *deviceString = [LWEUniversalAppHelpers deviceModelString];
   return [LWEUniversalAppHelpers deviceTypeWithString:deviceString];
@@ -218,7 +326,7 @@
     returnVal = ipadName;
     if (useRetina && [LWEFile fileExists:ipadName] == NO)
     {
-      returnVal = [LWERetinaUtils retinaFilenameForName:fileName];
+      returnVal = [fileName stringByAddingRetinaSpecifier];
     }
   }
   else
@@ -234,6 +342,21 @@
   }
   
   return returnVal;
+}
+
++ (CGAffineTransform)rotationTransformForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  switch (interfaceOrientation)
+  {
+    case UIInterfaceOrientationLandscapeLeft:
+      return CGAffineTransformMakeRotation(-0.5*M_PI);
+    case UIInterfaceOrientationLandscapeRight:
+      return CGAffineTransformMakeRotation(0.5*M_PI);
+    case UIInterfaceOrientationPortraitUpsideDown:
+      return CGAffineTransformMakeRotation(M_PI);
+    default:
+      return CGAffineTransformIdentity;
+  }
 }
 
 @end
