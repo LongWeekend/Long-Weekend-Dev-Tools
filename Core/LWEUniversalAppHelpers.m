@@ -45,6 +45,11 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   return [@"8.0" compare:[[UIDevice currentDevice] systemVersion] options:NSNumericSearch] != NSOrderedDescending;
 }
 
++ (BOOL)isiOS9OrAbove
+{
+  return [@"9.0" compare:[[UIDevice currentDevice] systemVersion] options:NSNumericSearch] != NSOrderedDescending;
+}
+
 + (BOOL)isAnIPad
 {
   UIDevice *currentDevice = [UIDevice currentDevice];

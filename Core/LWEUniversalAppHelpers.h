@@ -124,6 +124,7 @@ typedef enum
 + (CGSize)fourInchDisplaySize;
 
 + (BOOL)isiOS8OrAbove;
++ (BOOL)isiOS9OrAbove;
 
 //! Determines if touch ID is available or not.
 + (BOOL)isTouchIDAvailable;
