@@ -64,7 +64,8 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 + (BOOL)is3Point5InchRetinaDisplay
 {
-  return [self screenHeight_] < [self fourInchDisplayHeight];
+  return ([LWEUniversalAppHelpers isAnIPhone] &&
+          ([self screenHeight_] < [self fourInchDisplayHeight]));
 }
 
 + (BOOL)isFourInchRetinaDisplay
