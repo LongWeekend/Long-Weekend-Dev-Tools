@@ -21,12 +21,13 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+@import Foundation;
 #import "LWEUniversalAppHelpers.h"
 #import "LWERetinaUtils.h"
 #import "LWEFile.h"
-#import <UIKit/UIKit.h>
-#include <sys/types.h>
-#include <sys/sysctl.h>
+
+#import <sys/utsname.h>
+
 #ifdef __IPHONE_8_0
 #import <LocalAuthentication/LocalAuthentication.h>
 #endif
@@ -64,7 +65,8 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 + (BOOL)is3Point5InchRetinaDisplay
 {
-  return [self screenHeight_] < [self fourInchDisplayHeight];
+  return ([LWEUniversalAppHelpers isAnIPhone] &&
+          ([self screenHeight_] < [self fourInchDisplayHeight]));
 }
 
 + (BOOL)isFourInchRetinaDisplay
@@ -265,32 +267,20 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   return device;
 }
 
-+ (NSString*) deviceModelString
++ (NSString *)deviceModelString
 {
-  // This implementation is courtesy of John Muchow
-  // http://iphonedevelopertips.com/device/determine-if-iphone-is-3g-or-3gs-determine-if-ipod-is-first-or-second-generation.html
-  size_t size;
-  
-  // Set 'oldp' parameter to NULL to get the size of the data
-  // returned so we can allocate appropriate amount of space
-  sysctlbyname("hw.machine", NULL, &size, NULL, 0); 
-  
-  // Allocate the space to store name
-  char *name = malloc(size);
-  
-  // Get the platform name
-  sysctlbyname("hw.machine", name, &size, NULL, 0);
-  
-  // Place name into a string
-  NSString *machine = [NSString stringWithCString:name encoding:NSASCIIStringEncoding];
-  free(name);
-  return machine;
+  // Borrowed from:
+  // http://stackoverflow.com/a/11197770/516969
+  struct utsname systemInfo;
+  uname(&systemInfo);
+
+  return [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
 }
 
 /**
  * If iPad, will append "@HD" to the filename - does NOT check for file existence
  */
-+ (NSString*) fileNamed:(NSString*)fileName
++ (NSString *)fileNamed:(NSString*)fileName
 {
   NSString *returnVal = fileName;
   if ([LWEUniversalAppHelpers isAnIPad])
@@ -310,7 +300,7 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 }
 
 
-+ (NSString*) fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
++ (NSString *)fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina
 {
   NSString *returnVal = fileName;
   if ([LWEUniversalAppHelpers isAnIPad])
