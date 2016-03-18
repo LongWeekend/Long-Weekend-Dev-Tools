@@ -184,7 +184,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 - (void)_getKeychainData
 {
   CFDictionaryRef cfdict = NULL;
-  if (!SecItemCopyMatching((__bridge CFDictionaryRef)self.genericPasswordQuery, (CFTypeRef *)&cfdict) == noErr)
+  if (SecItemCopyMatching((__bridge CFDictionaryRef)self.genericPasswordQuery, (CFTypeRef *)&cfdict) != noErr)
   {
     [self initializeForEmptyKeychain_];
   }
