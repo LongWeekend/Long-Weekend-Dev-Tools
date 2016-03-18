@@ -129,6 +129,26 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   return number;
 }
 
++ (CGFloat)scaledInBiggerIphoneFor:(CGFloat)number axis:(UILayoutConstraintAxis)axis
+{
+  if ([self isLargeScreenSizePhone] == NO)
+  {
+    return number;
+  }
+
+  CGFloat ratio = 1;
+  if (axis == UILayoutConstraintAxisHorizontal)
+  {
+    ratio = CGRectGetWidth([UIScreen mainScreen].bounds)/[self fourInchDisplaySize].width;
+  }
+  else
+  {
+    ratio = CGRectGetHeight([UIScreen mainScreen].bounds)/[self fourInchDisplaySize].height;
+  }
+  return number*ratio;
+
+}
+
 + (CGFloat)threePoint5InchDisplayHeight
 {
   return ThreePointFiveInchDisplayHeight;

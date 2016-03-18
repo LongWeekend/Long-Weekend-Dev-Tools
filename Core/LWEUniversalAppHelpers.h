@@ -111,8 +111,18 @@ typedef enum
 /**
  * Given a measurement number for iPhone with 4" screen, it gets the
  * screen difference ratio and return what the scaled measurement for bigger iPhone.
+ *
+ * Note: This method is less accurate as this only accounts for height difference.
+ * (ignore the width difference)
  */
 + (CGFloat)scaledInBiggerIphoneFor:(CGFloat)number;
+
+/**
+ * Scaled measurement for the larger iPhone for a specific axis. Vertical is
+ * calculated against the height difference while horizontal takes the width
+ * difference as the ratio.
+ */
++ (CGFloat)scaledInBiggerIphoneFor:(CGFloat)number axis:(UILayoutConstraintAxis)axis;
 
 /** Used by client code when running with a non 3.5" screen that wants to adjust layout optimized for 3.5" */
 + (CGFloat)threePoint5InchDisplayHeight;
