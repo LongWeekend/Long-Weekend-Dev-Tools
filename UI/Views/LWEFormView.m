@@ -255,8 +255,13 @@
   {
     nextIndex = currIndex + 1;
   }
-  UIResponder *nextField = [self.fieldsSortedByTag objectAtIndex:nextIndex];
-  return nextField;
+
+  if (nextIndex >= self.fieldsSortedByTag.count)
+  {
+    return nil;
+  }
+
+  return [self.fieldsSortedByTag objectAtIndex:nextIndex];
 }
 
 /**
