@@ -23,6 +23,8 @@
 
 @import Foundation;
 #import "LWEUniversalAppHelpers.h"
+
+#import "NSString+LWEResolutionHelpers.h"
 #import "LWERetinaUtils.h"
 #import "LWEFile.h"
 
