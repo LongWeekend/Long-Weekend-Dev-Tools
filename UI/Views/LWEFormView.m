@@ -74,6 +74,7 @@
 {
   self.userInteractionEnabled = YES;
   self.animationInterval = 0.5;
+  self.fieldsSortedByTag = [NSArray array];
 
   [self startListeningToKeyboardNotification_];
 }
@@ -88,11 +89,7 @@
   // `super` will actually call back to this method AS it unpacks the 
   // XIB.  We may be able to move it to *above* the super call in -initWithCoder,
   // but I'm not 100% confident that works well.  MMA - 7/13/2012
-  if (self.fieldsSortedByTag == nil)
-  {
-    self.fieldsSortedByTag = [NSArray array];
-  }
-  
+
   // TODO: MMA this is starting to get hacky.  Time for a better solution?
   BOOL isTextField = [theSubview isKindOfClass:[UITextField class]];
   BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
@@ -220,6 +217,12 @@
 
 - (void)addFormObject_:(id<LWEFormViewFieldProtocol>)controlObject
 {
+  // Dont allow for readding.
+  if ([self.fieldsSortedByTag containsObject:controlObject])
+  {
+    return;
+  }
+
   NSMutableArray *newArray = [[self.fieldsSortedByTag mutableCopy] autorelease];
   [newArray addObject:controlObject];
   
