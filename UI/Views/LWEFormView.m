@@ -51,10 +51,7 @@
 - (instancetype)initWithFrame:(CGRect)aFrame
 {
   self = [super initWithFrame:aFrame];
-  if (self)
-  {
-    [self commonInit_];
-  }
+  [self commonInit_];
   return self;
 }
 
@@ -83,13 +80,6 @@
 
 - (void)didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
 {
-  // NOTE:  You (if your name is RSH) might wonder why this is here, not in init.
-  // This is here because `didAddSubview:` gets called BEFOREEEE any 
-  // of our initialization code.  When we call `-initWithCoder:`, the
-  // `super` will actually call back to this method AS it unpacks the 
-  // XIB.  We may be able to move it to *above* the super call in -initWithCoder,
-  // but I'm not 100% confident that works well.  MMA - 7/13/2012
-
   // TODO: MMA this is starting to get hacky.  Time for a better solution?
   BOOL isTextField = [theSubview isKindOfClass:[UITextField class]];
   BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
