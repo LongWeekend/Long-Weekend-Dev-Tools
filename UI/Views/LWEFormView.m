@@ -51,7 +51,7 @@
   // might be an interest.
   for (UIView<LWEFormViewFieldProtocol> *view in self.subviews)
   {
-    [self addFormField:view];
+    [self addFormObject_:view];
   }
 
   return self;
@@ -222,7 +222,7 @@
   // TODO: MMA this is starting to get hacky.  Time for a better solution?
   BOOL isTextField = [controlObject isKindOfClass:[UITextField class]];
   BOOL isTextView = [controlObject isKindOfClass:[UITextView class]];
-  if (isTextView == NO && isTextField == NO)
+  if (isTextField == NO && isTextView == NO)
   {
     return;
   }
