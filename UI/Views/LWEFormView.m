@@ -90,14 +90,7 @@
 - (void)didAddSubview:(UIView<LWEFormViewFieldProtocol> *)subview
 {
   [super didAddSubview:subview];
-
-  // TODO: MMA this is starting to get hacky.  Time for a better solution?
-  BOOL isTextField = [subview isKindOfClass:[UITextField class]];
-  BOOL isTextView = [subview isKindOfClass:[UITextView class]];
-  if (isTextView || isTextField)
-  {
-    [self addFormObject_:subview];
-  }
+  [self addFormObject_:subview];
 }
 
 - (void)willRemoveSubview:(UIView<LWEFormViewFieldProtocol> *)subview
@@ -225,6 +218,15 @@
   {
     return;
   }
+
+  // TODO: MMA this is starting to get hacky.  Time for a better solution?
+  BOOL isTextField = [controlObject isKindOfClass:[UITextField class]];
+  BOOL isTextView = [controlObject isKindOfClass:[UITextView class]];
+  if (isTextView == NO && isTextField == NO)
+  {
+    return;
+  }
+
 
   NSMutableArray *newArray = [[self.fieldsSortedByTag mutableCopy] autorelease];
   [newArray addObject:controlObject];
