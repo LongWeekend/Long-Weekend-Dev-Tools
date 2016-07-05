@@ -45,6 +45,15 @@
 {
   self = [super initWithCoder:aDecoder];
   [self commonInit_];
+
+  // Because when `didAddSubview` is called,
+  // `self` is not fully initialized yet. Readd anything that
+  // might be an interest.
+  for (UIView<LWEFormViewFieldProtocol> *view in self.subviews)
+  {
+    [self addFormObject_:view];
+  }
+
   return self;
 }
 
@@ -78,23 +87,20 @@
 
 #pragma mark - Subview work
 
-- (void)didAddSubview:(id<LWEFormViewFieldProtocol>)theSubview
+- (void)didAddSubview:(UIView<LWEFormViewFieldProtocol> *)subview
 {
-  // TODO: MMA this is starting to get hacky.  Time for a better solution?
-  BOOL isTextField = [theSubview isKindOfClass:[UITextField class]];
-  BOOL isTextView = [theSubview isKindOfClass:[UITextView class]];
-  if (isTextView || isTextField)
-  {
-    [self addFormObject_:theSubview];
-  }
+  [super didAddSubview:subview];
+  [self addFormObject_:subview];
 }
 
-- (void)willRemoveSubview:(id<LWEFormViewFieldProtocol>)theSubview
+- (void)willRemoveSubview:(UIView<LWEFormViewFieldProtocol> *)subview
 {
+  [super willRemoveSubview:subview];
+
   // Only respond to this if it's an object we care about!
-  if ([self.fieldsSortedByTag containsObject:theSubview])
+  if ([self.fieldsSortedByTag containsObject:subview])
   {
-    [self removeFormObject_:theSubview];
+    [self removeFormObject_:subview];
   }
 }
 
@@ -212,6 +218,15 @@
   {
     return;
   }
+
+  // TODO: MMA this is starting to get hacky.  Time for a better solution?
+  BOOL isTextField = [controlObject isKindOfClass:[UITextField class]];
+  BOOL isTextView = [controlObject isKindOfClass:[UITextView class]];
+  if (isTextField == NO && isTextView == NO)
+  {
+    return;
+  }
+
 
   NSMutableArray *newArray = [[self.fieldsSortedByTag mutableCopy] autorelease];
   [newArray addObject:controlObject];
