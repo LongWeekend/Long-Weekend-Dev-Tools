@@ -110,7 +110,7 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
  * 
  * Set the form field's tag to control its tab position in the form.
  */
-- (void)addFormField:(id<LWEFormViewFieldProtocol>)formField;
+- (void)addFormField:(UIResponder<LWEFormViewFieldProtocol> *)formField;
 
 /**
  * Removes a form field from the form.  Removing the view from the subview
@@ -118,7 +118,7 @@ typedef BOOL(^LWEFormFieldValidationChecks)(UIControl *);
  *
  * If the form is currently editing this field, this method will resign the responder.
  */
-- (void)removeFormField:(id<LWEFormViewFieldProtocol>)formField;
+- (void)removeFormField:(UIResponder<LWEFormViewFieldProtocol> *)formField;
 
 /**
  * Get all of the invalid fields on this form by checking each fields

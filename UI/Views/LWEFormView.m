@@ -106,19 +106,19 @@
 
 #pragma mark - Manual Form Management
 
-- (void)addFormField:(id<LWEFormViewFieldProtocol>)formField
+- (void)addFormField:(UIResponder <LWEFormViewFieldProtocol>*)formField
 {
   [self addFormObject_:formField];
 }
 
-- (void)removeFormField:(id<LWEFormViewFieldProtocol>)formField
+- (void)removeFormField:(UIResponder<LWEFormViewFieldProtocol> *)formField
 {
   // If we don't have this field, don't do anything.
   if ([self.fieldsSortedByTag containsObject:formField] == NO)
   {
     return;
   }
-  
+
   if ([self currentResponder_] == formField)
   {
     // OK, we are removing the active field.
