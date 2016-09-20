@@ -164,13 +164,6 @@ typedef enum
 + (NSString *)fileNamed:(NSString*)fileName;
 
 /**
- * Adds an @HD extension to the name if the device is an iPad.  If the @HD filename does not exist
- * and useRetinaIfMissing is YES, it will be @2x instead.
- * Also, if NON ipad and is a retina device on 4.0.x, this method will return @2x
- */
-+ (NSString *)fileNamed:(NSString *)fileName useRetinaIfMissing:(BOOL)useRetina;
-
-/**
  * Returns an appropriate filename based on the filename given, making considerations for whether the device is an iPad or not, and whether the device is Retina or not.
  * \param fileName The name of the file to Retina-icize or iPadHD-icize
  * \param useRetina If the device is an iPad, and no iPad HD file is found for the given fileName, setting this param to YES will return the retina filename instead.
