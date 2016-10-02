@@ -178,8 +178,6 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
 + (BOOL)isTouchIDAvailable
 {
-#ifdef __IPHONE_8_0
-  // Don't crash if we're on iOS 7 or below
   if ([self isiOS8OrAbove] == NO)
   {
     return NO;
@@ -188,9 +186,6 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   // We don't care about the error, we just want to know if we can use touch ID or not
   LAContext *context = [[LAContext alloc] init];
   return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-#else
-  return NO;
-#endif
 }
 
 + (kLWEDeviceType)deviceType
