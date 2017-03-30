@@ -355,7 +355,7 @@
 	//else use the whole rectangle of this view to be rounded rect. 
 	if (self.params.showCallout)
 	{
-		CGRect newRoundedRectViewRect;
+		CGRect newRoundedRectViewRect = CGRectZero;
 		NSInteger totalSpace; 
 		NSInteger numPixelsToShave;
 		CGFloat calloutSize = self.params.calloutSize;
