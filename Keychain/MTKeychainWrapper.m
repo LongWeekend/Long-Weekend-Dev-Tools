@@ -88,18 +88,18 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
 
   if (accessGroup != nil)
   {
-#if TARGET_IPHONE_SIMULATOR
-    // Ignore the access group if running on the iPhone simulator.
-    //
-    // Apps that are built for the simulator aren't signed, so there's no keychain access group
-    // for the simulator to check. This means that all apps can see all keychain items when run
-    // on the simulator.
-    //
-    // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
-    // simulator will return -25243 (errSecNoAccessForItem).
-#else
-    [keychainQuery setObject:accessGroup forKey:(__bridge id)kSecAttrAccessGroup];
-#endif
+    #if TARGET_IPHONE_SIMULATOR
+      // Ignore the access group if running on the iPhone simulator.
+      //
+      // Apps that are built for the simulator aren't signed, so there's no keychain access group
+      // for the simulator to check. This means that all apps can see all keychain items when run
+      // on the simulator.
+      //
+      // If a SecItem contains an access group attribute, SecItemAdd and SecItemUpdate on the
+      // simulator will return -25243 (errSecNoAccessForItem).
+    #else
+      [keychainQuery setObject:accessGroup forKey:(__bridge id)kSecAttrAccessGroup];
+    #endif
   }
 
   OSStatus status = SecItemDelete((__bridge CFDictionaryRef)keychainQuery);
@@ -194,7 +194,7 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
     
     // Load the saved data from Keychain
     // 1. Create a dictionary to return populated with the attributes and data.
-    NSMutableDictionary *returnDictionary = [metadataDictionary mutableCopy];
+    NSMutableDictionary * const returnDictionary = [metadataDictionary mutableCopy];
     
     // 2. Add the proper search key and class attribute.
     [returnDictionary setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
@@ -212,17 +212,32 @@ static NSString * const LWEKeychainDictionaryKey = @"LWEKeychainDictionaryKey";
       NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
       NSMutableDictionary *dataDict = [unarchiver decodeObjectForKey:LWEKeychainDictionaryKey];
       [unarchiver finishDecoding];
-      
-      // 3c. Set the data back to the return dict as part of the "kSecValueData" key.
-      [returnDictionary setObject:dataDict forKey:(__bridge id)kSecValueData];
-      
-      // 3d. Set thos values back to the ivar.
-      self.keychainItem = [NSMutableDictionary dictionaryWithDictionary:returnDictionary];
-      self.keychainData = dataDict;
+
+      if (dataDict != nil)
+      {
+        // 3c. Set the data back to the return dict as part of the "kSecValueData" key.
+        [returnDictionary setObject:dataDict forKey:(__bridge id)kSecValueData];
+
+        // 3d. Set thos values back to the ivar.
+        self.keychainItem = [NSMutableDictionary dictionaryWithDictionary:returnDictionary];
+        self.keychainData = dataDict;
+      }
+      else
+      {
+        // Would like to do all `MT_LOG` or `MT_ASSERT` here even with
+        // Crashlytics, but this file lives in a different world (lwe-dev-tools)
+        // TODO: Move to Lib along with crash reporting facade and logging -- RPR 2017-06-26
+        NSLog(@"Query: %@ is fetched but no data: %@", self.genericPasswordQuery, returnDictionary);
+        NSAssert(NO, @"No expected data.");
+
+        // Should not happen but to avoid crash here
+        // https://fabric.io/moneytree-kk/ios/apps/jp.moneytree.journal/issues/594a2eaebe077a4dcc698647/sessions/f7f28e940f4c4844b63242b77c07dd6c_e2fc9aa456ee11e7bdaf56847afe9799_0_v2
+        [self initializeForEmptyKeychain_];
+      }
     }
     else
     {
-      NSAssert((NO), @"The keychain should have the 'data'/'password' on its item.");
+      NSAssert(NO, @"The keychain should have the 'data'/'password' on its item.");
     }
   }
 }
