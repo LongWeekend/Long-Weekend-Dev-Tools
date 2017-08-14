@@ -136,6 +136,7 @@ typedef enum
 + (BOOL)isiOS8OrAbove;
 + (BOOL)isiOS9OrAbove;
 + (BOOL)isiOS10OrAbove;
++ (BOOL)isiOS11OrAbove;
 
 //! Determines if touch ID is available or not.
 + (BOOL)isTouchIDAvailable;
