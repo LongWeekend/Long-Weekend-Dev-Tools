@@ -2,7 +2,7 @@
 //
 // Copyright (c) 2010, 2011 Long Weekend LLC
 //
-// EXCEPT for +(NSString*)deviceModelString method implementation, courtesy of 
+// EXCEPT for +(NSString*)deviceModelString method implementation, courtesy of
 // John Muchow:
 // http://iphonedevelopertips.com/device/determine-if-iphone-is-3g-or-3gs-determine-if-ipod-is-first-or-second-generation.html
 //
@@ -67,9 +67,9 @@ typedef enum
 
 /**
  * This class helps applications be universal: work on any iOS device (iPhone, iPod Touch, iPad)
- * This includes device identification helper methods, filename selector methods (e.g. using 
+ * This includes device identification helper methods, filename selector methods (e.g. using
  * HD file extensions for iPad-specific resources).
- * 
+ *
  * Note that this class is RELATED to LWERetinaUtils, which is responsible for device resolution/display
  * universality issues, but the roles of each class are distinct.  An iPad could theoretically also be
  * Retina someday; this class should/would not care about that at that point.
@@ -100,7 +100,7 @@ typedef enum
  */
 + (CGFloat)screenHeightDifferenceFrom4InchDisplay;
 
-/** 
+/**
  * Derrived the number from `screenHeightDifferenceFrom4InchDisplay` method, it takes the height ratio,
  * how much bigger in a percentage.
  *

@@ -2,7 +2,7 @@
 //
 // Copyright (c) 2010, 2011 Long Weekend LLC
 //
-// EXCEPT for +(NSString*)deviceModelString method implementation, courtesy of 
+// EXCEPT for +(NSString*)deviceModelString method implementation, courtesy of
 // John Muchow:
 // http://iphonedevelopertips.com/device/determine-if-iphone-is-3g-or-3gs-determine-if-ipod-is-first-or-second-generation.html
 //
@@ -214,19 +214,19 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
 
   kLWEDeviceType device = kLWEDeviceTypeUnknown;
   NSArray *components = [deviceString componentsSeparatedByString:@","];
-  
+
   // If we didn't find "," in the device string, we don't know how to class this device type unless simulator
   if ([components count] > 1)
   {
     NSInteger minorRevision = [(NSString*)[components objectAtIndex:1] integerValue];
-    
+
     // Naive implementation - assumes 1 digit version number.   Could use Regex but this would
     // break iOS3.1+ compatability.
     NSString *deviceClassWithVersion = [components objectAtIndex:0];
     NSInteger versionIndex = ([deviceClassWithVersion length]-1);
     NSInteger majorRevision = [[deviceClassWithVersion substringFromIndex:versionIndex] integerValue];
     NSString *deviceClass = [deviceClassWithVersion substringToIndex:versionIndex];
-    
+
     // Now determine our device type based on all this info.
     if ([deviceClass isEqualToString:@"iPhone"])
     {
@@ -343,7 +343,7 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
     {
       ipadName = [fileName stringByReplacingCharactersInRange:lastPeriod withString:@"@HD."];
     }
-    
+
     // Assign first, if we care about retina/file existence, we may change once more
     returnVal = ipadName;
     if (useRetina && [LWEFile fileExists:ipadName] == NO)
@@ -362,7 +362,7 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
       returnVal = [LWERetinaUtils retinaSafeImageName:fileName];
     }
   }
-  
+
   return returnVal;
 }
 
