@@ -138,8 +138,8 @@ typedef enum
 + (BOOL)isiOS10OrAbove;
 + (BOOL)isiOS11OrAbove;
 
-//! Determines if touch ID is available or not.
-+ (BOOL)isTouchIDAvailable;
+//! Determines if Touch/Face ID is available or not.
++ (BOOL)isBiometricAuthAvailable;
 
 /**
  * \brief Returns the name of this device, e.g. "iPhone 2,1" for an iPhone 3GS.

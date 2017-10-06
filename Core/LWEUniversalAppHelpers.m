@@ -181,14 +181,14 @@ static const CGFloat ThreePointFiveInchDisplayHeight = 480.0;
   return [UIScreen mainScreen].bounds.size.height;
 }
 
-+ (BOOL)isTouchIDAvailable
++ (BOOL)isBiometricAuthAvailable
 {
   if ([self isiOS8OrAbove] == NO)
   {
     return NO;
   }
-  
-  // We don't care about the error, we just want to know if we can use touch ID or not
+
+  // We don't care about the error, we just want to know if we can use Touch/Face ID or not
   LAContext *context = [[LAContext alloc] init];
   return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
 }
