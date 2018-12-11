@@ -7,7 +7,6 @@
 //
 
 #import "LWEFormView.h"
-#import "LWEFormDatePickerField.h"
 
 // Private Methods
 @interface LWEFormView()
@@ -236,18 +235,6 @@
   self.fieldsSortedByTag = [newArray sortedArrayUsingDescriptors:[NSArray arrayWithObject:sorter]];
   
   [controlObject setDelegate:self];
-  
-  // In addition to becoming the delegate, in the case of a picker form, also set up the button
-  if ([controlObject isKindOfClass:[LWEFormDatePickerField class]])
-  {
-    UIBarButtonItem *barButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Next", @"Next")
-                                                                  style:UIBarButtonItemStyleDone
-                                                                 target:self
-                                                                 action:@selector(doneButtonPressed_:)];
-    LWEFormDatePickerField *pickerField = (LWEFormDatePickerField*)controlObject;
-    pickerField.doneButton = barButton;
-    [barButton release];
-  }
 }
 
 /**
